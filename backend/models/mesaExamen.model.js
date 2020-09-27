@@ -43,7 +43,8 @@ let resultados = [{
     legajo: String,
     nombre: String,
     apellido: String,
-    nota: Number
+    nota: Number,
+    condicion: {type: String, enum:[]} //FIXME completar
 }]
 
 const mesaExamenEsquema = new Schema({
