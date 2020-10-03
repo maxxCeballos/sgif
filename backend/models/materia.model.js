@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const materiaEsquema = new Schema({
+const materiaEsquema = new Schema({    
     
 }, { timestamps: true });
 

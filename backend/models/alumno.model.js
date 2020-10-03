@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema
 
 let dictado = {
+    //TODO agregue el oid
+    idDictado: Schema.Types.ObjectId,
     materia: {
         nombre: String,
         anio: { type: Number, min: 1, max: 5 }
@@ -23,29 +25,53 @@ let calificaciones = [{
 }];
 
 let resultadosMesasEx = [{
+    //TODO terminar
 
 }];
 
 let inasistencia = {
     valor: { type: Number, enum: [0.25, 0.5, 1] },
     estado: { type: String, enum: ["Justificada", "Injustificada", "Justificacion Especial"] },
-    justificacion: Srting, //FIXME ver si suben una captura por ej
+    justificacion: String, //FIXME puede ser archivo
+    dictado: {
+        //TODO agregue el oid
+        idDictado: Schema.Types.ObjectId,
+        materia: {
+            nombre: String,
+            anio: { type: Number, min: 1, max: 5 }
+        },
+        programa: String
+    }
 };
 
 let presentismos = [{
     fecha: Date,
     horaEntrada: String, //FIXME tipo hora
-    horaSalida: String,
-
-
+    horaSalida: String, //FIXME tipo hora
+    //TODO revisar
+    inasistencia // si se retira antes o no va se completa aca
 }];
 
-let sanciones = [{
+let preceptorSancion = {
+    idPreceptor: Schema.Types.ObjectId,
+    nombre: String,
+    apellido: String,
+    legajo: String,
+}
 
+let sanciones = [{
+    id: String, //FIXME definir formato?
+    fecha: Date,
+    cantidad: Number, //TODO ver si hay enum
+    justificacion: String,
+    preceptorSancion
 }];
 
 let observaciones = [{
-
+    titulo: String,
+    descripcion: String,
+    fecha: Date,
+    archivo: String, //FIXME es un archivo
 }];
 
 const alumnoEsquema = new Schema({
@@ -54,10 +80,11 @@ const alumnoEsquema = new Schema({
     nombre: String,
     apellido: String,
     genero: { type: String, enum: ["Masculino", "Femenino"] },
-    fechaNac: Date,
+    fechaNacimiento: Date,
     legajo: String,
     fechaIngreso: Date,
     fechaEgreso: Date,
+    nombreEscuelaAnt: String,
     foto: String, //FIXME poner tipo de dato para la foto
     sacramento: [{
         tipo: { type: String, enum: ["Bautismo", "Comunión", "Confirmación"] },
@@ -68,7 +95,14 @@ const alumnoEsquema = new Schema({
     estadoInscripción: {
         type: String, enum: ["Inscripto", "No Inscripto", "Reinscripto"]
     },
-    anioCorespondiente: { type: Number, min: 1, max: 5 }
+    anioCorespondiente: { type: Number, min: 1, max: 5 },
+    observaciones,
+    sanciones,
+    presentismos,
+    calificaciones,
+    idResponsable: Schema.Types.ObjectId,
+    idHermanos: [Schema.Types.ObjectId],
+    idPadres: [Schema.Types.ObjectId]
 }, { timestamps: true });
 
 const Alumno = mongoose.model('Alumno', alumnoEsquema);
