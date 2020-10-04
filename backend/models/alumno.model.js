@@ -12,6 +12,13 @@ let dictado = {
     programa: String
 }
 
+let resultadosMesasEx = [{
+    //TODO revisar
+    nota: Number,
+    condicion: String,
+    mesaDeExamen: Schema.Types.ObjectId,
+}];
+
 let calificaciones = [{
     //Notas de cada trimestre
     nota1T: Number,
@@ -21,12 +28,8 @@ let calificaciones = [{
     promedio: { type: Number, min: 1, max: 10 },
     notaFinal: { type: Number, min: 1, max: 10 },
     condicion: { type: String, enum: ["Cursando", "Aprobado", "Desaprobado", "Repitio"] },
+    resultadosMesasEx,
     dictado
-}];
-
-let resultadosMesasEx = [{
-    //TODO terminar
-
 }];
 
 let inasistencia = {
@@ -62,7 +65,7 @@ let preceptorSancion = {
 let sanciones = [{
     id: String, //FIXME definir formato?
     fecha: Date,
-    cantidad: Number, //TODO ver si hay enum
+    cantidad: {type: Number, enum: [0.25, 0.5, 1]},
     justificacion: String,
     preceptorSancion
 }];

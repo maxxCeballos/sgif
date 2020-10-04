@@ -83,6 +83,7 @@ const personaEsquema = new Schema({
     hermano,
     padre,
     preceptor,
+    profesor,
     alumno: Schema.Types.ObjectId
 
 }, { timestamps: true });
