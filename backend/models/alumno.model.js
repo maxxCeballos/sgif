@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema
 
 let dictado = {
-    //TODO agregue el oid
     idDictado: Schema.Types.ObjectId,
     materia: {
         nombre: String,
@@ -13,9 +12,8 @@ let dictado = {
 }
 
 let resultadosMesasEx = [{
-    //TODO revisar
     nota: Number,
-    condicion: String,
+    condicion: { type: String, enum: ["Aprobado", "Desaprobado", "Ausente"] },
     mesaDeExamen: Schema.Types.ObjectId,
 }];
 
@@ -37,21 +35,14 @@ let inasistencia = {
     estado: { type: String, enum: ["Justificada", "Injustificada", "Justificacion Especial"] },
     justificacion: String, //FIXME puede ser archivo
     dictado: {
-        //TODO agregue el oid
         idDictado: Schema.Types.ObjectId,
-        materia: {
-            nombre: String,
-            anio: { type: Number, min: 1, max: 5 }
-        },
-        programa: String
     }
 };
 
 let presentismos = [{
     fecha: Date,
-    horaEntrada: String, //FIXME tipo hora
-    horaSalida: String, //FIXME tipo hora
-    //TODO revisar
+    horaEntrada: String, 
+    horaSalida: String, 
     inasistencia // si se retira antes o no va se completa aca
 }];
 
@@ -63,7 +54,7 @@ let preceptorSancion = {
 }
 
 let sanciones = [{
-    id: String, //FIXME definir formato?
+    id: String, 
     fecha: Date,
     cantidad: {type: Number, enum: [0.25, 0.5, 1]},
     justificacion: String,

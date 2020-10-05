@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const bloqueHorarioEsquema = new Schema({
-    horaInicio: String, //FIXME tipo hora
-    horaFin: String, //FIXME tipo hora
+    horaInicio: String, 
+    horaFin: String,
     duracion: Number //en minutos
 }, { timestamps: true });
 

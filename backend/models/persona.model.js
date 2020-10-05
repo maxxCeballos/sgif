@@ -15,8 +15,8 @@ let responsable = {
     tira: { type: String },
     localidad: { type: String },
     codigoPostal: { type: Number },
-    provincia: { type: String },
-
+    provincia: { type: String }, 
+    //TODO: Ver si conviene tener al alumno   
 };
 
 
@@ -25,8 +25,6 @@ let hermano = {
     escuelaActual: { type: String },
     grado: { type: String },
     hermanos: [Schema.Types.ObjectId],
-
-
 };
 
 let padre = {
@@ -42,7 +40,7 @@ let padre = {
     egresoPrimario: { type: Boolean },
     egresoSecundario: { type: Boolean },
     relacionParentesco: { type: String }
-    //FIXME ver relacion alumno 
+    //TODO: Ver si conviene tener al alumno
 };
 
 let preceptor = {
@@ -85,7 +83,6 @@ const personaEsquema = new Schema({
     preceptor,
     profesor,
     alumno: Schema.Types.ObjectId
-
 }, { timestamps: true });
 
 

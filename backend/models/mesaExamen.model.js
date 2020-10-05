@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 
 //arr de profesores, el primero es el que puede impartir la materia, el resto secundarios
 let profesores = [{
-    //TODO: completar (ver si oid o los artib consultados)
     idProfesor: Schema.Types.ObjectId,
     legajo: { type: String },
     nombre: { type: String },
@@ -12,7 +11,6 @@ let profesores = [{
 }, {}, {}]
 
 let preceptores = [{
-    //TODO: completar (ver si oid o los artib consultados)
     idPreceptor: Schema.Types.ObjectId,
     legajo: { type: String },
     nombre: { type: String },
@@ -20,13 +18,12 @@ let preceptores = [{
 }, {}]
 
 let resultados = [{
-    //FIXME pasar a alumno
     idAlumno: Schema.Types.ObjectId,
     legajo: String,
     nombre: String,
     apellido: String,
     nota: Number,
-    condicion: { type: String, enum: [] } //FIXME completar
+    condicion: { type: String, enum: ["Aprobado", "Desaprobado", "Ausente"] },
 }]
 
 const mesaExamenEsquema = new Schema({
@@ -38,7 +35,6 @@ const mesaExamenEsquema = new Schema({
     profesores,
     dictado: Schema.Types.ObjectId,
     resultados,
-
     //estructura para compartir mesas y referencias 
     esCompartida: Boolean,
     esPadre: Boolean,

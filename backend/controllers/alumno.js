@@ -11,8 +11,6 @@ const createAlumno = (alumno) => {
 
 }
 
-
-
 module.exports = {
     createAlumno,
 }
