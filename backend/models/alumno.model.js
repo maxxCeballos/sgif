@@ -2,21 +2,6 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema
 
-let dictado = {
-    idDictado: Schema.Types.ObjectId,
-    materia: {
-        nombre: String,
-        anio: { type: Number, min: 1, max: 5 }
-    },
-    programa: String
-}
-
-let resultadosMesasEx = [{
-    nota: Number,
-    condicion: { type: String, enum: ["Aprobado", "Desaprobado", "Ausente"] },
-    mesaDeExamen: Schema.Types.ObjectId,
-}];
-
 let calificaciones = [{
     //Notas de cada trimestre
     nota1T: Number,
@@ -26,39 +11,32 @@ let calificaciones = [{
     promedio: { type: Number, min: 1, max: 10 },
     notaFinal: { type: Number, min: 1, max: 10 },
     condicion: { type: String, enum: ["Cursando", "Aprobado", "Desaprobado", "Repitio"] },
-    resultadosMesasEx,
-    dictado
+    dictado = Schema.Types.ObjectId,
+
+    //hace referencia a las mesas de examen en las que rindió, y asi obtiene los resultados
+    mesasExamen =[Schema.Types.ObjectId],     
 }];
 
 let inasistencia = {
     valor: { type: Number, enum: [0.25, 0.5, 1] },
     estado: { type: String, enum: ["Justificada", "Injustificada", "Justificacion Especial"] },
     justificacion: String, //FIXME puede ser archivo
-    dictado: {
-        idDictado: Schema.Types.ObjectId,
-    }
+    dictado: Schema.Types.ObjectId,
 };
 
 let presentismos = [{
     fecha: Date,
-    horaEntrada: String, 
-    horaSalida: String, 
+    horaEntrada: String,
+    horaSalida: String,
     inasistencia // si se retira antes o no va se completa aca
 }];
 
-let preceptorSancion = {
-    idPreceptor: Schema.Types.ObjectId,
-    nombre: String,
-    apellido: String,
-    legajo: String,
-}
-
 let sanciones = [{
-    id: String, 
+    id: String,
     fecha: Date,
-    cantidad: {type: Number, enum: [0.25, 0.5, 1]},
+    cantidad: { type: Number, enum: [0.25, 0.5, 1] },
     justificacion: String,
-    preceptorSancion
+    preceptorSancion = Schema.Types.ObjectId
 }];
 
 let observaciones = [{
@@ -94,9 +72,9 @@ const alumnoEsquema = new Schema({
     sanciones,
     presentismos,
     calificaciones,
-    idResponsable: Schema.Types.ObjectId,
-    idHermanos: [Schema.Types.ObjectId],
-    idPadres: [Schema.Types.ObjectId]
+    responsable: Schema.Types.ObjectId,
+    hermanos: [Schema.Types.ObjectId],
+    padres: [Schema.Types.ObjectId]
 }, { timestamps: true });
 
 const Alumno = mongoose.model('Alumno', alumnoEsquema);
