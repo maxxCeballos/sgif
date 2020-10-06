@@ -2,7 +2,6 @@
 
 let Alumno = require('../models/alumno.model');
 
-
 const createAlumno = async (alumno) => {
 
     const { dni, tipoDni, nombre, apellido, genero } = alumno;
@@ -39,7 +38,6 @@ const createAlumno = async (alumno) => {
         // idHermanos,
         // idPadres
     });
-
 
     const alumnoDB = await newAlumno.save()
 
@@ -83,8 +81,6 @@ const deleteAlumno = async (dni) => {
 
     return true;
 }
-
-
 
 module.exports = {
     createAlumno,
