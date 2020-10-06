@@ -8,6 +8,7 @@ const horarioEsquema = new Schema({
     bloqueHorario: {
         horaInicio: String, 
         horaFin: String,
+        //TODO: ver si se puede definir calculo en vez de carga manual
         duracion: Number //en minutos        
     }
     //TODO puede ser asi tambien bloqueHorario: BloqueHorario

@@ -40,8 +40,6 @@ router.get('/alumno', asyncHandler( async (req, res) => {
 }));
 
 
-
-
 router.put('/alumno', asyncHandler( async (req, res) => {
 
     const alumno = req.body

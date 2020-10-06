@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 let Persona = require('../models/persona.model');
 
@@ -6,18 +6,19 @@ const createProfesor = async (profesor) => {
 
     const { dni, tipoDni, nombre, apellido, genero } = profesor;
 
-    if (!ya existe) {
+    if (no existe) {
         createPersona(datosDePersona);
+        {nombre,
+            apellido,
+            dni,
+            sexo,
+            alumno,}
     }else{
         //Update de persona agregando profe
     }
     
     const newProfesor = new Persona({
-        nombre,
-        apellido,
-        dni,
-        sexo,
-        alumno,
+        
 
         // Atributos de Profesor
         profesor: {
