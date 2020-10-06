@@ -9,7 +9,7 @@ const createAlumno = async (alumno) => {
     //     sacramento,
     //     estadoInscripcion,
     //     anioCorrespondiente,
-    //     observaciones,
+    //     observaciones,existeexiste
     //     sanciones,
     //     presentismos,
     //     calificaciones,
