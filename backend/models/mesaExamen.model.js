@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
+// TODO OID prof
 //arr de profesores, el primero es el que puede impartir la materia, el resto secundarios
 let profesores = [{
     idProfesor: Schema.Types.ObjectId,
@@ -10,6 +11,7 @@ let profesores = [{
     apellido: { type: String }
 }, {}, {}]
 
+// TODO OID prec
 let preceptores = [{
     idPreceptor: Schema.Types.ObjectId,
     legajo: { type: String },
