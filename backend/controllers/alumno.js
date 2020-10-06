@@ -1,11 +1,12 @@
 'use strict'
 
-let Alumno=require('../models/alumno.model');
+let Alumno = require('../models/alumno.model');
 
 
 const createAlumno = async (alumno) => {
 
-    // const { dni, tipoDni, nombre, apellido, genero, fechaNacimiento, legajo, fechaIngreso, fechaEgreso, nombreEscuelaAnt, foto,
+    const { dni, tipoDni, nombre, apellido, genero } = alumno;
+    // , fechaNacimiento, legajo, fechaIngreso, fechaEgreso, nombreEscuelaAnt, foto,
     //     sacramento,
     //     estadoInscripcion,
     //     anioCorrespondiente,
@@ -17,10 +18,10 @@ const createAlumno = async (alumno) => {
     //     idPadres} = alumno;
 
     const newAlumno = new Alumno({
-        dni: "35109970",
-        tipoDni: "dni",
-        nombre: "Maximiliano",
-        apellido: "Ceballos",
+        dni,
+        tipoDni,
+        nombre,
+        apellido,
         genero,
         // fechaNacimiento,
         // legajo,
@@ -46,23 +47,42 @@ const createAlumno = async (alumno) => {
 
 }
 
-const updateAlumno = () => {
 
+const getAlumnoById = async (dni) => {
+    
+    const alumnoDB = await Alumno.find({ dni: dni }).exec();
+    
+    return alumnoDB
+}
+
+const getAllAlumnos = async () => {
+    
+    const alumnosDB = await Alumno.find().exec();
+    
+    return alumnosDB;
+}
+
+const updateAlumno = async (alumno) => {
+
+    const { dni, nombre, apellido } = alumno
+
+    const response = await Alumno.updateOne({ dni: dni}, { 
+        nombre: nombre,
+        apellido: apellido,
+    })
+
+    if (response.n === 1) return true
+
+    return false
 
 }
 
+const deleteAlumno = async (dni) => {
 
-const deleteAlumno = () => {
+    await Alumno.deleteOne({ dni : dni }).exec();
 
-
+    return true;
 }
-
-const getAlumno = () => {
-
-}
-
-
-
 
 
 
@@ -70,5 +90,6 @@ module.exports = {
     createAlumno,
     updateAlumno,
     deleteAlumno,
-    getAlumno,
+    getAllAlumnos,
+    getAlumnoById,
 }
