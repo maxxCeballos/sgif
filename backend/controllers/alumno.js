@@ -47,8 +47,16 @@ const createAlumno = async (alumno) => {
 
 
 const getAlumnoById = async (dni) => {
-    
+    //FIXME: ver si cambiar nombre a ...ByDni porq id puede ser OID
+
     const alumnoDB = await Alumno.find({ dni: dni }).exec();
+    
+    return alumnoDB
+}
+
+const getAlumnoByLegajo = async (legajo) => {
+    
+    const alumnoDB = await Alumno.find({ legajo: legajo }).exec();
     
     return alumnoDB
 }
@@ -88,4 +96,5 @@ module.exports = {
     deleteAlumno,
     getAllAlumnos,
     getAlumnoById,
+    getAlumnoByLegajo,
 }

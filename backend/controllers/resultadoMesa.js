@@ -31,7 +31,16 @@ const createResultadoMesa = async (resultadoMesa) => {
 
 
 const getResultadoMesaById = async (dni) => {
+    //FIXME: ver si cambiar nombre a ...ByDni porq id puede ser OID
 
+    const resultadoMesaDB = await ResultadoMesa.find({ dni: dni }).exec();
+
+    return resultadoMesaDB
+}
+
+const getResultadoMesaByOid = async (oidResultado) => {
+    //FIXME: ver como se buscaria por oid
+    
     const resultadoMesaDB = await ResultadoMesa.find({ dni: dni }).exec();
 
     return resultadoMesaDB
@@ -72,4 +81,5 @@ module.exports = {
     deleteResultadoMesa,
     getAllResultadoMesas,
     getResultadoMesaById,
+    getResultadoMesaByOid,
 }
