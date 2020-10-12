@@ -39,9 +39,6 @@ router.get('/alumno', asyncHandler( async (req, res) => {
 
 }));
 
-
-
-
 router.put('/alumno', asyncHandler( async (req, res) => {
 
     const alumno = req.body
@@ -51,7 +48,6 @@ router.put('/alumno', asyncHandler( async (req, res) => {
     res.send({ ok: true, response });
 
 }));
-
 
 router.delete('/alumno/:dni', asyncHandler( async (req, res) => {
 
