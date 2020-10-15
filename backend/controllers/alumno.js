@@ -11,8 +11,6 @@ const createAlumno = async (alumno) => {
         estadoInscripcion, anioCorrespondiente, observaciones, sanciones, presentismos,
         calificaciones, idHermanos, idPadres } = alumno;
 
-    const ultimoLegajo = db.find(); //TODO: Buscar legajo mas grande
-
     const newAlumno = new Alumno({
         dni,
         tipoDni,
@@ -20,13 +18,12 @@ const createAlumno = async (alumno) => {
         apellido,
         genero,
         fechaNacimiento,
-        legajo: ultimoLegajo,
-        fechaIngreso,
+        fechaIngreso: new Date().toISOString(),
         fechaEgreso,
         nombreEscuelaAnt,
         foto,
         sacramento,
-        estadoInscripcion,
+        estadoInscripcion, //FIXME: para pruebas zafa, pero hay que sacarlo
         anioCorrespondiente,
         observaciones,
         sanciones,
@@ -44,18 +41,9 @@ const createAlumno = async (alumno) => {
 
 const getAlumnoById = async (dni) => {
 
-    const alumnoDB = await Alumno.find({ dni: dni }).exec();
-    let response = { alumnoDB };
+    const alumnoDB = await Alumno.find({ dni: dni }).exec();    
 
-    if (alumnoDB.n === 1) {
-        if (alumnoDB.estadoInscripcion == "Reinscripto") {
-            response = { message: "El alumno ya esta Reinscripto" }
-        }
-    } else {
-        response = { message: "El alumno no existe, puede inscribir" }
-    }
-
-    return response
+    return alumnoDB
 }
 
 const getAllAlumnos = async () => {
@@ -65,19 +53,19 @@ const getAllAlumnos = async () => {
     return alumnosDB;
 }
 
-const updateAlumno = async (atributo,valor) => {
+const updateAlumno = async (atributo, valor, dni) => {
 
     //const { dni, nombre, apellido } = alumno    
 
-    const response = await Alumno.updateOne({ dni: dni }, {
-        `${atributo}`: atributo, //FIXME: arreglar atributo
-        apellido: apellido,
-    })
+    //TODO: refactorizar
+    var $set = { $set: {} };
+    $set.$set[atributo] = valor;
+
+    const response = await Alumno.updateOne({ dni: dni }, $set);
 
     if (response.n === 1) return true
 
     return false
-
 }
 
 const deleteAlumno = async (dni) => {
@@ -85,6 +73,12 @@ const deleteAlumno = async (dni) => {
     await Alumno.deleteOne({ dni: dni }).exec();
 
     return true;
+}
+
+const getUltimoLegajo = async () =>{
+    const response = await Alumno.find().sort({ legajo: -1 }).legajo;
+
+    return response;
 }
 
 
@@ -95,4 +89,5 @@ module.exports = {
     deleteAlumno,
     getAllAlumnos,
     getAlumnoById,
+    getUltimoLegajo
 }

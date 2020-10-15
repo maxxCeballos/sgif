@@ -11,10 +11,10 @@ let calificaciones = [{
     promedio: { type: Number, min: 1, max: 10 },
     notaFinal: { type: Number, min: 1, max: 10 },
     condicion: { type: String, enum: ["Cursando", "Aprobado", "Desaprobado", "Repitio"] },
-    dictado = Schema.Types.ObjectId,
+    dictado: Schema.Types.ObjectId,
 
     //hace referencia a las mesas de examen en las que rindió, y asi obtiene los resultados
-    mesasExamen =[Schema.Types.ObjectId],     
+    mesasExamen :[Schema.Types.ObjectId],     
 }];
 
 let inasistencia = {
@@ -36,7 +36,7 @@ let sanciones = [{
     fecha: Date,
     cantidad: { type: Number, enum: [0.25, 0.5, 1] },
     justificacion: String,
-    preceptorSancion = Schema.Types.ObjectId
+    preceptorSancion : Schema.Types.ObjectId
 }];
 
 let observaciones = [{
@@ -67,7 +67,7 @@ const alumnoEsquema = new Schema({
     estadoInscripcion: {
         type: String, enum: ["Inscripto", "No Inscripto", "Reinscripto"]
     },
-    anioCorespondiente: { type: Number, min: 1, max: 5 },
+    anioCorrespondiente: { type: Number, min: 1, max: 5 },
     observaciones,
     sanciones,
     presentismos,

@@ -1,27 +1,36 @@
 'use strict'
 
-let Responsable = require('../models/responsable.model');
+let Persona = require('../models/persona.model');
+const { getPersonaById, createPersona, asociarRol } = require('./persona');
 
+const createResponsable = async (datosResponsable) => {
 
-const createResponsable = async (responsable) => {
+    const { nombre, apellido, dni, sexo, legajo, cuitCuil, telefono, email, calle, altura,
+        barrio, piso, depto, tira, modulo, localidad, codigoPostal, provincia } = datosRsponsable;
 
-    const { nombre, apellido, dni, sexo, cuit, telefono, email, calle, altura,
-        barrio, piso, depto, tira, modelo, localidad, cp, provincia, dniAlumno } = responsable;
+    const persona = { nombre, apellido, dni, sexo };
+    const responsable = {
+        legajo, cuitCuil, telefono, email, calle, altura,
+        barrio, piso, depto, tira, modulo, localidad, codigoPostal, provincia
+    }
 
-    const newResponsable = new Responsable({
-        nombre, apellido, dni, sexo, cuit, telefono, email, calle, altura,
-        barrio, piso, depto, tira, modelo, localidad, cp, provincia
-    });
+    //verifico si la persona existe
+    //TODO: es var, let, o sin nada?
+    personaDB = await getPersonaById(dni);
 
-    const responsableDB = await newResponsable.save()
+    //TODO: mejorar, ver consultas en drive
+    if (personaDB.n > 1) {
+        //si hay mas de 1 error
+        return //TODO poner mensaje? o que va?
 
-    //se actualiza el estado del alumno
-    await Alumno.updateOne({ dni: dni }, {
-        estadoInscripcion: "Inscripto"
-    })
+    } else if (personaDB.n === 0) {
+        personaDB = createPersona(persona);
+    }
+
+    //si existe o no
+    response = await asociarRol("responsable", responsable, dni);
 
     return responsableDB;
-
 }
 
 const getResponsableById = async (dni) => {
@@ -59,8 +68,6 @@ const deleteResponsable = async (dni) => {
 
     return true;
 }
-
-
 
 module.exports = {
     createResponsable,
