@@ -78,7 +78,6 @@ const registrarAlumno = async (alumno) => {
 
     const alumnoDB = await createAlumno(alumno);
 
-    //const ultimoLegajo = await Alumno.find().sort({ legajo: -1 }).legajo;  
     //TODO: esta bien en el controller
     const legajo = await generarLegajo();
 
@@ -98,6 +97,9 @@ const registrarAlumno = async (alumno) => {
 const regRespYActAlumno = async (responsable, dniAlumno) => {
 
     //TODO:ver la response
+
+    //TODO: !!!!!!!verificar que el alumno no tenga un responsable registrado
+   
     const responsableDB = await createResponsable(responsable);
 
     const response = await updateAlumno("estadoInscripcion", "Inscripto", dniAlumno);

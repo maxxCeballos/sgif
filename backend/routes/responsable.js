@@ -59,6 +59,4 @@ router.delete('/responsable/:dni', asyncHandler( async (req, res) => {
     res.send({ ok: true, response })    
 }));
 
-
-
 module.exports = router;

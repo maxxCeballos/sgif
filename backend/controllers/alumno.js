@@ -8,6 +8,10 @@ const createAlumno = async (alumno) => {
 
     //TODO: agregarle el atributo del legajo, despues??
 
+    //TODO: poner unique en bd y control de un alumno
+
+    //TODO: crear la persona y agregar oid alumno
+
     const { dni, tipoDni, nombre, apellido, genero, fechaNacimiento,
         fechaEgreso, nombreEscuelaAnt, foto, sacramento,
         estadoInscripcion, anioCorrespondiente, observaciones, sanciones, presentismos,
@@ -55,6 +59,12 @@ const getAllAlumnos = async () => {
     return alumnosDB;
 }
 
+/**
+ * actualiza un atributo genérico del primer alumno con el dni ingresado
+ * @param {*} atributo 
+ * @param {*} valor 
+ * @param {*} dni 
+ */
 const updateAlumno = async (atributo, valor, dni) => {
 
     //const { dni, nombre, apellido } = alumno    

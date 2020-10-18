@@ -41,19 +41,18 @@ router.post('/insc-alumno/alumno', asyncHandler(async (req, res) => {
 }))
 
 router.get('/insc-alumno/responsable/:dni', asynchandler(async (req, res) => {
-    const dni = req.params.dni
-
-    //TODO: uso el controller del responsable? o armo el metodo de nuevo en inscirbir alumno y ahi lo uso
-    const response = await getResponsableById(dni)
+    const dni = req.params.dni;    
+    
+    const response = await getResponsableById(dni);
 
     res.send({ ok: true, response })
 }))
 
 router.post('/insc-alumno/reg-resp-act-alum', asyncHandler(async (req, res) => {
-    const responsable = delete req.body.responsable;
-    const dniAlumno = req.body.dniAlumno;
+    const responsable = req.body.responsable;
+    const dniAlumno = req.body.dniAlumno;  
 
-    //TODO: ver nombre
+    //FIXME: ver nombre    
     const response = await regRespYActAlumno(responsable, dniAlumno);
 
     res.send({ ok: true, response })
@@ -63,9 +62,11 @@ router.put('/insc-alumno/reinscribir-alumno', asynchandler(async (req, res) => {
 
     const dniAlumno = req.body.dniAlumno;
 
-    const valorAnio = req.params.anioCorrespondiente //se cambia el año o el estado reinscripto    
+    //TODO:revisar
+    //const valorAnio = req.params.anioCorrespondiente;
+    const valorAnio = req.body.anioCorrespondiente; //se cambia el año o el estado reinscripto    
 
-    const response = await reinscribirAlumno(valorAnio, dniAlumno)
+    const response = await reinscribirAlumno(valorAnio, dniAlumno);
 
     res.send({ ok: true, response })
 }))

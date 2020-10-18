@@ -1,52 +1,66 @@
 'use strict'
 
-const { response } = require('express');
 let Persona = require('../models/persona.model');
-const { getPersonaById, createPersona, asociarRol } = require('./persona');
+const { getPersonaById, createPersona, asociarRol, getAllPersonas } = require('./persona');
 
 const createResponsable = async (datosResponsable) => {
 
     const { nombre, apellido, dni, sexo, legajo, cuitCuil, telefono, email, calle, altura,
-        barrio, piso, depto, tira, modulo, localidad, codigoPostal, provincia } = datosRsponsable;
+        barrio, piso, depto, tira, modulo, localidad, codigoPostal, provincia } = datosResponsable;
 
     const persona = { nombre, apellido, dni, sexo };
-    
+
+    //TODO: generarle legajo.
     const responsable = {
         legajo, cuitCuil, telefono, email, calle, altura,
         barrio, piso, depto, tira, modulo, localidad, codigoPostal, provincia
-    }
+    }    
 
-    //verifico si la persona existe
-    //TODO: es var, let, o sin nada?
-    personaDB = await getPersonaById(dni);
+    let response;
+
+    //console.log(responsable);
+    //console.log(persona);
+
+    //verifico si la persona existe    
+    let personaDB = await getPersonaById(dni);
 
     //TODO: mejorar, ver consultas en drive
-    if (personaDB.n > 1) {
+    if (personaDB.length > 1) {
         //si hay mas de 1 error
-        return //TODO poner mensaje? o que va?
+        response= {message: "Mas de una persona con el mismo dni"};
 
-    } else if (personaDB.n === 0) {
-        personaDB = createPersona(persona);
+    } else if (personaDB.length === 0) {
+        personaDB = await createPersona(persona);
     }
 
-    //si existe o no
+    //si existe o no la persona
     response = await asociarRol("responsable", responsable, dni);
 
-    return responsableDB;
+    return response;
 }
 
 const getResponsableById = async (dni) => {
 
     //TODO: ver es middle man
-    const responsableDB = await getPersonaById();
+    const responsableDB = await getPersonaById(dni);
 
     return responsableDB
 }
 
 const getAllResponsables = async () => {
+    //TODO: para los otros ver si llevar a persona o que cada uno redefina
 
-    const responsablesDB = await Responsable.find().exec();
+    let responsablesDB=[];
+    let j=0;    
+    const personasDB = await getAllPersonas();  
 
+    for (let i = 0; i < personasDB.length; i++) {  
+        //FIXME: no encontre como hacerlo sin el stringify                      
+        if (JSON.parse(JSON.stringify(personasDB[i])).hasOwnProperty('responsable')) {            
+            responsablesDB[j] = personasDB[i];
+            j++;
+        }
+    }
     return responsablesDB;
 }
 
