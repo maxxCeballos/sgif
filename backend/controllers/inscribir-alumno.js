@@ -2,7 +2,7 @@
 
 let Alumno = require('../models/alumno.model'); //TODO: esta bien aca
 
-const { createAlumno, getAlumnoById, updateAlumno, getUltimoLegajo } = require('./alumno');
+const { createAlumno, getAlumnoById, updateAlumno, generarLegajo } = require('./alumno');
 const { createResponsable } = require('./responsable');
 const { getCicloLectivo } = require('./ciclo-lectivo');
 
@@ -12,10 +12,10 @@ const { getCicloLectivo } = require('./ciclo-lectivo');
  */
 const validarFechaInscripcion = async () => {
 
-    const cicloLectivoDB= await getCicloLectivo();
+    const cicloLectivoDB = await getCicloLectivo();
 
-    console.log (cicloLectivoDB);
-    
+    console.log(cicloLectivoDB);
+
     let response;
 
     if (new Date().toISOString() <= cicloLectivoDB.fechaFinInscripcion.toISOString()) {
@@ -47,21 +47,23 @@ const validarAlumno = async (dni) => {
 
         //FIXME: hacer que retorne siempre algo, si hay mas de uno el error sino el alumno
         estadoInscripcion = alumnoDB[0].estadoInscripcion;
-        
+
         /*
         if(estadoInscripcion == "No Inscripto") {
             response = {message: "El alumno no esta inscripto, puede reinscribir"}
         }
         */
 
-        if (estadoInscripcion == "Reinscripto") {            
+        if (estadoInscripcion == "Reinscripto") {
             response = { message: "El alumno ya está Reinscripto" }
-        } else if (estadoInscripcion == "Inscripto") {            
+        } else if (estadoInscripcion == "Inscripto") {
             response = { message: "El alumno ya está Inscripto, no puede reinscribir" }
         }
 
-    } else {
+    } else if (alumnoDB.length === 0) {
         response = { message: "El alumno no existe, puede inscribir" }
+    } else {
+        response = { message: "Error, más de un alumno con el mismo dni" }
     }
 
     return response
@@ -78,9 +80,11 @@ const registrarAlumno = async (alumno) => {
 
     //const ultimoLegajo = await Alumno.find().sort({ legajo: -1 }).legajo;  
     //TODO: esta bien en el controller
-    const ultimoLegajo = await getUltimoLegajo();
+    const legajo = await generarLegajo();
 
-    const response = await updateAlumno("legajo", ultimoLegajo + 1, alumnoDB.dni);
+    console.log(legajo);
+
+    const response = await updateAlumno("legajo", legajo, alumnoDB.dni);
 
     return response;
 }

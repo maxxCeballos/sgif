@@ -6,8 +6,10 @@ const { trace } = require('../routes/alumno');
 
 const createAlumno = async (alumno) => {
 
+    //TODO: agregarle el atributo del legajo, despues??
+
     const { dni, tipoDni, nombre, apellido, genero, fechaNacimiento,
-        fechaIngreso, fechaEgreso, nombreEscuelaAnt, foto, sacramento,
+        fechaEgreso, nombreEscuelaAnt, foto, sacramento,
         estadoInscripcion, anioCorrespondiente, observaciones, sanciones, presentismos,
         calificaciones, idHermanos, idPadres } = alumno;
 
@@ -23,7 +25,7 @@ const createAlumno = async (alumno) => {
         nombreEscuelaAnt,
         foto,
         sacramento,
-        estadoInscripcion, //FIXME: para pruebas zafa, pero hay que sacarlo
+        estadoInscripcion, //FIXME: para pruebas zafa, pero hay que sacarlo        
         anioCorrespondiente,
         observaciones,
         sanciones,
@@ -41,7 +43,7 @@ const createAlumno = async (alumno) => {
 
 const getAlumnoById = async (dni) => {
 
-    const alumnoDB = await Alumno.find({ dni: dni }).exec();    
+    const alumnoDB = await Alumno.find({ dni: dni }).exec();
 
     return alumnoDB
 }
@@ -75,10 +77,11 @@ const deleteAlumno = async (dni) => {
     return true;
 }
 
-const getUltimoLegajo = async () =>{
-    const response = await Alumno.find().sort({ legajo: -1 }).legajo;
+const generarLegajo = async () => {
+    const response = await Alumno.find().select('legajo -_id').sort({ legajo: -1 }).exec();
 
-    return response;
+    //FIXME: estaria bien asi?
+    return parseInt(response[0].legajo)+1;
 }
 
 
@@ -89,5 +92,5 @@ module.exports = {
     deleteAlumno,
     getAllAlumnos,
     getAlumnoById,
-    getUltimoLegajo
+    generarLegajo
 }

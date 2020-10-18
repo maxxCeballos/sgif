@@ -1,5 +1,6 @@
 'use strict'
 
+const { response } = require('express');
 let Persona = require('../models/persona.model');
 const { getPersonaById, createPersona, asociarRol } = require('./persona');
 
@@ -9,6 +10,7 @@ const createResponsable = async (datosResponsable) => {
         barrio, piso, depto, tira, modulo, localidad, codigoPostal, provincia } = datosRsponsable;
 
     const persona = { nombre, apellido, dni, sexo };
+    
     const responsable = {
         legajo, cuitCuil, telefono, email, calle, altura,
         barrio, piso, depto, tira, modulo, localidad, codigoPostal, provincia
@@ -35,7 +37,8 @@ const createResponsable = async (datosResponsable) => {
 
 const getResponsableById = async (dni) => {
 
-    const responsableDB = await Responsable.find({ dni: dni }).exec();
+    //TODO: ver es middle man
+    const responsableDB = await getPersonaById();
 
     return responsableDB
 }

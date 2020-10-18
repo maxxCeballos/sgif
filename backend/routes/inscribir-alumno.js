@@ -15,7 +15,7 @@ router.get('/insc-alumno/validar-fecha', asynchandler(async (req, res) => {
 
     console.log(response);
 
-    res.send({ ok: true, response })
+    res.send({ ok: true, response})
 }))
 
 router.get('/insc-alumno/validar-alumno/:dni', asynchandler(async (req, res) => {
@@ -23,14 +23,19 @@ router.get('/insc-alumno/validar-alumno/:dni', asynchandler(async (req, res) => 
 
     const response = await validarAlumno(dni)
 
+    //console.log(response);
+
     res.send({ ok: true, response })
 }))
 
 router.post('/insc-alumno/alumno', asyncHandler(async (req, res) => {
     //FIXME: corregir inscripcion alumno vacio
+    //TODO: crear la persona despues del alumno y asignarle el OID
     const alumno = req.body
 
     const response = await registrarAlumno(alumno);
+    
+    console.log("Alumno Registrado");
 
     res.send({ ok: true, response });
 }))
@@ -45,8 +50,8 @@ router.get('/insc-alumno/responsable/:dni', asynchandler(async (req, res) => {
 }))
 
 router.post('/insc-alumno/reg-resp-act-alum', asyncHandler(async (req, res) => {
-    const responsable = delete req.body.dniAlumno;
-    const dniAlumno = req.body.dniAlumno
+    const responsable = delete req.body.responsable;
+    const dniAlumno = req.body.dniAlumno;
 
     //TODO: ver nombre
     const response = await regRespYActAlumno(responsable, dniAlumno);

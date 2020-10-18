@@ -38,6 +38,7 @@ router.get('/alumno', asyncHandler(async (req, res) => {
 
 router.put('/alumno', asyncHandler(async (req, res) => {
 
+    //FIXME: ver si dni en uri o no 
     const { atributo, valor, dniAlumno } = req.body
 
     //console.log(atributo + " " + valor + " " + dniAlumno);
