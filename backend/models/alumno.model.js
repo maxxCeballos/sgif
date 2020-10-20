@@ -37,8 +37,7 @@ let sanciones = [{
     cantidad: { type: Number, enum: [0.25, 0.5, 1] },
     justificacion: String,
 
-    //TODO: ATENCION! llenar solo con preceptor
-    // es Persona el esquema al que va a relacionar
+    //TODO: ATENCION! con esquema persona, llenar con preceptor
     preceptorSancion = {type: Schema.Types.ObjectId, ref: 'Persona'}
 }];
 
@@ -76,8 +75,7 @@ const alumnoEsquema = new Schema({
     presentismos,
     calificaciones,
 
-    //TODO: ATENCION! llenar solo con los roles que corresponde
-    // es Persona el esquema al que va a relacionar
+    //TODO: ATENCION! con esquema persona, llenar con preceptores, profesores y hermanos
     responsable: {type: Schema.Types.ObjectId, ref: 'Persona'},
     hermanos: [{type: Schema.Types.ObjectId, ref: 'Persona'}],
     padres: [{type: Schema.Types.ObjectId, ref: 'Persona'}]

@@ -9,8 +9,7 @@ const cursoEsquema = new Schema({
     dictados = [{type: Schema.Types.ObjectId, ref: 'Dictado'}],
     alumnos = [{type: Schema.Types.ObjectId, ref: 'Alumno'}],
     
-    //TODO: ATENCION! llenar solo con preceptor
-    // es Persona el esquema al que va a relacionar
+    //TODO: ATENCION! con esquema persona, llenar con preceptor
     preceptor = {type: Schema.Types.ObjectId, ref: 'Persona'}
 }, { timestamps: true});
 
