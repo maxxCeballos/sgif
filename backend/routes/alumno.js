@@ -37,7 +37,7 @@ router.get('/alumno', asyncHandler(async (req, res) => {
 }));
 
 router.put('/alumno/:dni', asyncHandler(async (req, res) => {
-
+    //TODO:revisar no me anduvo req.query usando postman, dio undefined por consola
     const dniAlumno = req.params.dni;
     const { atributo, valor } = req.query;    
 
