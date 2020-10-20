@@ -14,7 +14,7 @@ let calificaciones = [{
     dictado: {type: Schema.Types.ObjectId, ref: 'Dictado'},
 
     //hace referencia a las mesas de examen en las que rindió, y asi obtiene los resultados
-    mesasExamen =[{ type: Schema.Types.ObjectId, ref: 'MesaExamen' }],
+    mesasExamen: [{ type: Schema.Types.ObjectId, ref: 'MesaExamen' }],
 }];
 
 let inasistencia = {
@@ -38,7 +38,7 @@ let sanciones = [{
     justificacion: String,
 
     //TODO: ATENCION! con esquema persona, llenar con preceptor
-    preceptorSancion = {type: Schema.Types.ObjectId, ref: 'Persona'}
+    preceptorSancion: {type: Schema.Types.ObjectId, ref: 'Persona'}
 }];
 
 let observaciones = [{
