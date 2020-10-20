@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 let responsable = {
-    legajo: { type: String },
+    //TODO:testear
+    legajo: { type: String, unique: true },
     cuitCuil: { type: String },
     telefono: { type: String },
     email: { type: String },
@@ -15,7 +16,7 @@ let responsable = {
     tira: { type: String },
     localidad: { type: String },
     codigoPostal: { type: Number },
-    provincia: { type: String }, 
+    provincia: { type: String },
     //TODO: Ver si conviene tener al alumno   
 };
 
@@ -24,7 +25,8 @@ let hermano = {
     fechaNacimiento: { type: Date },
     escuelaActual: { type: String },
     grado: { type: String },
-    hermanos: [Schema.Types.ObjectId],
+    //TODO: ATENCION! con esquema persona, llenar con hermanos
+    hermanos: [{ type: Schema.Types.ObjectId, ref: 'Persona' }],
 };
 
 let padre = {
@@ -75,14 +77,14 @@ let profesor = {
 const personaEsquema = new Schema({
     nombre: String,
     apellido: String,
-    dni: String,
+    dni: { type: String, unique: true },
     sexo: { type: String, enum: ["Masculino", "Femenino"] },
     responsable,
     hermano,
     padre,
     preceptor,
     profesor,
-    alumno: Schema.Types.ObjectId
+    alumno: { type: Schema.Types.ObjectId, ref: 'Alumno' }
 }, { timestamps: true });
 
 
