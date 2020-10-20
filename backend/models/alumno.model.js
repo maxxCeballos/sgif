@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
- const Schema = mongoose.Schema
+const Schema = mongoose.Schema
 
 let calificaciones = [{
     //Notas de cada trimestre
@@ -11,17 +11,17 @@ let calificaciones = [{
     promedio: { type: Number, min: 1, max: 10 },
     notaFinal: { type: Number, min: 1, max: 10 },
     condicion: { type: String, enum: ["Cursando", "Aprobado", "Desaprobado", "Repitio"] },
-    dictado: Schema.Types.ObjectId,
+    dictado: {type: Schema.Types.ObjectId, ref: 'Dictado'},
 
     //hace referencia a las mesas de examen en las que rindió, y asi obtiene los resultados
-    mesasExamen :[Schema.Types.ObjectId],     
+    mesasExamen =[{ type: Schema.Types.ObjectId, ref: 'MesaExamen' }],
 }];
 
 let inasistencia = {
     valor: { type: Number, enum: [0.25, 0.5, 1] },
     estado: { type: String, enum: ["Justificada", "Injustificada", "Justificacion Especial"] },
     justificacion: String, //FIXME puede ser archivo
-    dictado: Schema.Types.ObjectId,
+    dictado: {type: Schema.Types.ObjectId, ref: 'Dictado'},
 };
 
 let presentismos = [{
@@ -36,7 +36,9 @@ let sanciones = [{
     fecha: Date,
     cantidad: { type: Number, enum: [0.25, 0.5, 1] },
     justificacion: String,
-    preceptorSancion : Schema.Types.ObjectId
+
+    //TODO: ATENCION! con esquema persona, llenar con preceptor
+    preceptorSancion = {type: Schema.Types.ObjectId, ref: 'Persona'}
 }];
 
 let observaciones = [{
@@ -47,13 +49,13 @@ let observaciones = [{
 }];
 
 const alumnoEsquema = new Schema({
-    dni: String,
+    dni: { type: String, unique: true },
     tipoDni: String,
     nombre: String,
     apellido: String,
     genero: { type: String, enum: ["Masculino", "Femenino"] },
     fechaNacimiento: Date,
-    legajo: String,
+    legajo: { type: String, unique: true },
     fechaIngreso: Date,
     fechaEgreso: Date,
     nombreEscuelaAnt: String,
@@ -72,9 +74,11 @@ const alumnoEsquema = new Schema({
     sanciones,
     presentismos,
     calificaciones,
-    responsable: Schema.Types.ObjectId,
-    hermanos: [Schema.Types.ObjectId],
-    padres: [Schema.Types.ObjectId]
+
+    //TODO: ATENCION! con esquema persona, llenar con preceptores, profesores y hermanos
+    responsable: {type: Schema.Types.ObjectId, ref: 'Persona'},
+    hermanos: [{type: Schema.Types.ObjectId, ref: 'Persona'}],
+    padres: [{type: Schema.Types.ObjectId, ref: 'Persona'}]
 }, { timestamps: true });
 
 const Alumno = mongoose.model('Alumno', alumnoEsquema);
