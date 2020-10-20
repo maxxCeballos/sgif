@@ -1,9 +1,6 @@
 'use strict'
 
-let Alumno = require('../models/alumno.model'); //TODO: esta bien aca
-
 const { createAlumno, getAlumnoById, updateAlumno, generarLegajo } = require('./alumno');
-const { createResponsable } = require('./responsable');
 const { getCicloLectivo } = require('./ciclo-lectivo');
 
 /**
@@ -14,7 +11,7 @@ const validarFechaInscripcion = async () => {
 
     const cicloLectivoDB = await getCicloLectivo();
 
-    console.log(cicloLectivoDB);
+    //console.log(cicloLectivoDB);
 
     let response;
 
@@ -43,22 +40,20 @@ const validarAlumno = async (dni) => {
 
     //console.log(alumnoDB.length);
 
-    if (alumnoDB.length === 1) { //si existe el alumno (no existe más de uno, este lo controla)
+    if (alumnoDB.length === 1) {
 
-        //FIXME: hacer que retorne siempre algo, si hay mas de uno el error sino el alumno
-        estadoInscripcion = alumnoDB[0].estadoInscripcion;
+        estadoInscripcion = alumnoDB.estadoInscripcion;
 
-        /*
         if(estadoInscripcion == "No Inscripto") {
             response = {message: "El alumno no esta inscripto, puede reinscribir"}
         }
-        */
-
+        
+        /*//FIXME: arreglar
         if (estadoInscripcion == "Reinscripto") {
             response = { message: "El alumno ya está Reinscripto" }
         } else if (estadoInscripcion == "Inscripto") {
             response = { message: "El alumno ya está Inscripto, no puede reinscribir" }
-        }
+        }*/
 
     } else if (alumnoDB.length === 0) {
         response = { message: "El alumno no existe, puede inscribir" }
@@ -70,39 +65,20 @@ const validarAlumno = async (dni) => {
 }
 
 /**
- * metodo que registra al nuevo alumno y le asigna su legajo a partir del ultimo registrado
+ * metodo que captura las responsabilidades de generar el legajo y registrar el alumno
+ * asociando su responsable y su nuevo estado de inscripción.
  * @param {*} alumno 
  */
 
-const registrarAlumno = async (alumno) => {
+const registrarAlumno = async (alumno, oidResponsable) => {
 
-    const alumnoDB = await createAlumno(alumno);
-
-    //TODO: esta bien en el controller
     const legajo = await generarLegajo();
 
-    console.log(legajo);
-
-    const response = await updateAlumno("legajo", legajo, alumnoDB.dni);
-
-    return response;
-}
-
-/**
- * modulo que agrupa las últimas dos responsabilidades de la transacción
- * registra los datos del responsable y actualiza el estado de inscripción del alumno a Inscripto
- * @param {*} responsable 
- * @returns response 
- */
-const regRespYActAlumno = async (responsable, dniAlumno) => {
-
-    //TODO:ver la response
-
-    //TODO: !!!!!!!verificar que el alumno no tenga un responsable registrado
-   
-    const responsableDB = await createResponsable(responsable);
-
-    const response = await updateAlumno("estadoInscripcion", "Inscripto", dniAlumno);
+    //TODO: ver response para devolver el alumno despues del update
+    const alumnoDB = await createAlumno(alumno, legajo, oidResponsable);
+    
+    //FIXME: ver dni, que lo saque del alumno que viene por parametro
+    const response = await updateAlumno("estadoInscripcion", "Inscripto", alumno.dni);
 
     return response;
 }
@@ -125,7 +101,6 @@ const reinscribirAlumno = async (anioReinscripcion, dniAlumno) => {
 module.exports = {
     validarFechaInscripcion,
     validarAlumno,
-    registrarAlumno,
-    regRespYActAlumno,
+    registrarAlumno,    
     reinscribirAlumno
 }

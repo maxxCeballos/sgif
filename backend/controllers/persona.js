@@ -42,8 +42,8 @@ const updatePersona = async (persona) => {
     return false
 }
 
-//TODO: pongo un update generico aca y que se asocie el nuevo rol. asociarRol (nombre,datosRol)
 const asociarRol = async (nombreRol, datosRol, dniPersona) => {
+    //metodo que asocia el nuevo rol de la persona, segun el nombre y datos que se reciben por parámetro
 
     var $set = { $set: {} };
     $set.$set[nombreRol] = datosRol;

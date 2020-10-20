@@ -13,7 +13,7 @@ const getCicloLectivo = async () => {
     */
 
     //TODO: arreglar para que quede una sola en la BD
-    //return cicloLectivoDB[1];
+    //return cicloLectivoDB[2];
     return cicloLectivoDB;
 }
 

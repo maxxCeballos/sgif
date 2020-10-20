@@ -30,7 +30,6 @@ router.get('/responsable/:dni', asynchandler( async (req, res) => {
 
 }));
 
-//TODO: se puede sacar
 router.get('/responsable', asyncHandler( async (req, res) => {
 
     const response = await getAllResponsables();

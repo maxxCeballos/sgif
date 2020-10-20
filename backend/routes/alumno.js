@@ -36,12 +36,12 @@ router.get('/alumno', asyncHandler(async (req, res) => {
 
 }));
 
-router.put('/alumno', asyncHandler(async (req, res) => {
+router.put('/alumno/:dni', asyncHandler(async (req, res) => {
 
-    //FIXME: ver si dni en uri o no 
-    const { atributo, valor, dniAlumno } = req.body
+    const dniAlumno = req.params.dni;
+    const { atributo, valor } = req.query;    
 
-    //console.log(atributo + " " + valor + " " + dniAlumno);
+    console.log(atributo + " " + valor + " " + dniAlumno);
 
     const response = await updateAlumno(atributo, valor, dniAlumno);
 

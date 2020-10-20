@@ -5,15 +5,15 @@ const asyncHandler = require('../middlewares/asynchandler');
 
 const router = express.Router();
 
-const { validarFechaInscripcion, validarAlumno, registrarAlumno, regRespYActAlumno, reinscribirAlumno } = require('../controllers/inscribir-alumno');
-const { getResponsableById } = require('../controllers/responsable');
+const { validarFechaInscripcion, validarAlumno, registrarAlumno, reinscribirAlumno } = require('../controllers/inscribir-alumno');
+const { getResponsableById, createResponsable } = require('../controllers/responsable');
 const asynchandler = require('../middlewares/asynchandler');
 
 router.get('/insc-alumno/validar-fecha', asynchandler(async (req, res) => {
 
     const response = await validarFechaInscripcion();
 
-    console.log(response);
+    //console.log(response);
 
     res.send({ ok: true, response})
 }))
@@ -28,18 +28,6 @@ router.get('/insc-alumno/validar-alumno/:dni', asynchandler(async (req, res) => 
     res.send({ ok: true, response })
 }))
 
-router.post('/insc-alumno/alumno', asyncHandler(async (req, res) => {
-    //FIXME: corregir inscripcion alumno vacio
-    //TODO: crear la persona despues del alumno y asignarle el OID
-    const alumno = req.body
-
-    const response = await registrarAlumno(alumno);
-    
-    console.log("Alumno Registrado");
-
-    res.send({ ok: true, response });
-}))
-
 router.get('/insc-alumno/responsable/:dni', asynchandler(async (req, res) => {
     const dni = req.params.dni;    
     
@@ -48,23 +36,31 @@ router.get('/insc-alumno/responsable/:dni', asynchandler(async (req, res) => {
     res.send({ ok: true, response })
 }))
 
-router.post('/insc-alumno/reg-resp-act-alum', asyncHandler(async (req, res) => {
-    const responsable = req.body.responsable;
-    const dniAlumno = req.body.dniAlumno;  
+router.post('/insc-alumno/responsable', asyncHandler(async (req, res) => {
+    const responsable = req.body.responsable;    
 
-    //FIXME: ver nombre    
-    const response = await regRespYActAlumno(responsable, dniAlumno);
+    const response = await createResponsable(responsable);
 
     res.send({ ok: true, response })
 }))
 
-router.put('/insc-alumno/reinscribir-alumno', asynchandler(async (req, res) => {
+router.post('/insc-alumno/alumno', asyncHandler(async (req, res) => {
+    //esta ruta capta las responsabilidades de generar el legajo y registrar el alumno con todo lo que conlleva
+    //FIXME: corregir inscripcion alumno vacio    
+    const alumno = req.body.alumno;
+    const oidResponsable = req.body.oidResponsable;    
 
-    const dniAlumno = req.body.dniAlumno;
+    const response = await registrarAlumno(alumno,oidResponsable);
+    
+    console.log("Alumno Registrado");
 
-    //TODO:revisar
-    //const valorAnio = req.params.anioCorrespondiente;
-    const valorAnio = req.body.anioCorrespondiente; //se cambia el año o el estado reinscripto    
+    res.send({ ok: true, response });
+}))
+
+router.put('/insc-alumno/reinscribir-alumno/:dni', asynchandler(async (req, res) => {
+    //TODO:revisar posible error
+    const dniAlumno = req.params.dni;
+    const valorAnio = req.query.anio;  
 
     const response = await reinscribirAlumno(valorAnio, dniAlumno);
 

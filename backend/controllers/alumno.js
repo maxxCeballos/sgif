@@ -1,21 +1,15 @@
 'use strict'
 
 let Alumno = require('../models/alumno.model');
-const { trace } = require('../routes/alumno');
+const { getPersonaById, createPersona, asociarRol} = require('./persona');
 
-
-const createAlumno = async (alumno) => {
-
-    //TODO: agregarle el atributo del legajo, despues??
-
-    //TODO: poner unique en bd y control de un alumno
-
-    //TODO: crear la persona y agregar oid alumno
-
+const createAlumno = async (alumno, legajo, oidResponsable) => {
     const { dni, tipoDni, nombre, apellido, genero, fechaNacimiento,
         fechaEgreso, nombreEscuelaAnt, foto, sacramento,
         estadoInscripcion, anioCorrespondiente, observaciones, sanciones, presentismos,
-        calificaciones, idHermanos, idPadres } = alumno;
+        calificaciones, hermanos, padres } = alumno;
+
+    //TODO: evitar alumno vacio y alumno replicado    
 
     const newAlumno = new Alumno({
         dni,
@@ -24,6 +18,7 @@ const createAlumno = async (alumno) => {
         apellido,
         genero,
         fechaNacimiento,
+        legajo,
         fechaIngreso: new Date().toISOString(),
         fechaEgreso,
         nombreEscuelaAnt,
@@ -35,13 +30,25 @@ const createAlumno = async (alumno) => {
         sanciones,
         presentismos,
         calificaciones,
-        idHermanos,
-        idPadres
+        responsable: oidResponsable,
+        hermanos,
+        padres
     });
 
     const alumnoDB = await newAlumno.save()
 
-    return alumnoDB;
+    //creacion/asociacion de rol alumno a persona
+    let personaDB = await getPersonaById(dni);
+    if (personaDB.length === 0) {
+        personaDB = createPersona({
+            nombre, apellido, dni, sexo: genero
+        });
+    }
+    
+    //TODO: ver response para devolver el alumno despues del update
+    const response = await asociarRol("alumno", alumnoDB._id, dni);
+
+    return response;
 }
 
 
@@ -81,6 +88,7 @@ const updateAlumno = async (atributo, valor, dni) => {
 }
 
 const deleteAlumno = async (dni) => {
+    //TODO: tiene que borrarlo de la persona tambien
 
     await Alumno.deleteOne({ dni: dni }).exec();
 
@@ -90,11 +98,8 @@ const deleteAlumno = async (dni) => {
 const generarLegajo = async () => {
     const response = await Alumno.find().select('legajo -_id').sort({ legajo: -1 }).exec();
 
-    //FIXME: estaria bien asi?
-    return parseInt(response[0].legajo)+1;
+    return parseInt(response[0].legajo) + 1;
 }
-
-
 
 module.exports = {
     createAlumno,
