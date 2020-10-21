@@ -6,7 +6,8 @@ const Schema = mongoose.Schema;
 const dictadoEsquema = new Schema({
     cicloLectivo: Number, //Se copia desde el esquema de CicloLectivo
     programa: String, //FIXME es un archivo
-    profesor: Schema.Types.ObjectId,
+    //TODO: ATENCION! con esquema persona, llenar con profesor
+    profesor: {type: Schema.Types.ObjectId, ref: 'Persona'},
     materia: {
         nombre: String,
         anio: { type: Number, min: 1, max: 5 }
