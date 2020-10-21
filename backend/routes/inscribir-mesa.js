@@ -14,13 +14,13 @@ const asynchandler = require('../middlewares/asynchandler');
  * 
  * req = { legajoAlumno }
  */
-router.get('/inscribir-mesa-obtener-dictados', asyncHandler(async (req, res) => {
+router.get('/inscribir-mesa/obtener-dictados', asyncHandler(async (req, res) => {
 
+    //FIXME: cambiar por req.params
     const legajoAlumno = req.body.legajoAlumno
 
     const response = await obtenerDictados(legajoAlumno);
 
-    //FIXME: verificar si esta bien q devuelva ok si hay error
     res.send({ ok: true, response });
 }));
 
@@ -30,7 +30,7 @@ router.get('/inscribir-mesa-obtener-dictados', asyncHandler(async (req, res) => 
  * 
  * req = { legajoAlumno, dictado: { cicloLectivoDictado, nombreDictado, anioDictado } }
  */
-router.post('/inscribir-mesa-registrar-mesa', asyncHandler(async (req, res) => {
+router.post('/inscribir-mesa/registrar-mesa', asyncHandler(async (req, res) => {
 
     const legajoAlumno = req.body.legajoAlumno;
     const dictado = req.body.dictado;

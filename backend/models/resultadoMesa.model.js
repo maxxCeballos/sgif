@@ -8,3 +8,8 @@ const resultadoMesaEsquema = new Schema({
     nota: Number,
     condicion: { type: String, enum: ["Aprobado", "Desaprobado", "Ausente"] }
 })
+
+
+const ResultadoMesa = mongoose.model('ResultadoMesa', resultadoMesaEsquema);
+
+module.exports = ResultadoMesa;

@@ -19,6 +19,9 @@ const obtenerDictados = async (legajoAlumno) => {
     //TODO: verificar formatos
     if (!verificarFormato(legajoAlumno)) {
         //FIXME: expandir error legajo malformado
+        const err = {
+            code: "error x"
+        }
         throw err;
     }
 
@@ -65,6 +68,9 @@ const obtenerDictados = async (legajoAlumno) => {
  * Busca si un resultado de mesa del mes anterior es ausente
  * 
  * @param {*} element arreglo de OIDs de ResultadosMesas
+ * 
+ * @returns el oid del resultado mesa que fue ausente en el mes pasado
+ * o undefined
  */
 function estuvoAusente(element, index, array) {
     //Arreglo de OID de resultados
@@ -74,9 +80,11 @@ function estuvoAusente(element, index, array) {
         let objetoResultado = getResultadoMesaByOid(oidResultado);
         let objetoMesa = getMesaExamenByOid(objetoResultado.mesaDeExamen);
 
-        return (objetoMesa.fechaHora //Verificar si es de mes - 1;
+        return (objetoMesa.fechaHora //FIXME: Verificar si es de mes - 1;
             && objetoResultado.condicion === "Ausente");
     })
+
+    return result;
 }
 
 const registrarMesa = async (legajoAlumno, dictado) => {
