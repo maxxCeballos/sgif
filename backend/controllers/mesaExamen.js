@@ -18,7 +18,7 @@ const deleteMesaExamen = () => {
 }
 
 
-const getMesaExamenByOid = (oidMesa) => {
+const getMesaExamenByOid = async (oidMesa) => {
     //FIXME: ver como se buscaria por oid
     const mesaDB = await MesaExamen.findById(oidMesa).exec();
 

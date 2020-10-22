@@ -4,12 +4,15 @@ const { getAlumnoByLegajo } = require('../controllers/alumno');
 const { getResultadoMesaByOid } = require('../controllers/resultadoMesa');
 const { getMesaExamenByOid } = require('../controllers/mesaExamen');
 const { getDictadoByOid } = require('../controllers/dictado');
+const { verificarLegajo } = require('../utils/legajo');
+
+//TODO: Pensar implementacion de errores (codigo con global tipo Error.TIPO1, mensaje por defecto y expandido)
 
 /**
  * Busca los dictados de las calificaciones desaprobadas del Alumno recibido,
  * verificando que el alumno no haya estado ausente en una mesa del mes anterior
  * 
- * @param {*} legajoAlumno legajo del Alumno a buscar
+ * @param {String} legajoAlumno legajo del Alumno a buscar
  * 
  * @returns objeto con arreglo de dictados: dictadosDesaprobados = {
  *      dictados: [{nombreMateria, anioMateria, cicloLectivo},],
@@ -17,7 +20,7 @@ const { getDictadoByOid } = require('../controllers/dictado');
  */
 const obtenerDictados = async (legajoAlumno) => {
     //TODO: verificar formatos
-    if (!verificarFormato(legajoAlumno)) {
+    if (!verificarLegajo(legajoAlumno)) {
         //FIXME: expandir error legajo malformado
         const err = {
             code: "error x"
@@ -28,15 +31,25 @@ const obtenerDictados = async (legajoAlumno) => {
     //TODO: buscar alumno
     let alumno = await getAlumnoByLegajo(legajoAlumno);
 
+    //FIXME: necesito verificar inscripcion?
+
     if (!alumno) {
         //FIXME: expandir error alumno no encontrado
         throw err;
+    } else if (!alumno.calificaciones) {
+        //FIXME: expandir error alumno sin calificaciones
+        throw "Alumno sin Calificaciones";
     }
 
     //TODO: buscar sus calificaciones desaprobadas
     let calificacionesDesaprobadas = alumno.calificaciones.filter(
         calificacion => calificacion.condicion === "Desaprobado"
     )
+
+    if(calificacionesDesaprobadas.length === 0){
+        //FIXME: expandir error sin calificaciones desaprobadas
+        throw err;
+    }
 
     //TODO: verificar ausencia previa a mesa
     if (calificacionesDesaprobadas.find(estuvoAusente)) {
