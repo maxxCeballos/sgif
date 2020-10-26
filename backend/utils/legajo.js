@@ -3,7 +3,7 @@
 /**
  * Verifica que el formato del legajo sea correcto
  * 
- * @param {*} legajoAlumno 
+ * @returns verdadero si el formato es correcto
  */
 const verificarLegajo = (legajoAlumno) => {
     return !isNaN(legajoAlumno);

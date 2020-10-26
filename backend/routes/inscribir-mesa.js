@@ -31,14 +31,13 @@ router.get('/inscribir-mesa/obtener-dictados', asyncHandler(async (req, res) => 
  * 
  * req = { legajoAlumno, dictado: { cicloLectivoDictado, nombreDictado, anioDictado } }
  */
-// router.post('/inscribir-mesa/registrar-mesa', asyncHandler(async (req, res) => {
+router.post('/inscribir-mesa/registrar-mesa', asyncHandler(async (req, res) => {
+    const legajoAlumno = req.body.legajoAlumno;
+    const dictado = req.body.dictado;
 
-//     const legajoAlumno = req.body.legajoAlumno;
-//     const dictado = req.body.dictado;
+    const response = await registrarMesa(legajoAlumno, dictado);
 
-//     const response = await registrarMesa(legajoAlumno, dictado);
-
-//     res.send({ ok: true, response });
-// }));
+    res.send({ ok: true, response });
+}));
 
 module.exports = router;
