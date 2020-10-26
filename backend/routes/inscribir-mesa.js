@@ -5,22 +5,24 @@ const asyncHandler = require('../middlewares/asynchandler');
 
 const router = express.Router();
 
-const { obtenerDictados, registrarMesa } = require('../transacciones/inscribir-mesa.transaccion');
+const obtenerDictados = require('../transacciones/inscribir-mesa/obtenerDictados');
 
 /**
- * Obtiene los dictados en estado "desaprobado" 
- * del alumno recibido.
- * 
- * req = { legajoAlumno }
+ * Obtiene los dictados en estado "desaprobado" del alumno recibido.
  */
-router.get('/inscribir-mesa/obtener-dictados', asyncHandler(async (req, res) => {
-
-    //FIXME: cambiar por req.params
-    const legajoAlumno = req.query.legajoAlumno
+router.get('/inscribir-mesa/obtener-dictados/:legajo', asyncHandler(async (req, res) => {
+    const legajoAlumno = req.params.legajo
 
     const response = await obtenerDictados(legajoAlumno);
 
     res.send({ ok: true, response });
+}));
+
+/**
+ * Para controlar si no se envia legajo
+ */
+router.get('/inscribir-mesa/obtener-dictados', asyncHandler(async (req, res) => {
+    throw "Por Favor, Ingrese un Legajo";
 }));
 
 /**

@@ -6,8 +6,7 @@
  * @param {*} legajoAlumno 
  */
 const verificarLegajo = (legajoAlumno) => {
-    //FIXME: verificar realmente
-    return true;
+    return !isNaN(legajoAlumno);
 }
 
 module.exports = {

@@ -3,9 +3,7 @@
 let Dictado = require('../models/dictado.model');
 
 const getDictadoByOid = async (oidDictado) => {
-    //FIXME: ver como se buscaria por oid
-
-    const dictadoDB = await Dictado.find({ dni: dni }).exec();
+    const dictadoDB = await Dictado.findById(oidDictado).exec();
 
     return dictadoDB
 }

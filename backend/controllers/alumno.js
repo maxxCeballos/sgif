@@ -1,7 +1,7 @@
 'use strict'
 
 let Alumno = require('../models/alumno.model');
-const { getPersonaById, createPersona, asociarRol} = require('./persona');
+const { getPersonaById, createPersona, asociarRol } = require('./persona');
 
 const createAlumno = async (alumno, legajo, oidResponsable) => {
     const { dni, tipoDni, nombre, apellido, genero, fechaNacimiento,
@@ -44,7 +44,7 @@ const createAlumno = async (alumno, legajo, oidResponsable) => {
             nombre, apellido, dni, sexo: genero
         });
     }
-    
+
     //TODO: ver response para devolver el alumno despues del update
     const response = await asociarRol("alumno", alumnoDB._id, dni);
 
@@ -61,9 +61,9 @@ const getAlumnoById = async (dni) => {
 }
 
 const getAlumnoByLegajo = async (legajo) => {
-    
+
     const alumnoDB = await Alumno.find({ legajo: legajo }).exec();
-    
+
     return alumnoDB
 }
 
@@ -109,6 +109,25 @@ const generarLegajo = async () => {
     return parseInt(response[0].legajo) + 1;
 }
 
+const addCalificacion = async (calificacion, dni) => {
+    const alumnoDB = (await getAlumnoById(dni))[0];
+
+    let calificaciones = [];
+    if (alumnoDB.calificaciones) {
+        calificaciones = [
+            ...alumnoDB.calificaciones,
+        ];
+    }
+    calificaciones.push(calificacion);
+
+    const response = await Alumno.updateOne({ dni: dni }, { calificaciones });
+
+    if (response.n === 1) return true
+
+    return false
+}
+
+
 module.exports = {
     createAlumno,
     updateAlumno,
@@ -117,4 +136,5 @@ module.exports = {
     getAlumnoById,
     getAlumnoByLegajo,
     generarLegajo,
+    addCalificacion,
 }

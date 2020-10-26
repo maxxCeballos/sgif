@@ -14,8 +14,9 @@ let calificaciones = [{
     dictado: {type: Schema.Types.ObjectId, ref: 'Dictado'},
 
     //hace referencia a las mesas de examen en las que rindió, y asi obtiene los resultados
-    //FIXME: no convenia q sea a Resultado?
-    mesasExamen: [{ type: Schema.Types.ObjectId, ref: 'MesaExamen' }],
+    resultadoMesaExamen: [{ type: Schema.Types.ObjectId, ref: 'ResultadoMesa' }]
+    // //FIXME: no convenia q sea a Resultado?
+    // mesasExamen: [{ type: Schema.Types.ObjectId, ref: 'MesaExamen' }],
 }];
 
 let inasistencia = {

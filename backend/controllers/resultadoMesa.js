@@ -3,13 +3,9 @@
 let ResultadoMesa = require('../models/resultadoMesa.model');
 
 const createResultadoMesa = async (resultadoMesa) => {
-
     const {
         alumno,
         mesaDeExamen,
-        legajo,
-        nombre,
-        apellido,
         nota,
         condicion
     } = resultadoMesa;
@@ -17,9 +13,6 @@ const createResultadoMesa = async (resultadoMesa) => {
     const newResultadoMesa = new ResultadoMesa({
         alumno,
         mesaDeExamen,
-        legajo,
-        nombre,
-        apellido,
         nota,
         condicion
     });
@@ -29,19 +22,19 @@ const createResultadoMesa = async (resultadoMesa) => {
     return resultadoMesaDB;
 }
 
-
+/**
+ * TODO: no anda
+ */
 const getResultadoMesaById = async (dni) => {
     //FIXME: ver si cambiar nombre a ...ByDni porq id puede ser OID
-
     const resultadoMesaDB = await ResultadoMesa.find({ dni: dni }).exec();
 
     return resultadoMesaDB
 }
 
 const getResultadoMesaByOid = async (oidResultado) => {
-    //FIXME: ver como se buscaria por oid
-    
-    const resultadoMesaDB = await ResultadoMesa.find({ dni: dni }).exec();
+    //FIXME: ver como se buscaria por oid    
+    const resultadoMesaDB = await ResultadoMesa.findById(oidResultado).exec();
 
     return resultadoMesaDB
 }
