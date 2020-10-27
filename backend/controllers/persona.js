@@ -42,16 +42,23 @@ const updatePersona = async (persona) => {
     return false
 }
 
+/*
+ * Metodo que asocia el nuevo rol de la persona, segun el nombre del mismo y datos que se reciben por parámetro
+ * Retorna la persona luego de modificarse.
+ */
 const asociarRol = async (nombreRol, datosRol, dniPersona) => {
-    //metodo que asocia el nuevo rol de la persona, segun el nombre y datos que se reciben por parámetro
+    let response = false;
 
     var $set = { $set: {} };
     $set.$set[nombreRol] = datosRol;
-    const response = await Persona.updateOne({ dni: dniPersona }, $set);
 
-    if (response.n === 1) return true
+    const resUpdate = await Persona.updateOne({ dni: dniPersona }, $set);
 
-    return false
+    if (resUpdate.n === 1) {
+        response = await getPersonaById(dni);
+    };
+
+    return response;
 }
 
 module.exports = {
