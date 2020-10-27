@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 let responsable = {
-    legajo: { type: String },
+    //TODO:testear
+    legajo: { type: String, unique: true },
     cuitCuil: { type: String },
     telefono: { type: String },
     email: { type: String },
@@ -15,8 +16,7 @@ let responsable = {
     tira: { type: String },
     localidad: { type: String },
     codigoPostal: { type: Number },
-    provincia: { type: String }, 
-    //TODO: Ver si conviene tener al alumno   
+    provincia: { type: String },   
 };
 
 
@@ -24,7 +24,8 @@ let hermano = {
     fechaNacimiento: { type: Date },
     escuelaActual: { type: String },
     grado: { type: String },
-    hermanos: [Schema.Types.ObjectId],
+    //TODO: ATENCION! con esquema persona, llenar con hermanos
+    hermanos: [{ type: Schema.Types.ObjectId, ref: 'Persona' }],
 };
 
 let padre = {
@@ -40,7 +41,6 @@ let padre = {
     egresoPrimario: { type: Boolean },
     egresoSecundario: { type: Boolean },
     relacionParentesco: { type: String }
-    //TODO: Ver si conviene tener al alumno
 };
 
 let preceptor = {
@@ -48,6 +48,7 @@ let preceptor = {
     email: { type: String }
 };
 
+// Para el profesor
 let materias = [{
     nombre: { type: String },
     anio: { type: Number, min: 1, max: 5 }
@@ -75,16 +76,15 @@ let profesor = {
 const personaEsquema = new Schema({
     nombre: String,
     apellido: String,
-    dni: String,
-    sexo: { type: String, enum: ["Masculino", "Femenino"] },
+    dni: { type: String, unique: true },
+    genero: { type: String, enum: ["Masculino", "Femenino", "Otro"] },
     responsable,
     hermano,
     padre,
     preceptor,
     profesor,
-    alumno: Schema.Types.ObjectId
+    alumno: { type: Schema.Types.ObjectId, ref: 'Alumno' }
 }, { timestamps: true });
-
 
 const Persona = mongoose.model('Persona', personaEsquema);
 
