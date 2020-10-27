@@ -11,7 +11,7 @@ const mesaExamenEsquema = new Schema({
     preceptores: [{ type: Schema.Types.ObjectId, ref: 'Persona' }], //son 2 preceptores
     profesores: [{ type: Schema.Types.ObjectId, ref: 'Persona' }], //son 3 profesores
     dictado: { type: Schema.Types.ObjectId, ref: 'Dictado' },
-    resultados=[{ type: Schema.Types.ObjectId, ref: 'ResultadoMesa' }],
+    resultados: [{ type: Schema.Types.ObjectId, ref: 'ResultadoMesa' }],
 
     //estructura para compartir mesas y referencias 
     esCompartida: Boolean,
