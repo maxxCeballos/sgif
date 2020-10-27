@@ -4,7 +4,7 @@ const { getAlumnoByLegajo } = require('../../controllers/alumno');
 const { getResultadoMesaByOid } = require('../../controllers/resultadoMesa');
 const { getMesaExamenByOid } = require('../../controllers/mesaExamen');
 const { getDictadoByOid } = require('../../controllers/dictado');
-const { verificarLegajo } = require('../../utils/legajo');
+const { verificarLegajo } = require('../../utils/verificaciones');
 
 //TODO: Pensar implementacion de errores (codigo con global tipo Error.TIPO1, mensaje por defecto y expandido)
 
