@@ -8,10 +8,10 @@ const mesaExamenEsquema = new Schema({
     aula: { type: Number },
     estado: { type: String, enum: ["Solicitada", "Completada", "Cerrada"] },
     //TODO: ATENCION! con esquema persona, llenar con preceptores y profesores
-    preceptores=[{ type: Schema.Types.ObjectId, ref: 'Persona' }], //son 2 preceptores
-    profesores=[{ type: Schema.Types.ObjectId, ref: 'Persona' }], //son 3 profesores
+    preceptores: [{ type: Schema.Types.ObjectId, ref: 'Persona' }], //son 2 preceptores
+    profesores: [{ type: Schema.Types.ObjectId, ref: 'Persona' }], //son 3 profesores
     dictado: { type: Schema.Types.ObjectId, ref: 'Dictado' },
-    resultados=[{ type: Schema.Types.ObjectId, ref: 'ResultadoMesa' }],
+    resultados: [{ type: Schema.Types.ObjectId, ref: 'ResultadoMesa' }],
 
     //estructura para compartir mesas y referencias 
     esCompartida: Boolean,
