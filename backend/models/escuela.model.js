@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 let direccion = {
-    
-    altura: { type:Number },
+
+    altura: { type: Number },
     piso: { type: Number },
     depto: { type: String },
     barrio: { type: String },
@@ -14,8 +14,8 @@ let direccion = {
 }
 
 const escuelaEsquema = new Schema({
-    nombre:String,
-    codigo:String,
+    nombre: String,
+    codigo: String,
     direccion
 
 }, { timestamps: true });
