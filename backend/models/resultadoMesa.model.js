@@ -9,7 +9,6 @@ const resultadoMesaEsquema = new Schema({
     condicion: { type: String, enum: ["Aprobado", "Desaprobado", "Ausente"] }
 })
 
-
 const ResultadoMesa = mongoose.model('ResultadoMesa', resultadoMesaEsquema);
 
 module.exports = ResultadoMesa;
