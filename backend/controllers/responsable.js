@@ -1,58 +1,65 @@
 'use strict'
 
+const Persona = require('../models/persona.model');
+const persona = require('./persona');
 const { getPersonaById, createPersona, asociarRol, getAllPersonas } = require('./persona');
 
 const createResponsable = async (datosResponsable) => {
+
+    //FIXME: !!!se puede crear un responsable vacio
 
     const { nombre, apellido, dni, sexo, legajo, cuitCuil, telefono, email, calle, altura,
         barrio, piso, depto, tira, modulo, localidad, codigoPostal, provincia } = datosResponsable;
 
     const persona = { nombre, apellido, dni, sexo };
 
-    //TODO: generarle legajo.
     const responsable = {
-        legajo, cuitCuil, telefono, email, calle, altura,
+        legajo: await generarLegajo(),
+        cuitCuil, telefono, email, calle, altura,
         barrio, piso, depto, tira, modulo, localidad, codigoPostal, provincia
     }
-
-    //console.log(responsable);
-    //console.log(persona);
 
     //verifico si la persona existe    
     let personaDB = await getPersonaById(dni);
 
-    if (personaDB.length === 0) {
+    if (personaDB === false) {
         personaDB = await createPersona(persona);
-    } else if (personaDB.length > 1) {
-        //si hay mas de 1 error        
-        return { message: "Mas de una persona con el mismo dni" };
     }
 
-    //TODO: ver response para devolver el alumno despues del update
-    //si existe o no la persona
-    const response = await asociarRol("responsable", responsable, dni);
+    //si la persona existe o se creó, se realiza esto
+    let actualizoRol = false;
+    if (!esResponsable(personaDB)) {
+        actualizoRol = await asociarRol("responsable", responsable, dni);
+    }else{
+        throw "La persona ya esta registrada como responsable"
+    }
+
+    let response;
+    if (actualizoRol !== false) {
+        //lo busco para devolverlo despues de crearlo
+        response = await getResponsableById(dni);
+    } else {
+        throw "Ocurrió un error al asignar el rol, reintente nuevamente";
+    }
 
     return response;
 }
 
 const getResponsableById = async (dni) => {
-
-    //TODO: ver es middle man
-    const responsableDB = await getPersonaById(dni);
-
-    return responsableDB
+    const personaDB = await getPersonaById(dni);
+    if (personaDB !== false && esResponsable(personaDB)) {
+        return personaDB;
+    }
+    return false;
 }
 
 const getAllResponsables = async () => {
-    //TODO: para los otros ver si llevar a persona o que cada uno redefina
-
     let responsablesDB = [];
     let j = 0;
     const personasDB = await getAllPersonas();
 
     for (let i = 0; i < personasDB.length; i++) {
-        //FIXME: no encontre como hacerlo sin el stringify                      
-        if (JSON.parse(JSON.stringify(personasDB[i])).hasOwnProperty('responsable')) {
+        if (esResponsable(personasDB[i])) {
             responsablesDB[j] = personasDB[i];
             j++;
         }
@@ -76,10 +83,24 @@ const updateResponsable = async (responsable) => {
 }
 
 const deleteResponsable = async (dni) => {
+    //PARA ELIMINAR UN RESPONSABLE, SE DEBE ELIMINAR A LOS ALUMNOS QUE LO TENGAN PRIMERO
 
     await Responsable.deleteOne({ dni: dni }).exec();
 
     return true;
+}
+
+const generarLegajo = async () => {
+    const response = await Persona.find().select('responsable.legajo -_id').sort({ 'responsable.legajo': "desc" }).exec();
+    let nuevoLegajo = parseInt(response[0].responsable.legajo) + 1;
+    if (Number.isNaN(nuevoLegajo)) {
+        nuevoLegajo = 1;
+    }
+    return nuevoLegajo;
+}
+
+const esResponsable = (personaObj) => {
+    return JSON.parse(JSON.stringify(personaObj)).hasOwnProperty('responsable');;
 }
 
 module.exports = {
@@ -87,5 +108,5 @@ module.exports = {
     updateResponsable,
     deleteResponsable,
     getAllResponsables,
-    getResponsableById,
+    getResponsableById
 }

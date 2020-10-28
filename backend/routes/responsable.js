@@ -6,21 +6,21 @@ const asyncHandler = require('../middlewares/asynchandler');
 
 const router = express.Router();
 
-const { createResponsable, updateResponsable, getAllResponsables, getResponsableById, deleteResponsable } = require('../controllers/responsable');
+const { createResponsable, updateResponsable, getAllResponsables, getResponsableById, deleteResponsable, generarLegajo } = require('../controllers/responsable');
 const asynchandler = require('../middlewares/asynchandler');
 
 
-router.post('/responsable', asyncHandler( async (req, res) => {
+router.post('/responsable', asyncHandler(async (req, res) => {
 
     const responsable = req.body
 
     const response = await createResponsable(responsable);
 
-    res.send({ ok: true, response  });
+    res.send({ ok: true, response });
 }));
 
 
-router.get('/responsable/:dni', asynchandler( async (req, res) => {
+router.get('/responsable/:dni', asynchandler(async (req, res) => {
 
     const dni = req.params.dni
 
@@ -30,7 +30,7 @@ router.get('/responsable/:dni', asynchandler( async (req, res) => {
 
 }));
 
-router.get('/responsable', asyncHandler( async (req, res) => {
+router.get('/responsable', asyncHandler(async (req, res) => {
 
     const response = await getAllResponsables();
 
@@ -38,7 +38,7 @@ router.get('/responsable', asyncHandler( async (req, res) => {
 
 }));
 
-router.put('/responsable', asyncHandler( async (req, res) => {
+router.put('/responsable', asyncHandler(async (req, res) => {
 
     const responsable = req.body
 
@@ -49,13 +49,18 @@ router.put('/responsable', asyncHandler( async (req, res) => {
 }));
 
 
-router.delete('/responsable/:dni', asyncHandler( async (req, res) => {
+router.delete('/responsable/:dni', asyncHandler(async (req, res) => {
 
     const dni = req.params.dni
 
     const response = await deleteResponsable(dni)
 
-    res.send({ ok: true, response })    
+    res.send({ ok: true, response })
 }));
+
+router.get('/resp/legajo', asyncHandler(async (req, res) => {    
+    const response = await generarLegajo();
+    res.send({ok:true,response})
+}))
 
 module.exports = router;

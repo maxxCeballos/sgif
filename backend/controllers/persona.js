@@ -3,6 +3,7 @@
 let Persona = require('../models/persona.model');
 
 const createPersona = async (persona) => {
+    //FIXME: !!!! se pueden crear personas vacias
     const { nombre, apellido, dni, sexo } = persona;
 
     let newPersona = new Persona({
@@ -20,7 +21,13 @@ const createPersona = async (persona) => {
 const getPersonaById = async (dni) => {
     const personaDB = await Persona.find({ dni: dni }).exec();
 
-    return personaDB;
+    if (personaDB.length === 1) {        
+        return personaDB[0];
+    } else if (personaDB.length === 0) {
+        return false;
+    } else {
+        throw "Hay mas de una persona con el mismo dni";
+    }
 }
 
 const getAllPersonas = async () => {
@@ -49,13 +56,12 @@ const updatePersona = async (persona) => {
 const asociarRol = async (nombreRol, datosRol, dniPersona) => {
     let response = false;
 
-    var $set = { $set: {} };
-    $set.$set[nombreRol] = datosRol;
+    var $set = { $set: { [nombreRol]: datosRol } };
 
     const resUpdate = await Persona.updateOne({ dni: dniPersona }, $set);
 
     if (resUpdate.n === 1) {
-        response = await getPersonaById(dni);
+        response = await getPersonaById(dniPersona);
     };
 
     return response;
