@@ -8,7 +8,7 @@ const createResponsable = async (datosResponsable) => {
 
     //FIXME: !!!se puede crear un responsable vacio
 
-    const { nombre, apellido, dni, sexo, legajo, cuitCuil, telefono, email, calle, altura,
+    const { nombre, apellido, dni, sexo, cuitCuil, telefono, email, calle, altura,
         barrio, piso, depto, tira, modulo, localidad, codigoPostal, provincia } = datosResponsable;
 
     const persona = { nombre, apellido, dni, sexo };
@@ -45,12 +45,15 @@ const createResponsable = async (datosResponsable) => {
     return response;
 }
 
-const getResponsableById = async (dni) => {
+const getResponsableById = async (dni) => {   
+
     const personaDB = await getPersonaById(dni);
+
     if (personaDB !== false && esResponsable(personaDB)) {
         return personaDB;
     }
     return false;
+
 }
 
 const getAllResponsables = async () => {
@@ -91,8 +94,8 @@ const deleteResponsable = async (dni) => {
 }
 
 const generarLegajo = async () => {
-    const response = await Persona.find().select('responsable.legajo -_id').sort({ 'responsable.legajo': "desc" }).exec();
-    let nuevoLegajo = parseInt(response[0].responsable.legajo) + 1;
+    const responsablesBD = await Persona.find().select('responsable.legajo -_id').sort({ 'responsable.legajo': "desc" }).exec();    
+    let nuevoLegajo = parseInt(responsablesBD[0].responsable.legajo) + 1;
     if (Number.isNaN(nuevoLegajo)) {
         nuevoLegajo = 1;
     }
@@ -108,5 +111,5 @@ module.exports = {
     updateResponsable,
     deleteResponsable,
     getAllResponsables,
-    getResponsableById
+    getResponsableById,
 }

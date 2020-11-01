@@ -20,14 +20,15 @@ const createPersona = async (persona) => {
 
 const getPersonaById = async (dni) => {
     const personaDB = await Persona.find({ dni: dni }).exec();
+    let persona = false;
 
     if (personaDB.length === 1) {        
-        return personaDB[0];
-    } else if (personaDB.length === 0) {
-        return false;
-    } else {
+        persona = personaDB[0];
+    } else if (personaDB.length > 1) {
         throw "Hay mas de una persona con el mismo dni";
     }
+    
+    return persona;
 }
 
 const getAllPersonas = async () => {
