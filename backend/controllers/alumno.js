@@ -1,15 +1,32 @@
 'use strict'
 
+const { response } = require('express');
 let Alumno = require('../models/alumno.model');
-const { getPersonaById, createPersona, asociarRol} = require('./persona');
+const { getPersonaById, createPersona, asociarRol } = require('./persona');
 
 const createAlumno = async (alumno, legajo, oidResponsable) => {
     const { dni, tipoDni, nombre, apellido, genero, fechaNacimiento,
-        fechaEgreso, nombreEscuelaAnt, foto, sacramento,
-        estadoInscripcion, anioCorrespondiente, observaciones, sanciones, presentismos,
-        calificaciones, hermanos, padres } = alumno;
+        lugarNacimiento, fechaEgreso, nombreEscuelaAnt, foto,
+        sacramentos, anioCorrespondiente } = alumno;
 
-    //TODO: evitar alumno vacio y alumno replicado    
+    let response;
+
+    //TODO: refactor, poner required en bd
+    console.log(tieneDatosBasicos(alumno))
+    if (!tieneDatosBasicos(alumno)) {
+        return {
+            exito: false,
+            message: "Datos básicos incompletos, verifiquelos nuevamente."
+        }
+    } else if (oidResponsable === null || oidResponsable === "") {
+        return {
+            exito: false,
+            message: "Faltó enviar OID Responsable."
+        }
+    }
+
+    //TODO: validar responsable
+    //TODO: verificar que la persona no sea un alumno ya
 
     const newAlumno = new Alumno({
         dni,
@@ -18,45 +35,53 @@ const createAlumno = async (alumno, legajo, oidResponsable) => {
         apellido,
         genero,
         fechaNacimiento,
+        lugarNacimiento,
         legajo,
         fechaIngreso: new Date().toISOString(),
         fechaEgreso,
         nombreEscuelaAnt,
         foto,
-        sacramento,
-        estadoInscripcion, //FIXME: para pruebas zafa, pero hay que sacarlo        
+        sacramentos, //TODO: revisar que este bien armado
+        //estadoInscripcion, se completa mas adelante
         anioCorrespondiente,
-        observaciones,
-        sanciones,
-        presentismos,
-        calificaciones,
-        responsable: oidResponsable,
-        hermanos,
-        padres
+        responsable: oidResponsable
     });
 
     const alumnoDB = await newAlumno.save()
 
     //creacion/asociacion de rol alumno a persona
     let personaDB = await getPersonaById(dni);
-    if (personaDB.length === 0) {
+    if (personaDB === false) {
         personaDB = createPersona({
             nombre, apellido, dni, sexo: genero
         });
     }
-    
-    //TODO: ver response para devolver el alumno despues del update
-    const response = await asociarRol("alumno", alumnoDB._id, dni);
+    response = await asociarRol("alumno", alumnoDB._id, dni);
 
-    return response;
+    if (response !== false) {
+        return {
+            exito: true,
+            alumno: alumnoDB,
+        };
+    } else {
+        return {
+            exito: false,
+            message: "No se pudo asignar el rol de alumno a la persona, intentelo nuevamente."
+        }
+    }
 }
 
-
 const getAlumnoById = async (dni) => {
-
     const alumnoDB = await Alumno.find({ dni: dni }).exec();
+    let alumno = false;
 
-    return alumnoDB
+    if (alumnoDB.length === 1) {
+        alumno = alumnoDB[0];
+    } else if (alumnoDB.length > 1) {
+        throw "Existe mas de un alumno con el mismo DNI";
+    }
+
+    return alumno;
 }
 
 const getAllAlumnos = async () => {
@@ -73,18 +98,16 @@ const getAllAlumnos = async () => {
  * @param {*} dni 
  */
 const updateAlumno = async (atributo, valor, dni) => {
+    let alumno;    
 
-    //const { dni, nombre, apellido } = alumno    
+    var $set = { $set: { [atributo]: valor } };
 
-    //TODO: refactorizar
-    var $set = { $set: {} };
-    $set.$set[atributo] = valor;
+    const response = await Alumno.updateOne({ dni: dni }, $set);        
+    if (response.n === 1) { 
+        alumno = await getAlumnoById(dni);
+    }
 
-    const response = await Alumno.updateOne({ dni: dni }, $set);
-
-    if (response.n === 1) return true
-
-    return false
+    return alumno;
 }
 
 const deleteAlumno = async (dni) => {
@@ -96,9 +119,31 @@ const deleteAlumno = async (dni) => {
 }
 
 const generarLegajo = async () => {
+    //FIXME: hacer como el del responsable
     const response = await Alumno.find().select('legajo -_id').sort({ legajo: -1 }).exec();
 
     return parseInt(response[0].legajo) + 1;
+}
+
+/**
+ * Metodo que verifica que el alumno recibido, tenga sus atributos básicos y no estén vacíos
+ * @param {*} alumno recibe un alumno a inscribir, con todos los datos que se hayan recibido
+ */
+function tieneDatosBasicos(alumno) {
+    const datosBasicos = ['dni', 'tipoDni', 'nombre', 'apellido', 'genero',
+        'fechaNacimiento', 'lugarNacimiento', 'fechaEgreso', 'nombreEscuelaAnt'];
+
+    const valido = datosBasicos.every(atributo => {
+        if (!alumno.hasOwnProperty(atributo)) {
+            //console.log(atributo + " No existe")
+            return false;
+        } else if (alumno[atributo] === "" || alumno[atributo] === null) {
+            //console.log(atributo + " Está Vacío")
+            return false;
+        } else return true
+    });
+
+    return valido;
 }
 
 module.exports = {
