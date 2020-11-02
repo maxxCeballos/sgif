@@ -13,7 +13,7 @@ const dictadoEsquema = new Schema({
         anio: { type: Number, min: 1, max: 5 }
     },
     //TODO testear
-    horarios: [Horario]
+    horarios: []
 }, { timestamps: true });
 
 const Dictado = mongoose.model('Dictado', dictadoEsquema);
