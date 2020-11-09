@@ -22,6 +22,16 @@ const createResultadoMesa = async (resultadoMesa) => {
     return resultadoMesaDB;
 }
 
+const createResultadoMesaBasico = async (oidAlumno) => {
+    const newResultadoMesa = new ResultadoMesa({
+        alumno: oidAlumno,
+    });
+
+    const resultadoMesaDB = await newResultadoMesa.save()
+
+    return resultadoMesaDB;
+}
+
 /**
  * TODO: no anda
  */
@@ -75,4 +85,5 @@ module.exports = {
     getAllResultadoMesas,
     getResultadoMesaById,
     getResultadoMesaByOid,
+    createResultadoMesaBasico,
 }

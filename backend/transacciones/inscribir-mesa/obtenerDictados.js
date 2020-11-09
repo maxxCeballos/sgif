@@ -34,7 +34,7 @@ const obtenerDictados = async (legajoAlumno) => {
 
     let calificacionesDesaprobadas = getCalificacionesDesaprobadas(alumno)
 
-    if (tieneCalificacionesDesaprobadas(calificacionesDesaprobadas)) {
+    if (noTieneCalificacionesDesaprobadas(calificacionesDesaprobadas)) {
         throw "Alumno sin Calificaciones Desaprobadas";
     }
 
@@ -49,8 +49,9 @@ const obtenerDictados = async (legajoAlumno) => {
     return dictadosDesaprobados;
 }
 
+// TODO: agregar el id de dictado
 /**
- * Devuelve dictados con el formato {nombreMateria, anioMateria, cicloLectivo} de un conjunto de calificaciones
+ * Devuelve dictados con el formato {id, nombreMateria, anioMateria, cicloLectivo} de un conjunto de calificaciones
  */
 async function getDictadosDesaprobados(calificacionesDesaprobadas) {
     let dictadosDesaprobados = {
@@ -61,6 +62,7 @@ async function getDictadosDesaprobados(calificacionesDesaprobadas) {
         let objetoDictado = await getDictadoByOid(calificacion.dictado);
 
         let nuevoDictado = {
+            id: objetoDictado._id,
             nombreMateria: objetoDictado.materia.nombre,
             anioMateria: objetoDictado.materia.anio,
             cicloLectivo: objetoDictado.cicloLectivo,
@@ -70,7 +72,7 @@ async function getDictadosDesaprobados(calificacionesDesaprobadas) {
     return dictadosDesaprobados;
 }
 
-function tieneCalificacionesDesaprobadas(calificacionesDesaprobadas) {
+function noTieneCalificacionesDesaprobadas(calificacionesDesaprobadas) {
     return calificacionesDesaprobadas.length === 0;
 }
 
@@ -97,8 +99,8 @@ async function getMesaAusenteMesPasado(calificacionesDesaprobadas) {
     return MesaAusente;
 }
 
-async function estuvoAusenteCalificacionIndiv(element) {
-    let resultadoMesasExamen = element.resultadoMesaExamen;
+async function estuvoAusenteCalificacionIndiv(unaCalificacion) {
+    let resultadoMesasExamen = unaCalificacion.resultadoMesaExamen;
 
     let i = 0;
     let result = false;

@@ -54,7 +54,6 @@ const createAlumno = async (alumno, legajo, oidResponsable) => {
 
 const getAlumnoById = async (dni) => {
     //FIXME: ver si cambiar nombre a ...ByDni porq id puede ser OID
-
     const alumnoDB = await Alumno.find({ dni: dni }).exec();
 
     return alumnoDB
@@ -72,6 +71,25 @@ const getAllAlumnos = async () => {
     const alumnosDB = await Alumno.find().exec();
 
     return alumnosDB;
+}
+
+const addResultadoMesa = async (oidAlumno, oidDictado, oidResultadoMesa) => {
+    const alumnoDB = (await getAlumnoById(oidAlumno))[0];
+    const indiceCalificacion = alumnoDB.calificaciones.findIndex(
+        calificacion => calificacion.dictado === oidDictado);
+    const calificacionDB = alumnoDB.calificaciones[indiceCalificacion];
+
+    calificacionDB.resultadoMesaExamen.push(oidResultadoMesa);
+
+    // alumnoDB.calificaciones.splice(indiceCalificacion, 1, calificacionDB);
+    //FIXME: TEST
+    alumnoDB.calificaciones.push(calificacionDB);
+
+    const response = await Alumno.updateOne({ _id: oidAlumno }, alumnoDB);
+
+    if (response.n === 1) return true
+
+    return false
 }
 
 /**
@@ -137,4 +155,5 @@ module.exports = {
     getAlumnoByLegajo,
     generarLegajo,
     addCalificacion,
+    addResultadoMesa,
 }

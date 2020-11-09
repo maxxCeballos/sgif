@@ -31,7 +31,7 @@ const getMesaExamenByDictado = async (oidDictado) => {
 }
 
 const addResultadoMesa = async (oidMesa, oidResultadoMesa) => {
-    const mesaDB = (await getMesaExamenByOid(dni))[0];
+    const mesaDB = (await getMesaExamenByOid(oidMesa))[0];
 
     let resultados = [];
     if (mesaDB.resultados) {
