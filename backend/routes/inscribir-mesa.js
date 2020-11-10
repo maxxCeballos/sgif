@@ -7,6 +7,7 @@ const router = express.Router();
 
 const obtenerDictados = require('../transacciones/inscribir-mesa/obtenerDictados');
 const registrarMesa = require('../transacciones/inscribir-mesa/registrarMesa');
+const setTestInscribirMesa = require('../test/setTestInscribirMesa.js');
 
 /**
  * Obtiene los dictados en estado "desaprobado" del alumno recibido.
@@ -30,18 +31,19 @@ router.get('/inscribir-mesa/obtener-dictados', asyncHandler(async (req, res) => 
  * Registra una nueva mesa o en una ya existente al 
  * alumno para el dictado recibido.
  * 
- * req = { id, cicloLectivo, nombreMateria, anioMateria }
+ * req = { oidAlumno, oidDictado, cicloLectivo, nombreMateria, anioMateria }
  */
 router.post('/inscribir-mesa/registrar-mesa/:legajo', asyncHandler(async (req, res) => {
-    // TODO: CAMBIAR ID
     const legajoAlumno = req.params.legajo;
-    const dictado = req.body;
+    const { oidAlumno, oidDictado, cicloLectivo, nombreMateria, anioMateria } = req.body;
 
-    if(Object.entries(dictado).length === 0){
+    if (Object.entries(dictado).length === 0) {
         throw "Por Favor, Ingrese un Dictado";
     }
 
-    const response = await registrarMesa(legajoAlumno, dictado);
+    const response = await registrarMesa(legajoAlumno,
+        oidAlumno,
+        { oidDictado, cicloLectivo, nombreMateria, anioMateria });
 
     res.send({ ok: true, response });
 }));
@@ -51,6 +53,12 @@ router.post('/inscribir-mesa/registrar-mesa/:legajo', asyncHandler(async (req, r
  */
 router.post('/inscribir-mesa/registrar-mesa', asyncHandler(async (req, res) => {
     throw "Por Favor, Ingrese un Legajo";
+}));
+
+router.post('/inscribir-mesa/set-test', asyncHandler(async (req, res) => {
+    const response = await setTestInscribirMesa();
+
+    res.send({ ok: true, response });
 }));
 
 module.exports = router;

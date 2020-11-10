@@ -1,6 +1,6 @@
 'use strict';
 
-const { getAlumnoByLegajo, addResultadoAlumno } = require('../../controllers/alumno');
+const { getAlumnoByLegajo, addResultadoMesa: addResultadoMesaAlumno } = require('../../controllers/alumno');
 const { createResultadoMesaBasico } = require('../../controllers/resultadoMesa');
 const { getMesaExamenByDictado, addResultadoMesa, getMesaExamenByOid } = require('../../controllers/mesaExamen');
 const { getDictadoByParams } = require('../../controllers/dictado');
@@ -8,7 +8,7 @@ const { verificarLegajo, verificarDictado } = require('../../utils/verificacione
 
 //TODO: Pensar implementacion de errores (codigo con global tipo Error.TIPO1, mensaje por defecto y expandido)
 
-const registrarMesa = async (oidAlumno, valoresDictado) => {
+const registrarMesa = async (legajoAlumno, oidAlumno, valoresDictado) => {
     let fueCreada = false;
 
     //TODO: verificar formatos
@@ -38,7 +38,7 @@ const registrarMesa = async (oidAlumno, valoresDictado) => {
     //TODO: crear mesa si no existe o asociarla
     if (!objMesaDeExamen) {
         // Si no existe la creo
-        let acta = generarNumActa();
+        let acta = await generarNumActa();
 
         let nuevaMesa = {
             acta,
@@ -51,7 +51,7 @@ const registrarMesa = async (oidAlumno, valoresDictado) => {
 
         fueCreada = true;
     } else {
-        let responseAgregarResultadoMesa = await addResultadoMesa(
+        let responseAgregarResultadoMesa = await addResultadoMesaAlumno(
             objMesaDeExamen._id, responseResultado._id);
 
         // Si el resultado dio mal
@@ -61,7 +61,7 @@ const registrarMesa = async (oidAlumno, valoresDictado) => {
     }
 
     //TODO: asociar resultado al alumno
-    let responseAgregarResultadoAlumno = await addResultadoAlumno(
+    let responseAgregarResultadoAlumno = await addResultadoMesaAlumno(
         oidAlumno, responseResultado._id);
 
     if (responseAgregarResultadoAlumno) {
@@ -84,13 +84,10 @@ const registrarMesa = async (oidAlumno, valoresDictado) => {
     return response;
 }
 
-
-module.exports = registrarMesa
-
 /**
  * Genera un numero de acta que no sea utilizado por otra
  */
-function generarNumActa() {
+async function generarNumActa() {
     let numActa;
 
     do {
@@ -100,3 +97,5 @@ function generarNumActa() {
 
     return numActa;
 }
+
+module.exports = registrarMesa;
