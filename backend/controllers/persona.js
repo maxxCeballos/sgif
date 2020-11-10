@@ -4,13 +4,13 @@ let Persona = require('../models/persona.model');
 
 const createPersona = async (persona) => {
     //FIXME: !!!! se pueden crear personas vacias
-    const { nombre, apellido, dni, sexo } = persona;
+    const { nombre, apellido, dni, genero } = persona;
 
     let newPersona = new Persona({
         nombre,
         apellido,
         dni,
-        sexo
+        genero
     });
 
     const personaDB = await newPersona.save();

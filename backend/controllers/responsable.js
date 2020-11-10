@@ -8,10 +8,10 @@ const createResponsable = async (datosResponsable) => {
 
     //FIXME: !!!se puede crear un responsable vacio
 
-    const { nombre, apellido, dni, sexo, cuitCuil, telefono, email, calle, altura,
+    const { nombre, apellido, dni, genero, cuitCuil, telefono, email, calle, altura,
         barrio, piso, depto, tira, modulo, localidad, codigoPostal, provincia } = datosResponsable;
 
-    const persona = { nombre, apellido, dni, sexo };
+    const persona = { nombre, apellido, dni, genero };
 
     const responsable = {
         legajo: await generarLegajo(),
