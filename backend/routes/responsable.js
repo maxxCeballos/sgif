@@ -6,8 +6,8 @@ const asyncHandler = require('../middlewares/asynchandler');
 
 const router = express.Router();
 
-//TODO: eliminar generar legajo de aca
-const { createResponsable, updateResponsable, getAllResponsables, getResponsableById, deleteResponsable, generarLegajo } = require('../controllers/responsable');
+const { createResponsable, updateResponsable, getAllResponsables,
+    getResponsableById, deleteResponsable, getResponsableByOID} = require('../controllers/responsable');
 const asynchandler = require('../middlewares/asynchandler');
 
 
@@ -26,6 +26,16 @@ router.get('/responsable/:dni', asynchandler(async (req, res) => {
     const dni = req.params.dni
 
     const response = await getResponsableById(dni)
+
+    res.send({ ok: true, response })
+
+}));
+
+router.get('/responsable/oid/:oid', asynchandler(async (req, res) => {
+
+    const oid = req.params.oid
+
+    const response = await getResponsableByOID(oid)
 
     res.send({ ok: true, response })
 

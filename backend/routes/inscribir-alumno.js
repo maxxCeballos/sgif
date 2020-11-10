@@ -47,11 +47,8 @@ router.post('/insc-alumno/alumno', asyncHandler(async (req, res) => {
     //esta ruta capta las responsabilidades de generar el legajo y registrar el alumno con todo lo que conlleva    
     const alumno = req.body.alumno;
     const oidResponsable = req.body.oidResponsable;
-
-    const response = await registrarAlumno(alumno, oidResponsable);    
-
-    //TODO: que devuelva el alumno despues de crearlo
-
+    const response = await registrarAlumno(alumno, oidResponsable);
+    
     res.send({ ok: true, response });
 }))
 
