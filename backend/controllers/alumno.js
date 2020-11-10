@@ -74,8 +74,8 @@ const updateAlumno = async (alumno) => {
 
 }
 const updateAlumno2 = async (oid, update) => {
-
-    const alumnoUpdated = Alumno.findByIdAndUpdate(oid, update);
+//Actualiza un alumno y devuevle el valor guardado en la base de datos
+    const alumnoUpdated = Alumno.findOneAndUpdate({_id:oid}, update,{new: true});
 
     return alumnoUpdated;
 }

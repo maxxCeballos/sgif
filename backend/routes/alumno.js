@@ -7,7 +7,7 @@ const asyncHandler = require('../middlewares/asynchandler');
 
 const router = express.Router();
 
-const { createAlumno, updateAlumno,updateAlumno2, getAllAlumnos, getAlumnoById, deleteAlumno,getCalificacionesAlumno } = require('../controllers/alumno');
+const { createAlumno, updateAlumno,updateAlumno2, getAllAlumnos, getAlumnoByDni, deleteAlumno,getCalificacionesAlumno } = require('../controllers/alumno');
 const asynchandler = require('../middlewares/asynchandler');
 const {getDictado}=require('../controllers/dictado');
 
@@ -26,7 +26,7 @@ router.get('/alumno/:dni', asynchandler( async (req, res) => {
 
     const dni = req.params.dni
 
-    const response = await getAlumnoById(dni)
+    const response = await getAlumnoByDni(dni)
     
     res.send({ ok: true, response })
 

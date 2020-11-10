@@ -87,7 +87,7 @@ function obtenerCursoAlumno(cicloActual, oidAlumno) {
 }
 
 async function obtenerInasistenciasAlumno(asistencias, cicloLectivo) {
-    //Busco las inasistencias del ciclo lectivo actual
+    //Busco las inasistencias del ciclo lectivo recibido por parametro
     var i, dictadoABuscar, asistenciaActual, dictado;
     var inasistencias = [];
     //calificaciones de la materia elegida
@@ -109,23 +109,29 @@ async function obtenerInasistenciasAlumno(asistencias, cicloLectivo) {
 
 async function obtenerDictadosCalificaciones(calificaciones) {
     //Busca todos los dictados de las calificaciones
-    var i, dictadoABuscar, dictado;
-    var dictados = [];
+    var i, dictadoABuscar, dictadoActual,califActual;
+    var tuplaDC = []; //Guarda un json de calificacion junto a su dictado
     for (i in calificaciones) {
-        dictadoABuscar = calificaciones[i].dictado;
-        dictado = await getDictado(dictadoABuscar);
-        dictados.push(dictado);
+        //console.log(i);
+        califActual=calificaciones[i];
+        dictadoABuscar = califActual.dictado;
+        dictadoActual = await getDictado(dictadoABuscar);
+        tuplaDC.push({'calificacion':califActual, 'dictado':dictadoActual}); 
+        //console.log(tuplaDC);
     }
-    return dictados;
+    return tuplaDC;
 }
 
-function obtenerInasistenciaCicloActual(presentismos) {
-    //Esta función filtra las inasistencias
+function obtenerInasistenciaCiclo(presentismos,cicloLectivo) {
+    //Esta función filtra las inasistencias del ciclo lectivo recibido como parametro
     var inasistencias = [], i;
     let presentismoActual;
+   
     for (i in presentismos) {
-        presentismoActual = presentismos[inasistencias];
-        if (presentismoActual.hasOwnProperty('inasistencia')) {
+        presentismoActual = presentismos[i];
+       
+        if (JSON.parse(JSON.stringify(presentismoActual)).hasOwnProperty('inasistencia') && presentismoActual.fecha.getFullYear()==cicloLectivo) {
+            
             inasistencias.push(presentismoActual);
         }
     }
@@ -135,8 +141,9 @@ function obtenerInasistenciaCicloActual(presentismos) {
 module.exports = {
     obtenerCicloLectivo,
     obtenerCalificacionesMateria,
+    obtenerCalificacionesCiclo,
     obtenerCursoAlumno,
     obtenerInasistenciasAlumno,
-    obtenerInasistenciaCicloActual,
+    obtenerInasistenciaCiclo,
     obtenerDictadosCalificaciones
 };
