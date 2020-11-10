@@ -49,7 +49,7 @@ const getAlumnoByDni = async (dni) => {
 
     const alumnoDB = await Alumno.find({ dni: dni }).exec();
 
-    return alumnoDB
+    return alumnoDB[0]
 }
 
 const getAllAlumnos = async () => {

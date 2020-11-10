@@ -11,6 +11,7 @@ const cicloLectivoHandler = require('./cicloLectivo');
 const materiaHandler = require('./materia');
 const dictadoHandler =require('./dictado');
 const personaHandler =require('./persona');
+const transConsultasInfoAlumnoHandler=require('./consultarInfoAlumno');
 const app = express();
 
 app.get('/', (req, res) => {
@@ -23,7 +24,8 @@ app.use(cursoHandler);
 app.use(cicloLectivoHandler);
 app.use(materiaHandler);
 app.use(dictadoHandler);
-app.use(personaHandler)
+app.use(personaHandler);
+app.use(transConsultasInfoAlumnoHandler)
 
 
 module.exports = app;

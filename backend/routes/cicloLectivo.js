@@ -6,7 +6,7 @@ const asyncHandler = require('../middlewares/asynchandler');
 
 const router = express.Router();
 const { createCicloLectivo,getCicloLectivoActual,getCicloLectivo,updateCicloLectivo } = require('../controllers/cicloLectivo');
-const asynchandler = require('../middlewares/asynchandler');
+
 
 
 
@@ -15,7 +15,7 @@ const asynchandler = require('../middlewares/asynchandler');
 
 
 //Rutas relacionadas con Curso
-router.post('/ciclo', asynchandler( async (req, res) => {
+router.post('/ciclo', asyncHandler( async (req, res) => {
 
     const ciclo = req.body;
 

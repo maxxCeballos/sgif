@@ -20,19 +20,17 @@ const createCicloLectivo = async (ciclo) => {
 
     return cicloLectivoDB;
 }
-const getCicloLectivo = async (ciclo) => {
+const getCicloLectivo = async (id) => {
 
-    const cicloDB = await CicloLectivo.find({"cicloLectivo":ciclo});
+    const cicloDB = await CicloLectivo.findById(id);
 
     return cicloDB
 }
 const getCicloLectivoActual = async () => {
-
+    //Se ordena los resultados de manera descendiente y obtengo el primero 
     const ciclosDB = await CicloLectivo.find().sort({ "cicloLectivo": -1 }).limit(1);
-
-    return ciclosDB
+    return ciclosDB[0]
 }
-
 
 const updateCicloLectivo = async (oid, update) => {
 
@@ -40,6 +38,7 @@ const updateCicloLectivo = async (oid, update) => {
 
     return cicloUpdated;
 }
+
 module.exports = {
     createCicloLectivo,
     getCicloLectivo,

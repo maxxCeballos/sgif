@@ -1,4 +1,6 @@
 'use strict'
+
+
 //Controladores
 const { getCursoAlumno } = require('../controllers/curso');
 const { getAlumnoById, } = require('../controllers/alumno');
@@ -16,7 +18,7 @@ function consultarInformacionAlumno(dni) {
     //Obtener Ciclo Lectivo Actual
     const cicloLectivoActual = obtenerCicloLectivo();
 
-    //Obtener Curso de Alumno del Ciclo lectivo Actual 
+    //Obtener Curso de Alumno del Ciclo lectivo Actual
     const oidAlumno = alumno._id;
     const curso = obtenerCursoAlumno(cicloLectivoActual.cicloLectivo, oidAlumno);
 
@@ -24,7 +26,7 @@ function consultarInformacionAlumno(dni) {
     //Obtener Calificaciones del ciclo lectivo actual
     const calificacionesActuales = obtenerCalificacionesCiclo(cicloLectivoActual.cicloLectivo, alumno.calificaciones);
 
-    //Obtener Materias de los Dictados de las Calificaciones 
+    //Obtener Materias de los Dictados de las Calificaciones
 
 
     //Obtener Inasistencias del Alumno de los Dictados del Ciclo lectivo actual #TODO
@@ -44,11 +46,11 @@ function consultarInformacionAlumno(dni) {
 }
 
 
-function obtenerAlumnoConResponsable(dni) {
-    //Obtiene toda la información del alumno, dice con responsable porque antes responsable era un esquema separado
-    var alumno = await getAlumnoById(dni);
-    return alumno;
-}
+// function obtenerAlumnoConResponsable(dni) {
+//     //Obtiene toda la información del alumno, dice con responsable porque antes responsable era un esquema separado
+//     var alumno = await getAlumnoById(dni);
+//     return alumno;
+// }
 
 function obtenerCicloLectivo() {
     //const obteneranioActual y enviarlo como parametro #TODO
@@ -58,10 +60,10 @@ function obtenerCicloLectivo() {
 
 function obtenerCalificacionesCiclo(ciclo, calificaciones) {
     //Busca todos las calificaciones del ciclo lectivo ingresado como parametro
-    const calificaciones = calificaciones.filter(calificacion => calificacion.cicloLectivo == ciclo);
-    return calificaciones;
+    const calificacionesResponse = calificaciones.filter(calificacion => calificacion.cicloLectivo == ciclo);
+    return calificacionesResponse;
 }
-function obtenerCalificacionesMateria(materia, calificaciones) {
+async function obtenerCalificacionesMateria(materia, calificaciones) {
     //Busca todos las calificaciones de la materia  ingresada por parametro
     var i, dictadoABuscar, califActual, dictado;
     var califMateria = [];
@@ -84,7 +86,7 @@ function obtenerCursoAlumno(cicloActual, oidAlumno) {
     return curso;
 }
 
-function obtenerInasistenciasAlumno(asistencias, cicloLectivo) {
+async function obtenerInasistenciasAlumno(asistencias, cicloLectivo) {
     //Busco las inasistencias del ciclo lectivo actual
     var i, dictadoABuscar, asistenciaActual, dictado;
     var inasistencias = [];
@@ -105,7 +107,7 @@ function obtenerInasistenciasAlumno(asistencias, cicloLectivo) {
 
 }
 
-function obtenerDictadosCalificaciones(calificaciones) {
+async function obtenerDictadosCalificaciones(calificaciones) {
     //Busca todos los dictados de las calificaciones
     var i, dictadoABuscar, dictado;
     var dictados = [];
@@ -130,3 +132,11 @@ function obtenerInasistenciaCicloActual(presentismos) {
     return inasistencias;
 
 }
+module.exports = {
+    obtenerCicloLectivo,
+    obtenerCalificacionesMateria,
+    obtenerCursoAlumno,
+    obtenerInasistenciasAlumno,
+    obtenerInasistenciaCicloActual,
+    obtenerDictadosCalificaciones
+};
