@@ -16,7 +16,7 @@ let responsable = {
     tira: { type: String },
     localidad: { type: String },
     codigoPostal: { type: Number },
-    provincia: { type: String },   
+    provincia: { type: String },
 };
 
 
@@ -35,6 +35,7 @@ let padre = {
     telefono: { type: String },
     ocupacion: { type: String },
     lugarTrabajo: { type: String },
+    telefonoLaboral: { type: String },
     bautismo: { type: Boolean },
     comunion: { type: Boolean },
     confirmación: { type: Boolean },
