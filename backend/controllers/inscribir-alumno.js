@@ -80,9 +80,7 @@ const validarAlumno = async (dni) => {
 
 const registrarAlumno = async (alumno, oidResponsable) => {
 
-    const legajo = await generarLegajo();
-
-    //TODO: ver response para devolver el alumno despues del update
+    const legajo = await generarLegajo();    
     const alumnoDB = await createAlumno(alumno, legajo, oidResponsable);
 
     let response;

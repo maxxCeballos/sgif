@@ -22,12 +22,30 @@ const getPersonaById = async (dni) => {
     const personaDB = await Persona.find({ dni: dni }).exec();
     let persona = false;
 
-    if (personaDB.length === 1) {        
+    if (personaDB.length === 1) {
         persona = personaDB[0];
     } else if (personaDB.length > 1) {
         throw "Hay mas de una persona con el mismo dni";
     }
-    
+
+    return persona;
+}
+
+const getPersonaByOID = async (oid) => {
+    let personaDB
+    try {
+        personaDB = await Persona.findById(oid).exec();
+    } catch (error) {
+        console.log("hola");
+        return false;
+    }
+
+    let persona = false;
+
+    if (personaDB.length === 1) {
+        persona = personaDB[0];
+    }
+
     return persona;
 }
 
@@ -71,6 +89,7 @@ const asociarRol = async (nombreRol, datosRol, dniPersona) => {
 module.exports = {
     createPersona,
     getPersonaById,
+    getPersonaByOID,
     getAllPersonas,
     updatePersona,
     asociarRol
