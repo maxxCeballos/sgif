@@ -2,7 +2,7 @@
 
 const Persona = require('../models/persona.model');
 const persona = require('./persona');
-const { getPersonaById, createPersona, asociarRol, getAllPersonas } = require('./persona');
+const { getPersonaById, createPersona, asociarRol, getAllPersonas, getPersonaByOID } = require('./persona');
 
 const createResponsable = async (datosResponsable) => {
 
@@ -30,7 +30,7 @@ const createResponsable = async (datosResponsable) => {
     let actualizoRol = false;
     if (!esResponsable(personaDB)) {
         actualizoRol = await asociarRol("responsable", responsable, dni);
-    }else{
+    } else {
         throw "La persona ya esta registrada como responsable"
     }
 
@@ -45,7 +45,7 @@ const createResponsable = async (datosResponsable) => {
     return response;
 }
 
-const getResponsableById = async (dni) => {   
+const getResponsableById = async (dni) => {
 
     const personaDB = await getPersonaById(dni);
 
@@ -54,6 +54,15 @@ const getResponsableById = async (dni) => {
     }
     return false;
 
+}
+
+const getResponsableByOID = async (oid) => {
+    const personaDB = await getPersonaByOID(oid);
+
+    if (personaDB !== false && esResponsable(personaDB)) {
+        return personaDB;
+    }
+    return false;
 }
 
 const getAllResponsables = async () => {
@@ -94,7 +103,7 @@ const deleteResponsable = async (dni) => {
 }
 
 const generarLegajo = async () => {
-    const responsablesBD = await Persona.find().select('responsable.legajo -_id').sort({ 'responsable.legajo': "desc" }).exec();    
+    const responsablesBD = await Persona.find().select('responsable.legajo -_id').sort({ 'responsable.legajo': "desc" }).exec();
     let nuevoLegajo = parseInt(responsablesBD[0].responsable.legajo) + 1;
     if (Number.isNaN(nuevoLegajo)) {
         nuevoLegajo = 1;
@@ -103,7 +112,7 @@ const generarLegajo = async () => {
 }
 
 const esResponsable = (personaObj) => {
-    return JSON.parse(JSON.stringify(personaObj)).hasOwnProperty('responsable');;
+    return JSON.parse(JSON.stringify(personaObj)).hasOwnProperty('responsable');
 }
 
 module.exports = {
@@ -112,4 +121,5 @@ module.exports = {
     deleteResponsable,
     getAllResponsables,
     getResponsableById,
+    getResponsableByOID
 }
