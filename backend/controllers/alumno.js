@@ -3,6 +3,7 @@
 const { response } = require('express');
 let Alumno = require('../models/alumno.model');
 const { getPersonaById, createPersona, asociarRol } = require('./persona');
+const { getResponsableByOID } = require('./responsable');
 
 const createAlumno = async (alumno, legajo, oidResponsable) => {
     const { dni, tipoDni, nombre, apellido, genero, fechaNacimiento,
@@ -11,8 +12,7 @@ const createAlumno = async (alumno, legajo, oidResponsable) => {
 
     let response;
 
-    //TODO: refactor, poner required en bd
-    console.log(tieneDatosBasicos(alumno))
+    //FIXME: refactor, poner required en bd    
     if (!tieneDatosBasicos(alumno)) {
         return {
             exito: false,
@@ -25,7 +25,14 @@ const createAlumno = async (alumno, legajo, oidResponsable) => {
         }
     }
 
-    //TODO: validar responsable
+    //verifico que el oid recibido sea válido.
+    if(!getResponsableByOID(oidResponsable)){
+        return {
+            exito: false,
+            message: "OID responsable inválido."
+        }
+    }
+
     //TODO: verificar que la persona no sea un alumno ya
 
     const newAlumno = new Alumno({
@@ -98,12 +105,12 @@ const getAllAlumnos = async () => {
  * @param {*} dni 
  */
 const updateAlumno = async (atributo, valor, dni) => {
-    let alumno;    
+    let alumno;
 
     var $set = { $set: { [atributo]: valor } };
 
-    const response = await Alumno.updateOne({ dni: dni }, $set);        
-    if (response.n === 1) { 
+    const response = await Alumno.updateOne({ dni: dni }, $set);
+    if (response.n === 1) {
         alumno = await getAlumnoById(dni);
     }
 
@@ -118,11 +125,15 @@ const deleteAlumno = async (dni) => {
     return true;
 }
 
-const generarLegajo = async () => {
-    //FIXME: hacer como el del responsable
-    const response = await Alumno.find().select('legajo -_id').sort({ legajo: -1 }).exec();
+const generarLegajo = async () => {    
+    //El legajo es un string, por eso el orden desc lo hace de forma alfabetica y no de integer
 
-    return parseInt(response[0].legajo) + 1;
+    const alumnosBD = await Alumno.find().select('legajo -_id').sort({ legajo: "desc" }).exec();    
+    let nuevoLegajo = parseInt(alumnosBD[0].legajo) + 1;
+    if (Number.isNaN(nuevoLegajo)) {
+        nuevoLegajo = 1;
+    }
+    return nuevoLegajo
 }
 
 /**
