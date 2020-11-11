@@ -33,18 +33,16 @@ router.get('/inscribir-mesa/obtener-dictados', asyncHandler(async (req, res) => 
  * 
  * req = { oidAlumno, oidDictado, cicloLectivo, nombreMateria, anioMateria }
  */
-router.post('/inscribir-mesa/registrar-mesa/:legajo', asyncHandler(async (req, res) => {
+router.post('/inscribir-mesa/registrar-mesa/:oidAlumno', asyncHandler(async (req, res) => {
     //FIXME: sacar legajo
-    const legajoAlumno = req.params.legajo;
-    const { oidAlumno, oidDictado, cicloLectivo, nombreMateria, anioMateria } = req.body;
+    const oidAlumno = req.params.oidAlumno;
+    const dictado = req.body;
 
     if (Object.entries(dictado).length === 0) {
         throw "Por Favor, Ingrese un Dictado";
     }
 
-    const response = await registrarMesa(legajoAlumno,
-        oidAlumno,
-        { oidDictado, cicloLectivo, nombreMateria, anioMateria });
+    const response = await registrarMesa(oidAlumno, dictado);
 
     res.send({ ok: true, response });
 }));
@@ -53,13 +51,13 @@ router.post('/inscribir-mesa/registrar-mesa/:legajo', asyncHandler(async (req, r
  * Para controlar si no se envia legajo
  */
 router.post('/inscribir-mesa/registrar-mesa', asyncHandler(async (req, res) => {
-    throw "Por Favor, Ingrese un Legajo";
+    throw "Por Favor, Ingrese un Identificador de Alumno";
 }));
 
-router.post('/inscribir-mesa/set-test', asyncHandler(async (req, res) => {
-    const response = await setTestInscribirMesa();
+// router.post('/inscribir-mesa/set-test', asyncHandler(async (req, res) => {
+//     const response = await setTestInscribirMesa();
 
-    res.send({ ok: true, response });
-}));
+//     res.send({ ok: true, response });
+// }));
 
 module.exports = router;

@@ -8,22 +8,16 @@ const { verificarLegajo, verificarDictado } = require('../../utils/verificacione
 
 //TODO: Pensar implementacion de errores (codigo con global tipo Error.TIPO1, mensaje por defecto y expandido)
 
-const registrarMesa = async (legajoAlumno, oidAlumno, valoresDictado) => {
+const registrarMesa = async (oidAlumno, valoresDictado) => {
     let fueCreada = false;
 
     //TODO: verificar formatos
-    // if (!verificarLegajo(oidAlumno)) {
-    //     throw "El Legajo no es Correcto";
-    // }
-    // if (!verificarDictado(valoresDictado)) {
-    //     throw "El Dictado no es Correcto";
-    // }
-
-    //TODO: buscar oid alumno 
-    // let objAlumno = (await getAlumnoByLegajo(oidAlumno))[0];
+    if (!verificarDictado(valoresDictado)) {
+        throw "El Dictado no es Correcto";
+    }
 
     //TODO: verificar que el alumno tenga el dictado
-
+    
     //TODO: crear resultado
     let responseResultado = await createResultadoMesaBasico(oidAlumno);
 
@@ -69,17 +63,23 @@ const registrarMesa = async (legajoAlumno, oidAlumno, valoresDictado) => {
     }
 
     //TODO: return notificar mesa AGREGAR ACTA: 
-    //solicitada - solo mensaje / completada - fecha, hora, aula, etc
+    return generarResponse(fueCreada, objMesaDeExamen);
+}
+
+/**
+ * solicitada - solo mensaje / completada - fecha, hora, aula, etc
+ */
+function generarResponse(fueCreada, objMesaDeExamen) {
     let response = {
         mensaje: "Inscripción Exitosa, será notificado cuando se establezca fecha, hora y aula"
-    }
+    };
 
     if (!fueCreada) {
         response = {
             mensaje: "Inscripción Exitosa",
             fechaHora: objMesaDeExamen.fechaHora,
             aula: objMesaDeExamen.aula,
-        }
+        };
     }
     return response;
 }
