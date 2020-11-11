@@ -49,7 +49,7 @@ const obtenerDictados = async (legajoAlumno) => {
     return dictadosDesaprobados;
 }
 
-// TODO: agregar el id de dictado
+// TODO: agregar el id de alumno
 /**
  * Devuelve dictados con el formato {id, nombreMateria, anioMateria, cicloLectivo} de un conjunto de calificaciones
  */

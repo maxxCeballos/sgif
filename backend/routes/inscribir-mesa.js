@@ -34,6 +34,7 @@ router.get('/inscribir-mesa/obtener-dictados', asyncHandler(async (req, res) => 
  * req = { oidAlumno, oidDictado, cicloLectivo, nombreMateria, anioMateria }
  */
 router.post('/inscribir-mesa/registrar-mesa/:legajo', asyncHandler(async (req, res) => {
+    //FIXME: sacar legajo
     const legajoAlumno = req.params.legajo;
     const { oidAlumno, oidDictado, cicloLectivo, nombreMateria, anioMateria } = req.body;
 

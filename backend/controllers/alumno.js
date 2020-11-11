@@ -51,6 +51,62 @@ const createAlumno = async (alumno, legajo, oidResponsable) => {
     return response;
 }
 
+const resetAlumno = async (alumno, legajo) => {
+    const { dni, tipoDni, nombre, apellido, genero, fechaNacimiento,
+        fechaEgreso, nombreEscuelaAnt, foto, sacramento,
+        estadoInscripcion, anioCorrespondiente, observaciones, sanciones, presentismos,
+        calificaciones, hermanos, padres } = alumno;
+
+    const newAlumno = new Alumno({
+        dni,
+        tipoDni,
+        nombre,
+        apellido,
+        genero,
+        fechaNacimiento,
+        legajo,
+        fechaIngreso: new Date().toISOString(),
+        fechaEgreso,
+        nombreEscuelaAnt,
+        foto,
+        sacramento,
+        estadoInscripcion, //FIXME: para pruebas zafa, pero hay que sacarlo        
+        anioCorrespondiente,
+        observaciones,
+        sanciones,
+        presentismos,
+        calificaciones,
+        responsable: oidResponsable,
+        hermanos,
+        padres
+    });
+
+    let alumnoDB = await getAlumnoByLegajo(legajo)[0];
+    const response;
+    if (alumnoDB) {
+        //Si existe, le actualizo los datos
+        response = await Alumno.updateOne({ _id: oidAlumno }, alumnoDB);
+    }
+
+
+    const alumnoDB = await newAlumno.save()
+
+    //creacion/asociacion de rol alumno a persona
+    let personaDB = await getPersonaById(dni);
+    if (personaDB.length === 0) {
+        personaDB = createPersona({
+            nombre, apellido, dni, sexo: genero
+        });
+    }
+
+    //TODO: ver response para devolver el alumno despues del update
+    const response = await asociarRol("alumno", alumnoDB._id, dni);
+
+    if (response.n === 1) return true
+
+    return false
+}
+
 
 const getAlumnoById = async (dni) => {
     //FIXME: ver si cambiar nombre a ...ByDni porq id puede ser OID
@@ -148,6 +204,7 @@ const addCalificacion = async (calificacion, dni) => {
 
 module.exports = {
     createAlumno,
+    resetAlumno,
     updateAlumno,
     deleteAlumno,
     getAllAlumnos,
