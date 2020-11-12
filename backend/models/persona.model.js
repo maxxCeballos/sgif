@@ -44,7 +44,7 @@ let padre = {
 };
 
 let preceptor = {
-    legajo: { type: Date },
+    legajo: { type: String },
     email: { type: String }
 };
 

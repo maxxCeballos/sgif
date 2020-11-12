@@ -7,6 +7,7 @@ const {obtenerCalificacionesCiclo,obtenerDictadosCalificaciones,obtenerInasisten
 const router = express.Router();
 const { getCursoAlumno } = require('../controllers/curso');
 const { getAlumnoByDni, } = require('../controllers/alumno');
+const { getCicloLectivoActual } = require('../controllers/cicloLectivo');
 
 const alumno = require('../controllers/alumno');
 
@@ -24,7 +25,7 @@ router.get('/consultarInfoCicloActual/:dni', asyncHandler(async (req, res) => {
     responsable = await getResponsableAlumno(alumno.responsable);
 
     //Obtenemos el cicloLectivoAactual
-   cicloActual = await getCicloLectivoActual();
+    cicloActual = await getCicloLectivoActual();
   
     //Obtener Curso de Alumno del Ciclo lectivo Actual
   
@@ -32,7 +33,7 @@ router.get('/consultarInfoCicloActual/:dni', asyncHandler(async (req, res) => {
     //console.log(cursoActual);
 
     //Obtener Calificaciones del ciclo lectivo actual
-    calificacionesActuales = obtenerCalificacionesCiclo(2017, alumno.calificaciones);
+    calificacionesActuales = obtenerCalificacionesCiclo(cicloActual.cicloLectivo, alumno.calificaciones);
 
     //console.log(calificacionesActuales);
 
@@ -41,12 +42,8 @@ router.get('/consultarInfoCicloActual/:dni', asyncHandler(async (req, res) => {
         //console.log(result); 
         return result;
       });
-    //console.log(dictados);
-
-    //Obtener Inasistencias del Alumno de los Dictados del Ciclo lectivo actual
-
-    inasistencias = obtenerInasistenciaCiclo(alumno.presentismos,2017);
-     
+    console.log(dictados);
+    
     response ={ ciclo: cicloActual, curso: cursoActual, calificaciones: dictados, presentismos: inasistencias };
     
     res.send({ ok: true, response });

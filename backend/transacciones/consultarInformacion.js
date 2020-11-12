@@ -63,6 +63,10 @@ function obtenerCalificacionesCiclo(ciclo, calificaciones) {
     const calificacionesResponse = calificaciones.filter(calificacion => calificacion.cicloLectivo == ciclo);
     return calificacionesResponse;
 }
+
+
+
+
 async function obtenerCalificacionesMateria(materia, calificaciones) {
     //Busca todos las calificaciones de la materia  ingresada por parametro
     var i, dictadoABuscar, califActual, dictado;
