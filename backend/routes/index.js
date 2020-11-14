@@ -9,6 +9,7 @@ const alumnosHandler = require('./alumno');
 const cicloLectivoHandler = require('./ciclo-lectivo');
 const inscribirAlumnoHandler = require('./inscribir-alumno');
 const responsableHandler = require('./responsable');
+const completarFamiliaHandler = require('./completar-familia');
 
 const app = express();
 
@@ -24,5 +25,6 @@ app.use(responsableHandler);
 
 //movimientos
 app.use(inscribirAlumnoHandler);
+app.use(completarFamiliaHandler);
 
 module.exports = app;
