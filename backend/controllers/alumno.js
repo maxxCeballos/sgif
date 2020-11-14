@@ -51,61 +51,58 @@ const createAlumno = async (alumno, legajo, oidResponsable) => {
     return response;
 }
 
-const resetAlumno = async (alumno, legajo) => {
-    const { dni, tipoDni, nombre, apellido, genero, fechaNacimiento,
-        fechaEgreso, nombreEscuelaAnt, foto, sacramento,
-        estadoInscripcion, anioCorrespondiente, observaciones, sanciones, presentismos,
-        calificaciones, hermanos, padres } = alumno;
+// onst resetAlumno = async (alumno, legajo) => {
+//     const { dni, tipoDni, nombre, apellido, genero, fechaNacimiento,
+//         fechaEgreso, nombreEscuelaAnt, foto, sacramento,
+//         estadoInscripcion, anioCorrespondiente, observaciones, sanciones, presentismos,
+//         calificaciones, hermanos, padres } = alumno;
 
-    const newAlumno = new Alumno({
-        dni,
-        tipoDni,
-        nombre,
-        apellido,
-        genero,
-        fechaNacimiento,
-        legajo,
-        fechaIngreso: new Date().toISOString(),
-        fechaEgreso,
-        nombreEscuelaAnt,
-        foto,
-        sacramento,
-        estadoInscripcion, //FIXME: para pruebas zafa, pero hay que sacarlo        
-        anioCorrespondiente,
-        observaciones,
-        sanciones,
-        presentismos,
-        calificaciones,
-        responsable: oidResponsable,
-        hermanos,
-        padres
-    });
+//     const newAlumno = new Alumno({
+//         dni,
+//         tipoDni,
+//         nombre,
+//         apellido,
+//         genero,
+//         fechaNacimiento,
+//         legajo,
+//         fechaIngreso: new Date().toISOString(),
+//         fechaEgreso,
+//         nombreEscuelaAnt,
+//         foto,
+//         sacramento,
+//         estadoInscripcion, //FIXME: para pruebas zafa, pero hay que sacarlo        
+//         anioCorrespondiente,
+//         observaciones,
+//         sanciones,
+//         presentismos,
+//         calificaciones,
+//         responsable: oidResponsable,
+//         hermanos,
+//         padres
+//     });
 
-    let alumnoDB = await getAlumnoByLegajo(legajo)[0];
-    const response;
-    if (alumnoDB) {
-        //Si existe, le actualizo los datos
-        response = await Alumno.updateOne({ _id: oidAlumno }, alumnoDB);
-    }
+//     let alumnoDB = await getAlumnoByLegajo(legajo)[0];
+//     const response;
+//     if (alumnoDB) {
+//         //Si existe, le actualizo los datos
+//         response = await Alumno.updateOne({ _id: oidAlumno }, alumnoDB);
+//     }
+//     const alumnoDB = await newAlumno.save()
+//     //creacion/asociacion de rol alumno a persona
+//     let personaDB = await getPersonaById(dni);
+//     if (personaDB.length === 0) {
+//         personaDB = createPersona({
+//             nombre, apellido, dni, sexo: genero
+//         });
+//     }
 
+//     //TODO: ver response para devolver el alumno despues del update
+//     const response = await asociarRol("alumno", alumnoDB._id, dni);
 
-    const alumnoDB = await newAlumno.save()
+//     if (response.n === 1) return true
 
-    //creacion/asociacion de rol alumno a persona
-    let personaDB = await getPersonaById(dni);
-    if (personaDB.length === 0) {
-        personaDB = createPersona({
-            nombre, apellido, dni, sexo: genero
-        });
-    }
-
-    //TODO: ver response para devolver el alumno despues del update
-    const response = await asociarRol("alumno", alumnoDB._id, dni);
-
-    if (response.n === 1) return true
-
-    return false
-}
+//     return false
+// }c
 
 
 const getAlumnoById = async (dni) => {
@@ -115,8 +112,13 @@ const getAlumnoById = async (dni) => {
     return alumnoDB
 }
 
-const getAlumnoByLegajo = async (legajo) => {
+const getAlumnoByOid = async (oidAlumno) => {
+    const alumnoDB = await Alumno.findById(oidAlumno).exec();
 
+    return alumnoDB
+}
+
+const getAlumnoByLegajo = async (legajo) => {
     const alumnoDB = await Alumno.find({ legajo: legajo }).exec();
 
     return alumnoDB
@@ -130,7 +132,7 @@ const getAllAlumnos = async () => {
 }
 
 const addResultadoMesa = async (oidAlumno, oidDictado, oidResultadoMesa) => {
-    const alumnoDB = (await getAlumnoById(oidAlumno))[0];
+    const alumnoDB = (await getAlumnoByOid(oidAlumno))[0];
     const indiceCalificacion = alumnoDB.calificaciones.findIndex(
         calificacion => calificacion.dictado === oidDictado);
     const calificacionDB = alumnoDB.calificaciones[indiceCalificacion];
@@ -204,11 +206,12 @@ const addCalificacion = async (calificacion, dni) => {
 
 module.exports = {
     createAlumno,
-    resetAlumno,
+    // resetAlumno,
     updateAlumno,
     deleteAlumno,
     getAllAlumnos,
     getAlumnoById,
+    getAlumnoByOid,
     getAlumnoByLegajo,
     generarLegajo,
     addCalificacion,
