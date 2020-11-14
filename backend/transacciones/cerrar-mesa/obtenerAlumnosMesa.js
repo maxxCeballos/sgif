@@ -68,6 +68,8 @@ async function getDatosResponse(mesa) {
     for (const resultado of mesa.resultados) {
         const alumno = await getAlumnoByOid(resultado.alumno);
         alumnos.push({
+            oidResultado: resultado._id,
+            oidAlumno: alumno._id,
             nombre: alumno.nombre,
             apellido: alumno.apellido,
             legajo: alumno.legajo,
@@ -75,6 +77,7 @@ async function getDatosResponse(mesa) {
     }
 
     let mesaResponse = {
+        oidMesa: mesa._id,
         acta: mesa.acta,
         fechaHora: mesa.fechaHora,
         aula: mesa.aula,
