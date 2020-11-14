@@ -10,6 +10,7 @@ const cicloLectivoHandler = require('./ciclo-lectivo');
 const inscribirAlumnoHandler = require('./inscribir-alumno');
 const inscribirMesaHandler = require('./inscribir-mesa');
 const responsableHandler = require('./responsable');
+const cerrarMesaHandler = require('./cerrar-mesa');
 
 const app = express();
 
@@ -26,5 +27,6 @@ app.use(responsableHandler);
 //movimientos
 app.use(inscribirAlumnoHandler);
 app.use(inscribirMesaHandler);
+app.use(cerrarMesaHandler);
 
 module.exports = app;

@@ -24,13 +24,19 @@ const getMesaExamenByOid = async (oidMesa) => {
     return mesaDB
 }
 
+const getMesaExamenByActa = async (acta) => {
+    const mesaDB = await MesaExamen.find({ acta }).exec();
+
+    return mesaDB
+}
+
 const getMesaExamenByDictado = async (oidDictado) => {
     const mesaDB = await MesaExamen.find({ dictado: oidDictado }).exec();
 
     return mesaDB
 }
 
-const getAllMesasExamen = async () => {    
+const getAllMesasExamen = async () => {
     const mesasDB = await MesaExamen.find().exec();
 
     return mesasDB;
@@ -60,6 +66,7 @@ module.exports = {
     updateMesaExamen,
     deleteMesaExamen,
     getMesaExamenByOid,
+    getMesaExamenByActa,
     getMesaExamenByDictado,
     addResultadoMesa,
     getAllMesasExamen,
