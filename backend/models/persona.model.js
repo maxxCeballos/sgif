@@ -17,7 +17,6 @@ let responsable = {
     localidad: { type: String },
     codigoPostal: { type: Number },
     provincia: { type: String },
-    //TODO: Ver si conviene tener al alumno   
 };
 
 
@@ -36,13 +35,13 @@ let padre = {
     telefono: { type: String },
     ocupacion: { type: String },
     lugarTrabajo: { type: String },
+    telefonoLaboral: { type: String },
     bautismo: { type: Boolean },
     comunion: { type: Boolean },
     confirmación: { type: Boolean },
     egresoPrimario: { type: Boolean },
     egresoSecundario: { type: Boolean },
     relacionParentesco: { type: String }
-    //TODO: Ver si conviene tener al alumno
 };
 
 let preceptor = {
@@ -50,6 +49,7 @@ let preceptor = {
     email: { type: String }
 };
 
+// Para el profesor
 let materias = [{
     nombre: { type: String },
     anio: { type: Number, min: 1, max: 5 }
@@ -78,7 +78,7 @@ const personaEsquema = new Schema({
     nombre: String,
     apellido: String,
     dni: { type: String, unique: true },
-    sexo: { type: String, enum: ["Masculino", "Femenino"] },
+    genero: { type: String, enum: ["Masculino", "Femenino", "Otro"] },
     responsable,
     hermano,
     padre,
@@ -86,7 +86,6 @@ const personaEsquema = new Schema({
     profesor,
     alumno: { type: Schema.Types.ObjectId, ref: 'Alumno' }
 }, { timestamps: true });
-
 
 const Persona = mongoose.model('Persona', personaEsquema);
 
