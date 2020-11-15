@@ -56,19 +56,28 @@ const getAllResultadoMesas = async () => {
     return resultadoMesasDB;
 }
 
-const updateResultadoMesa = async (resultadoMesa) => {
+// const updateResultadoMesa = async (resultadoMesa) => {
+//     const { dni, nombre, apellido } = resultadoMesa
 
-    const { dni, nombre, apellido } = resultadoMesa
+//     const response = await ResultadoMesa.updateOne({ dni: dni }, {
+//         nombre: nombre,
+//         apellido: apellido,
+//     })
 
-    const response = await ResultadoMesa.updateOne({ dni: dni }, {
-        nombre: nombre,
-        apellido: apellido,
-    })
+//     if (response.n === 1) return true
+
+//     return false;
+// }
+
+const updateResultadoMesa = async (oidResultado, atributo, valor) => {
+    var $set = { $set: {} };
+    $set.$set[atributo] = valor;
+
+    const response = await Alumno.updateOne({ _id: oidResultado }, $set);
 
     if (response.n === 1) return true
 
     return false
-
 }
 
 const deleteResultadoMesa = async (dni) => {

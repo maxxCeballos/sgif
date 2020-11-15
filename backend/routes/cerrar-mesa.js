@@ -6,8 +6,8 @@ const asyncHandler = require('../middlewares/asynchandler');
 const router = express.Router();
 
 const obtenerMesasCompletadas = require('../transacciones/cerrar-mesa/obtenerMesasCompletadas');
-const obtenerAlumnosMesa = require('../transacciones/cerrar-mesa/obtenerAlumnosMesa');
-const cargarNotasMesa = require('../transacciones/cerrar-mesa/cargarNotasMesa');
+const obtenerAlumnosMesas = require('../transacciones/cerrar-mesa/obtenerAlumnosMesa');
+const cargarNotasMesas = require('../transacciones/cerrar-mesa/cargarNotasMesa');
 
 //TODO: ver si muestro mesas o solo pido acta
 
@@ -29,23 +29,32 @@ router.get('/cerrar-mesa/obtener-mesas-completadas/', asyncHandler(async (req, r
 router.get('/cerrar-mesa/obtener-alumnos-mesa/:acta', asyncHandler(async (req, res) => {
     const acta = req.params.acta;
 
-    const response = await obtenerAlumnosMesa(acta);
+    const response = await obtenerAlumnosMesas(acta);
 
     res.send({ ok: true, response });
 }));
 
 /**
- * Carga los resultados de los alumnos que rindieron en la mesa con las notas y la asistencia.
+ * Carga los resultados de los alumnos que rindieron en la mesa o mesas (asociadas) con las notas y la asistencia.
  */
 
 //FIXME: ver si va acta u oidMesa
 
-router.get('/cerrar-mesa/cargar-notas-mesa/:acta', asyncHandler(async (req, res) => {
-    const acta = req.params.acta;
-    //FIXME: ver si las notas capaz conviene q vengan dentro del body como arreglo
-    const notas = req.params.body;
+router.put('/cerrar-mesa/cargar-notas-mesa/', asyncHandler(async (req, res) => {
+    const notas = req.body;
 
-    const response = await cargarNotasMesa(acta, notas);
+    const response = await cargarNotasMesas(mesasConNotas);
+
+    res.send({ ok: true, response });
+}));
+
+//TODO: DELETE
+router.put('/test-guido-array', asyncHandler(async (req, res) => {
+    const notas = req.body;
+
+    console.log(notas)
+
+    const response = "Hola";
 
     res.send({ ok: true, response });
 }));

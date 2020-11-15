@@ -7,8 +7,15 @@ const createMesaExamen = () => {
 
 }
 
-const updateMesaExamen = () => {
+const updateMesaExamen = (oidMesa, atributo, valor) => {
+    var $set = { $set: {} };
+    $set.$set[atributo] = valor;
 
+    const response = await MesaExamen.updateOne({ _id: oidMesa }, $set);
+
+    if (response.n === 1) return true
+
+    return false
 }
 
 

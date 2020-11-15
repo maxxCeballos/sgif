@@ -171,6 +171,38 @@ const updateAlumno = async (atributo, valor, dni) => {
     return false
 }
 
+//TODO: ver si sacar
+const updateAlumnoByOid = async (oidAlumno, atributo, valor) => {
+
+    //TODO: refactorizar
+    var $set = { $set: {} };
+    $set.$set[atributo] = valor;
+
+    const response = await Alumno.updateOne({ _id: oidAlumno }, $set);
+
+    if (response.n === 1) return true
+
+    return false
+}
+
+const updateCalificacionAlumnoByOid = async (oidAlumno, calificacionNueva) => {
+    const alumnoDB = await getAlumnoByOid(oidAlumno);
+
+    let numeroCalificacion = alumnoDB.calificaciones.findIndex(calificacion =>
+        calificacion.dictado === calificacionNueva.dictado
+        && calificacion.cicloLectivo === calificacionNueva.cicloLectivo)
+
+    alumnoDB.calificaciones[numeroCalificacion] = calificacionNueva;
+
+    const response = await Alumno.updateOne(
+        { _id: oidAlumno },
+        { calificaciones: alumnoDB.calificaciones });
+
+    if (response.n === 1) return true
+
+    return false
+}
+
 const deleteAlumno = async (dni) => {
     //TODO: tiene que borrarlo de la persona tambien
 
@@ -208,6 +240,8 @@ module.exports = {
     createAlumno,
     // resetAlumno,
     updateAlumno,
+    updateAlumnoByOid,
+    updateCalificacionAlumnoByOid,
     deleteAlumno,
     getAllAlumnos,
     getAlumnoById,

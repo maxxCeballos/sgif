@@ -11,7 +11,7 @@ const { getAlumnoByOid } = require("../../controllers/alumno");
  * 
  * @returns cada mesa incluye (acta, fecha y hora, aula, datos de dictado y datos de cada alumno inscripto)
  */
-const obtenerAlumnosMesa = async (acta) => {
+const obtenerAlumnosMesas = async (acta) => {
     //TODO: Verificar acta
     if (!verificarActa(acta)) {
         throw "El acta no es valida";
@@ -89,4 +89,4 @@ async function getDatosResponse(mesa) {
     return mesaResponse;
 }
 
-module.exports = obtenerAlumnosMesa;
+module.exports = obtenerAlumnosMesas;
