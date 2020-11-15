@@ -56,7 +56,7 @@ const getResponsableById = async (dni) => {
 
 }
 
-const getResponsableByOID = async (oid) => {
+const getResponsableByOID = async (oid) => {    
     const personaDB = await getPersonaByOID(oid);
 
     if (personaDB !== false && esResponsable(personaDB)) {
