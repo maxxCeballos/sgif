@@ -4,25 +4,22 @@ let CicloLectivo = require("../models/cicloLectivo.model");
 const { trace } = require('../routes/ciclo-lectivo');
 
 const getCicloLectivo = async () => {
-    const cicloLectivoDB = await CicloLectivo.find().exec();
+    const cicloLectivoDB = await CicloLectivo.find().sort({ cicloLectivo: -1 }).exec();
+    //TODO: CUIDADO hay un ciclo lectivo del 2021
+    return cicloLectivoDB[1];
+}
 
-    //TODO: terminar
-    /*if (cicloLectoDB.n === 1) {
-        retornar el unico
-    }else{error, no deberia ocurrir nunca}
-    */
-
-    //TODO: arreglar para que quede una sola en la BD
-    //return cicloLectivoDB[2];
+const getCicloLectivoById = async (cicloLectivo) =>{
+    const cicloLectivoDB = await CicloLectivo.find({ cicloLectivo: cicloLectivo }).exec();
     return cicloLectivoDB;
 }
 
-const createCicloLectivo = async (cicloLectivo) => {
-    const { anioCicloLectivo, fechaIniClases, fechaCiere1T,
-        fechaCiere2T, fechaCiere3T, fechaFinInscripcion } = cicloLectivo
+const createCicloLectivo = async (cicloLectivoObj) => {
+    const { cicloLectivo, fechaIniClases, fechaCiere1T,
+        fechaCiere2T, fechaCiere3T, fechaFinInscripcion } = cicloLectivoObj
 
     const newCicloLectivo = new CicloLectivo({
-        anioCicloLectivo, fechaIniClases, fechaCiere1T,
+        cicloLectivo, fechaIniClases, fechaCiere1T,
         fechaCiere2T, fechaCiere3T, fechaFinInscripcion
     });
 
@@ -31,4 +28,4 @@ const createCicloLectivo = async (cicloLectivo) => {
     return cicloLectivoDB;
 }
 
-module.exports = { getCicloLectivo, createCicloLectivo }
+module.exports = { getCicloLectivo, createCicloLectivo, getCicloLectivoById}

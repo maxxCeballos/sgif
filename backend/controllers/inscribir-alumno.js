@@ -11,15 +11,20 @@ const validarFechaInscripcion = async () => {
 
     const cicloLectivoDB = await getCicloLectivo();
 
-    //console.log(cicloLectivoDB);
+    console.log(cicloLectivoDB);
 
     let response;
 
     if (new Date().toISOString() <= cicloLectivoDB.fechaFinInscripcion.toISOString()) {
-        response = { message: "Incripciones Abiertas" }
-    }
-    else {
-        response = { message: "Incripciones Cerradas" }
+        response = {
+            valido: true,
+            message: "Inscripciones Abiertas"
+        }
+    } else {
+        response = {
+            valido: false,
+            message: "Inscripciones Cerradas"
+        }
     }
 
     return response
@@ -35,30 +40,33 @@ const validarFechaInscripcion = async () => {
 const validarAlumno = async (dni) => {
 
     const alumnoDB = await getAlumnoById(dni);
-    let response = { alumnoDB };
     let estadoInscripcion;
+    let response = {
+        valido: true,
+        operacion: "Inscribir",
+        alumnoDB
+    };
 
-    //console.log(alumnoDB.length);
+    console.log(alumnoDB);
 
-    if (alumnoDB.length === 1) {
+    if (alumnoDB !== false) {
 
         estadoInscripcion = alumnoDB.estadoInscripcion;
 
-        if(estadoInscripcion == "No Inscripto") {
-            response = {message: "El alumno no esta inscripto, puede reinscribir"}
+        if (estadoInscripcion !== "No Inscripto") {
+            response = {
+                valido: false,
+                operacion: "Inválido",
+                message: "El alumno está " + estadoInscripcion
+            }
         }
-        
-        /*//FIXME: arreglar
-        if (estadoInscripcion == "Reinscripto") {
-            response = { message: "El alumno ya está Reinscripto" }
-        } else if (estadoInscripcion == "Inscripto") {
-            response = { message: "El alumno ya está Inscripto, no puede reinscribir" }
-        }*/
 
-    } else if (alumnoDB.length === 0) {
-        response = { message: "El alumno no existe, puede inscribir" }
     } else {
-        response = { message: "Error, más de un alumno con el mismo dni" }
+        response = {
+            valido: true,
+            operacion: "Inscribir",
+            message: "El alumno no existe, puede inscribir"
+        }
     }
 
     return response
@@ -72,14 +80,16 @@ const validarAlumno = async (dni) => {
 
 const registrarAlumno = async (alumno, oidResponsable) => {
 
-    const legajo = await generarLegajo();
-
-    //TODO: ver response para devolver el alumno despues del update
+    const legajo = await generarLegajo();    
     const alumnoDB = await createAlumno(alumno, legajo, oidResponsable);
-    
-    //FIXME: ver dni, que lo saque del alumno que viene por parametro
-    const response = await updateAlumno("estadoInscripcion", "Inscripto", alumno.dni);
 
+    let response;
+    if (alumnoDB.exito === true) {       
+        response = await updateAlumno("estadoInscripcion", "Inscripto", alumno.dni);
+    }else {
+        response = alumnoDB;
+    }
+    
     return response;
 }
 
@@ -101,6 +111,6 @@ const reinscribirAlumno = async (anioReinscripcion, dniAlumno) => {
 module.exports = {
     validarFechaInscripcion,
     validarAlumno,
-    registrarAlumno,    
+    registrarAlumno,
     reinscribirAlumno
 }

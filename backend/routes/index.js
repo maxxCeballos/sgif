@@ -5,7 +5,11 @@ const express = require('express');
 
 // controllers
 const alumnosHandler = require('./alumno');
+<<<<<<< HEAD
 const mesaExamenHandler = require('./mesa-examen');
+=======
+//const mesaExamenHandler = require('./mesa-examen');
+>>>>>>> transacciones-gaston
 const cicloLectivoHandler = require('./ciclo-lectivo');
 const inscribirAlumnoHandler = require('./inscribir-alumno');
 const responsableHandler = require('./responsable');
@@ -18,7 +22,11 @@ app.get('/', (req, res) => {
 
 //recursos independientes
 app.use(alumnosHandler);
+<<<<<<< HEAD
 app.use(mesaExamenHandler);
+=======
+//app.use(mesaExamenHandler);
+>>>>>>> transacciones-gaston
 app.use(cicloLectivoHandler);
 app.use(responsableHandler);
 

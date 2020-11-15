@@ -3,6 +3,7 @@
 let Persona = require('../models/persona.model');
 
 const createPersona = async (persona) => {
+    //FIXME: !!!! se pueden crear personas vacias
     const { nombre, apellido, dni, sexo } = persona;
 
     let newPersona = new Persona({
@@ -19,8 +20,33 @@ const createPersona = async (persona) => {
 
 const getPersonaById = async (dni) => {
     const personaDB = await Persona.find({ dni: dni }).exec();
+    let persona = false;
 
-    return personaDB;
+    if (personaDB.length === 1) {
+        persona = personaDB[0];
+    } else if (personaDB.length > 1) {
+        throw "Hay mas de una persona con el mismo dni";
+    }
+
+    return persona;
+}
+
+const getPersonaByOID = async (oid) => {
+    let personaDB
+    try {
+        personaDB = await Persona.findById(oid).exec();
+    } catch (error) {
+        console.log("hola");
+        return false;
+    }
+
+    let persona = false;
+
+    if (personaDB.length === 1) {
+        persona = personaDB[0];
+    }
+
+    return persona;
 }
 
 const getAllPersonas = async () => {
@@ -42,21 +68,28 @@ const updatePersona = async (persona) => {
     return false
 }
 
+/*
+ * Metodo que asocia el nuevo rol de la persona, segun el nombre del mismo y datos que se reciben por parámetro
+ * Retorna la persona luego de modificarse.
+ */
 const asociarRol = async (nombreRol, datosRol, dniPersona) => {
-    //metodo que asocia el nuevo rol de la persona, segun el nombre y datos que se reciben por parámetro
+    let response = false;
 
-    var $set = { $set: {} };
-    $set.$set[nombreRol] = datosRol;
-    const response = await Persona.updateOne({ dni: dniPersona }, $set);
+    var $set = { $set: { [nombreRol]: datosRol } };
 
-    if (response.n === 1) return true
+    const resUpdate = await Persona.updateOne({ dni: dniPersona }, $set);
 
-    return false
+    if (resUpdate.n === 1) {
+        response = await getPersonaById(dniPersona);
+    };
+
+    return response;
 }
 
 module.exports = {
     createPersona,
     getPersonaById,
+    getPersonaByOID,
     getAllPersonas,
     updatePersona,
     asociarRol
