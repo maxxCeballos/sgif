@@ -100,6 +100,21 @@ const asociarRol = async (nombreRol, datosRol, dniPersona) => {
     return response;
 }
 
+
+const asociarRolOID = async (nombreRol, datosRol, oidPersona) => {
+    let response = false;
+
+    var $set = { $set: { [nombreRol]: datosRol } };
+
+    const resUpdate = await Persona.updateOne({ _id: oidPersona }, $set);
+
+    if (resUpdate.n === 1) {
+        response = await getPersonaByOID(oidPersona);
+    };
+
+    return response;
+}
+
 const deletePersonaOID = async (oid) => {
     await Persona.deleteOne({ _id: oid }).exec();
 
@@ -131,5 +146,6 @@ module.exports = {
     getAllPersonas,
     updatePersona,
     deletePersonaOID,
-    asociarRol    
+    asociarRol,
+    asociarRolOID    
 }
