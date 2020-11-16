@@ -3,6 +3,7 @@
 const { getPadreByID, getPadreByOID } = require("./padre");
 const { updateAlumnoOID, getAlumnoByOID, getPadres } = require("./alumno");
 const { createPersona, deletePersonaOID, asociarRolOID, getPersonaByOID } = require("./persona");
+const { getHermanoById } = require("./hermano");
 
 const asociarPadre = async (dniPadre, oidAlumno) => {
     let actualizoAlumno = false;
@@ -14,6 +15,7 @@ const asociarPadre = async (dniPadre, oidAlumno) => {
     if (oidAlumno === undefined) {
         throw "Error de formato, envíe el OID del alumno."
     }
+    //TODO: evaluar oidAlumno antes
 
     const padre = await getPadreByID(dniPadre);
     if (padre !== false) {
@@ -106,7 +108,7 @@ const createPadreNuevo = async (datosPadre, oidAlumno) => {
 }
 
 const createPadreRol = async (datosPadre, oidPersona, oidAlumno) => {
-    let response  = false;
+    let response = false;
     //TODO: refactor respuestas con throw  
 
     //TODO: validar parametros nulos y estructura, etc
@@ -150,13 +152,123 @@ const createPadreRol = async (datosPadre, oidPersona, oidAlumno) => {
 }
 
 
-const asociarHermano = async (dniHermano, dniAlumno) => {
+const asociarHermano = async (dniHermano, oidAlumno) => {
     //TODO: buscar al hermano, si existe lo une y lo retorna despues, si no existe devuelve mensaje
+    let actualizoAlumno = false;
+    let response = {
+        valido: false,
+        message: "No existe el hermano, no se pudo asociar con el alumno"
+    }
+
+    if (!getAlumnoByOID(oidAlumno)) {
+        return {
+            exito: false,
+            message: "El OID recibido no corresponde a un alumno, envíelo nuevamente."
+        }
+    }
+
+    const hermano = await getHermanoById(dniHermano);
+    if (hermano !== false) {
+        //FIXME: llevar a setHermano
+        actualizoAlumno = await updateAlumnoOID('hermanos', hermano._id, oidAlumno);
+
+        //TODO: Ver con ifaz si devuelve el hermano o no (que solo devuelva el ok)
+        if (actualizoAlumno !== false) { //si se pudo actualizar el alumno, devuelvo el hermano
+            response = {
+                valido: true,
+                hermano
+                //message: "El hermano fue asociado con exito"
+            };
+        } else {
+            response = {
+                valido: false,
+                message: "No se pudo actualizar el alumno, verifique si existe"
+            };
+        }
+    }
+    return response;
 }
 
-const createHermano = async (hermano, dniAlumno) => {
+const createHermanoNuevo = async (datosHermano, oidAlumno) => {
     //TODO: buscar la persona, si existe agregar nuevo rol y asocia con al; sino crea, asigna y asocia con alumno
 
+    const { dni, nombre, apellido, genero,
+        fechaNacimiento, escuelaActual, grado } = datosHermano;
+
+    const persona = { dni, nombre, apellido, genero };
+
+    const hermano = { fechaNacimiento, escuelaActual, grado }
+    if (!await getAlumnoByOID(oidAlumno)) {
+        return {
+            exito: false,
+            message: "El OID recibido no corresponde a un alumno, envíelo nuevamente."
+        }
+    }
+
+    const personaDB = await createPersona(persona, 'hermano', hermano);
+    //TODO: controlar cuando no puede crear la persona
+
+    //FIXME: llevar a setHermano en herman o alumno? para que se revisen las restricciones ahi
+    let response = await updateAlumnoOID('hermanos', personaDB._id, oidAlumno);
+    if (response !== false) {
+        response = {
+            valido: true,
+            message: "Se pudo crear el nuevo hermano y se asoció con su alumno.",
+            hermano: personaDB
+        }
+    } else {
+        const resDelete = await deletePersonaOID(personaDB._id);
+        if (resDelete) {
+            throw "No se pudo asociar al hermano con el Alumno, inténtelo nuevamente"
+        } else {
+            throw "No se pudo deshacer la creación del hermano. ¡Inconsistencia!"
+        }
+    }
+    return response
+}
+
+const createHermanoRol = async (datosHermano, oidPersona, oidAlumno) => {
+    let response = false;
+    //TODO: refactor respuestas con throw  
+
+    //TODO: validar parametros nulos y estructura, etc
+
+    const personaDB = await getPersonaByOID(oidPersona);
+    if (!personaDB) {
+        return {
+            exito: false,
+            message: "El OID recibido no corresponde a una persona, envíelo nuevamente."
+        }
+    }
+
+    const alumnoDB = await getAlumnoByOID(oidAlumno);
+    if (!alumnoDB) {
+        return {
+            exito: false,
+            message: "El OID recibido no corresponde a un alumno, envíelo nuevamente."
+        }
+    }
+
+    //TODO:verificar que la persona no tenga el rol antes
+    const hermano = await asociarRolOID('hermano', datosHermano, oidPersona);
+    if (hermano !== false) {
+        //TODO: set hermanos
+        const alumnoHermano = await updateAlumnoOID('hermanos', hermano._id, oidAlumno);
+        if (alumnoHermano !== false) {
+            response = {
+                valido: true,
+                message: "Se pudo crear el nuevo hermano y se asoció con su alumno.",
+                hermano: hermano
+            }
+        } else {
+            throw "No se pudo asociar el hermano con el alumno.";
+            //TODO: eliminar el rol de hermano de la persona
+        }
+    } else {
+        throw "No se pudo asociar el rol de hermano a la persona";
+    }
+
+    return response;
 }
 
 function datosBasicos(padre) {
@@ -226,5 +338,6 @@ module.exports = {
     createPadreNuevo,
     createPadreRol,
     asociarHermano,
-    createHermano
+    createHermanoNuevo,
+    createHermanoRol,
 }
