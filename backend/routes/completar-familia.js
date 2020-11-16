@@ -5,7 +5,7 @@ const asyncHandler = require('../middlewares/asynchandler');
 
 const router = express.Router();
 
-const { asociarPadre, createPadreNuevo, createPadreRol, asociarHermano, createHermano } = require('../controllers/completar-familia');
+const { asociarPadre, createPadreNuevo, createPadreRol, asociarHermano, createHermanoNuevo, createHermanoRol } = require('../controllers/completar-familia');
 const { getAlumnoById } = require('../controllers/alumno');
 const { getPersonaById } = require('../controllers/persona');
 
@@ -46,10 +46,9 @@ router.get('/completar-familia/persona/:dni', asyncHandler(async (req, res) => {
  * ruta que crea la persona y le asocia el rol del padre
  */
 router.post('/completar-familia/padre-nuevo', asyncHandler(async (req, res) => {
+    //completar-familia/padre
     const datosPadre = req.body.padre;    
     const oidAlumno = req.body.oidAlumno;
-
-    //TODO: verficar que sea un oid valido de alumno
 
     const response = await createPadreNuevo(datosPadre, oidAlumno);
 
@@ -61,29 +60,58 @@ router.post('/completar-familia/padre-nuevo', asyncHandler(async (req, res) => {
  * ruta que asocia el rol del padre si la persona ya existe en el sistema
  */
 //TODO: verificar que los datos recibidos de la persona coincidan con los almacenados
-router.post('/completar-familia/padre-rol', asyncHandler(async (req, res) => {
-    const datosPersona = req.body.persona;
-    const datosPadre = req.body.padre;    
+router.put('/completar-familia/padre-rol/:oidPersona', asyncHandler(async (req, res) => {
+    //completar-familia/padre/persona/:oidPersona
+    const oidPersona = req.params.oidPersona;  
+    const datosPadre = req.body.padre;      
     const oidAlumno = req.body.oidAlumno;
-    
-    //TODO: verficar que sea un oid valido de alumno
 
-    const response = await createPadreRol(datosPadre, datosPersona,oidAlumno);
+    const response = await createPadreRol(datosPadre, oidPersona,oidAlumno);
 
     res.send({ ok: true, response });
 
 }))
 
-//FIXME: usar oid
-router.put('/completar-familia/asociar-hermano/:dni', asyncHandler(async (req, res) => {
-    const dniHermano = req.params.dni;
-    const dniAlumno = req.query.dniAlumno;
+router.put('/completar-familia/asociar-hermano/:dniHermano', asyncHandler(async (req, res) => {
+    const dniHermano = req.params.dniHermano;
+    const oidAlumno = req.query.oidAlumno;
 
     //TODO: verficar que sea un oid valido de alumno
 
-    const response = await asociarHermano(dniHermano, dniAlumno);
+    const response = await asociarHermano(dniHermano, oidAlumno);
 
     res.send({ ok: true, response });
+}))
+
+//TODO: revisar nombres rutas
+/**
+ * ruta que crea la persona y le asocia el rol de hermano
+ */
+router.post('/completar-familia/hermano-nuevo', asyncHandler(async (req, res) => {
+    //completar-familia/hermano
+    const datosHermano = req.body.hermano;    
+    const oidAlumno = req.body.oidAlumno;
+
+    const response = await createHermanoNuevo(datosHermano, oidAlumno);
+
+    res.send({ ok: true, response });
+
+}))
+
+/** * 
+ * ruta que asocia el rol de hermano  si la persona ya existe en el sistema
+ */
+//TODO: verificar que los datos recibidos de la persona coincidan con los almacenados
+router.put('/completar-familia/hermano-rol/:oidPersona', asyncHandler(async (req, res) => {
+    //completar-familia/hermano/persona/:oidPersona
+    const oidPersona = req.params.oidPersona;  
+    const datosHermano = req.body.hermano;      
+    const oidAlumno = req.body.oidAlumno;
+
+    const response = await createHermanoRol(datosHermano, oidPersona,oidAlumno);
+
+    res.send({ ok: true, response });
+
 }))
 
 //FIXME: usar oid
