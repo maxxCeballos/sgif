@@ -6,16 +6,19 @@ const { createPersona, deletePersonaOID, asociarRolOID, getPersonaByOID } = requ
 const { getHermanoById } = require("./hermano");
 
 const asociarPadre = async (dniPadre, oidAlumno) => {
+    //TODO: refactor respuestas
     let actualizoAlumno = false;
     let response = {
         valido: false,
         message: "No existe el padre, no se pudo asociar con el alumno"
     };
 
-    if (oidAlumno === undefined) {
-        throw "Error de formato, envíe el OID del alumno."
+    if (!await getAlumnoByOID(oidAlumno)) {
+        return {
+            exito: false,
+            message: "El OID recibido no corresponde a un alumno, envíelo nuevamente."
+        }
     }
-    //TODO: evaluar oidAlumno antes
 
     const padre = await getPadreByID(dniPadre);
     if (padre !== false) {
@@ -58,25 +61,14 @@ const createPadreNuevo = async (datosPadre, oidAlumno) => {
         confirmación, egresoPrimario, egresoSecundario, relacionParentesco
     }
 
-    //TODO: refactor, para error handler
-    const res = await validarParametros(datosPadre, oidAlumno)
-    if (!res.exito) {
-        return res;
-    }
-
-    if (!datosBasicos(padre)) {
+    if (!await getAlumnoByOID(oidAlumno)) {
         return {
             exito: false,
-            message: "Datos básicos Padre incompletos, verifíquelos nuevamente."
+            message: "El OID recibido no corresponde a un alumno, envíelo nuevamente."
         }
     }
-
-    if (dni === undefined) {
-        return {
-            exito: false,
-            message: "Dni de padre inválido."
-        }
-    } /*else if (!await padreValido(dni, oidAlumno)) {
+    
+    /*if (!await padreValido(dni, oidAlumno)) {
         console.log("invalido")
         return {
             exito: false,
@@ -108,25 +100,16 @@ const createPadreNuevo = async (datosPadre, oidAlumno) => {
 }
 
 const createPadreRol = async (datosPadre, oidPersona, oidAlumno) => {
-    let response = false;
-    //TODO: refactor respuestas con throw  
-
-    //TODO: validar parametros nulos y estructura, etc
+    let response = false;        
 
     const personaDB = await getPersonaByOID(oidPersona);
     if (!personaDB) {
-        return {
-            exito: false,
-            message: "El OID recibido no corresponde a una persona, envíelo nuevamente."
-        }
+        throw "El OID recibido no corresponde a una persona, envíelo nuevamente."        
     }
 
     const alumnoDB = await getAlumnoByOID(oidAlumno);
     if (!alumnoDB) {
-        return {
-            exito: false,
-            message: "El OID recibido no corresponde a un alumno, envíelo nuevamente."
-        }
+        throw "El OID recibido no corresponde a un alumno, envíelo nuevamente."
     }
 
     //TODO:verificar que la persona no tenga el rol antes
