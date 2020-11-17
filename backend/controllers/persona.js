@@ -136,6 +136,7 @@ function datosBasicos(persona) {
 }
 
 function poseeRol(dni, nombreRol) {
+    //TODO: usar en create y asociar rol
     return JSON.parse(JSON.stringify(getPersonaById(dni))).hasOwnProperty(nombreRol);
 }
 
