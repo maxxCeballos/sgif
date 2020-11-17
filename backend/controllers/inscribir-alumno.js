@@ -2,6 +2,7 @@
 
 const { createAlumno, getAlumnoById, updateAlumno, generarLegajo } = require('./alumno');
 const { getCicloLectivo } = require('./ciclo-lectivo');
+const { getResponsableByOID } = require('./responsable');
 
 /**
  * modulo que verifica si se encuentra dentro del período de inscripción o no
@@ -37,28 +38,28 @@ const validarFechaInscripcion = async () => {
  * @param {*} dni dni para buscar al alumno en el sistema
  * @return {*} response json con los datos del alumno (en el caso de existir), sino mensaje con el error correspondiente
  */
-const validarAlumno = async (dni) => {
+const validarAlumno = async (dni) => {    
 
     const alumnoDB = await getAlumnoById(dni);
     let estadoInscripcion;
-    let response = {
-        valido: true,
-        operacion: "Inscribir",
-        alumnoDB
-    };
-
-    console.log(alumnoDB);
+    let response        
 
     if (alumnoDB !== false) {
 
         estadoInscripcion = alumnoDB.estadoInscripcion;
-
         if (estadoInscripcion !== "No Inscripto") {
             response = {
                 valido: false,
                 operacion: "Inválido",
                 message: "El alumno está " + estadoInscripcion
             }
+        } else {
+            //TODO: verificar que no se haya egresado
+            response = {
+                valido: true,
+                operacion: "Inscribir",
+                alumnoDB
+            };
         }
 
     } else {
@@ -79,17 +80,37 @@ const validarAlumno = async (dni) => {
  */
 
 const registrarAlumno = async (alumno, oidResponsable) => {
+    //TODO: separar en varios endpoint como la creación de los padres y hermanos
+    //para cuando ya existe la persona
 
-    const legajo = await generarLegajo();    
+    //FIXME: refactor a middleware, poner required en bd    
+    if (!tieneDatosBasicos(alumno)) {
+        return {
+            exito: false,
+            message: "Datos básicos incompletos, verifiquelos nuevamente."
+        }
+    } else if (oidResponsable === null || oidResponsable === "") {
+        return {
+            exito: false,
+            message: "Faltó enviar OID Responsable."
+        }
+    }
+
+    if(!getResponsableByOID(oidResponsable)){
+        throw "OID responsable inválido"
+    }
+
+    const legajo = await generarLegajo();
     const alumnoDB = await createAlumno(alumno, legajo, oidResponsable);
 
-    let response;
-    if (alumnoDB.exito === true) {       
-        response = await updateAlumno("estadoInscripcion", "Inscripto", alumno.dni);
-    }else {
+    let response;    
+    if (alumnoDB.exito === true) {
+        response = await updateAlumno("estadoInscripcion", "Inscripto", alumnoDB._id);
+    } else {
+        //TODO: refactor, para cuando se ponga throw en createAlumno
         response = alumnoDB;
     }
-    
+
     return response;
 }
 

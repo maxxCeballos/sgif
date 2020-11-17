@@ -18,14 +18,15 @@ router.get('/insc-alumno/validar-fecha', asynchandler(async (req, res) => {
     res.send({ ok: true, response })
 }))
 
-router.get('/insc-alumno/validar-alumno/:dni', asynchandler(async (req, res) => {
-    //TODO: verificar que no se haya egresado
+router.get('/insc-alumno/validar-alumno/:dni', asynchandler(async (req, res) => {    
     const dni = req.params.dni
 
     const response = await validarAlumno(dni)
 
     res.send({ ok: true, response })
 }))
+
+//TODO: get persona para obtener alumno y responsable si no existen con ese rol
 
 router.get('/insc-alumno/responsable/:dni', asynchandler(async (req, res) => {
     const dni = req.params.dni;
@@ -35,6 +36,7 @@ router.get('/insc-alumno/responsable/:dni', asynchandler(async (req, res) => {
     res.send({ ok: true, response })
 }))
 
+//TODO: responsable Nuevo
 router.post('/insc-alumno/responsable', asyncHandler(async (req, res) => {
     const responsable = req.body.responsable;
 
@@ -42,6 +44,8 @@ router.post('/insc-alumno/responsable', asyncHandler(async (req, res) => {
 
     res.send({ ok: true, response })
 }))
+
+//TODO: responsable Rol
 
 router.post('/insc-alumno/alumno', asyncHandler(async (req, res) => {
     //esta ruta capta las responsabilidades de generar el legajo y registrar el alumno con todo lo que conlleva    

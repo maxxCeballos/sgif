@@ -12,27 +12,6 @@ const createAlumno = async (alumno, legajo, oidResponsable) => {
 
     let response;
 
-    //FIXME: refactor, poner required en bd    
-    if (!tieneDatosBasicos(alumno)) {
-        return {
-            exito: false,
-            message: "Datos básicos incompletos, verifiquelos nuevamente."
-        }
-    } else if (oidResponsable === null || oidResponsable === "") {
-        return {
-            exito: false,
-            message: "Faltó enviar OID Responsable."
-        }
-    }
-
-    //verifico que el oid recibido sea válido.
-    if(!getResponsableByOID(oidResponsable)){
-        return {
-            exito: false,
-            message: "OID responsable inválido."
-        }
-    }
-
     //TODO: verificar que la persona no sea un alumno ya
 
     const newAlumno = new Alumno({
@@ -57,10 +36,11 @@ const createAlumno = async (alumno, legajo, oidResponsable) => {
     const alumnoDB = await newAlumno.save()
 
     //creacion/asociacion de rol alumno a persona
+    //TODO: separar en varios endpoint como la creación de los padres y hermano
     let personaDB = await getPersonaById(dni);
     if (personaDB === false) {
         personaDB = createPersona({
-            nombre, apellido, dni, sexo: genero
+            nombre, apellido, dni, genero
         });
     }
     response = await asociarRol("alumno", alumnoDB._id, dni);
