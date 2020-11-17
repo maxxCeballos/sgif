@@ -2,18 +2,29 @@
 
 let Persona = require('../models/persona.model');
 
-const createPersona = async (persona) => {
-    //FIXME: !!!! se pueden crear personas vacias
-    const { nombre, apellido, dni, genero } = persona;
+const createPersona = async (datosPersona, nombreRol, datosRol) => {
+    const { nombre, apellido, dni, genero } = datosPersona;
+
+    //TODO: que la persona no exista antes, unique lo deberia controlar
+
+    if (!datosBasicos(datosPersona)) {
+        throw "Datos básicos Persona incompletos, verifíquelos nuevamente."
+    }
 
     let newPersona = new Persona({
         nombre,
         apellido,
         dni,
-        genero
+        genero,
+        [nombreRol]: datosRol,
     });
 
-    const personaDB = await newPersona.save();
+    const personaDB = await newPersona.save(/*function (err, doc) { 
+        //TODO: revisar
+        if(err){
+            throw "Ocurrió un error al insertar una Persona" + err;
+        }
+    }*/);
 
     return personaDB;
 }
@@ -32,18 +43,12 @@ const getPersonaById = async (dni) => {
 }
 
 const getPersonaByOID = async (oid) => {
-    let personaDB
-    try {
-        personaDB = await Persona.findById(oid).exec();
-    } catch (error) {
-        console.log("hola");
-        return false;
-    }
+    let persona;
 
-    let persona = false;
+    persona = await Persona.findById(oid).exec();
 
-    if (personaDB.length === 1) {
-        persona = personaDB[0];
+    if (persona === null) {
+        persona = false;
     }
 
     return persona;
@@ -57,6 +62,14 @@ const getAllPersonas = async () => {
 
 const updatePersona = async (persona) => {
     const { dni, nombre, apellido, } = persona;
+
+    //TODO: verificar que la persona no tenga el rol antes
+
+    /*if (poseeRol(dni, nombreRol)) {
+        
+        //TODO: verificar que el rol sea valido y sus datos también, los controllers ya lo hacen        
+        throw "La persona ya posee el rol " + nombreRol
+    }*/
 
     const response = await Persona.updateOne({ dni: dni }, {
         nombre: nombre,
@@ -72,6 +85,7 @@ const updatePersona = async (persona) => {
  * Metodo que asocia el nuevo rol de la persona, segun el nombre del mismo y datos que se reciben por parámetro
  * Retorna la persona luego de modificarse.
  */
+//FIXME: ver que se use el oid
 const asociarRol = async (nombreRol, datosRol, dniPersona) => {
     let response = false;
 
@@ -86,11 +100,53 @@ const asociarRol = async (nombreRol, datosRol, dniPersona) => {
     return response;
 }
 
+
+const asociarRolOID = async (nombreRol, datosRol, oidPersona) => {
+    let response = false;
+
+    var $set = { $set: { [nombreRol]: datosRol } };
+
+    const resUpdate = await Persona.updateOne({ _id: oidPersona }, $set);
+
+    if (resUpdate.n === 1) {
+        response = await getPersonaByOID(oidPersona);
+    };
+
+    return response;
+}
+
+const deletePersonaOID = async (oid) => {
+    await Persona.deleteOne({ _id: oid }).exec();
+
+    return true;
+}
+
+function datosBasicos(persona) {
+    const datosBasicos = ['nombre', 'apellido', 'dni', 'genero'];
+
+    const valido = datosBasicos.every(atributo => {
+        if (!persona.hasOwnProperty(atributo) || persona[atributo] === undefined) {
+            //console.log(atributo + " No Existe");
+            return false;
+        } else if (persona[atributo] === "") {
+            //console.log(atributo + " Está Vacío");
+        } else { return true }
+    })
+    return valido;
+}
+
+function poseeRol(dni, nombreRol) {
+    //TODO: usar en create y asociar rol
+    return JSON.parse(JSON.stringify(getPersonaById(dni))).hasOwnProperty(nombreRol);
+}
+
 module.exports = {
     createPersona,
     getPersonaById,
     getPersonaByOID,
     getAllPersonas,
     updatePersona,
-    asociarRol
+    deletePersonaOID,
+    asociarRol,
+    asociarRolOID    
 }

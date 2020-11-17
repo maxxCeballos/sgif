@@ -1,7 +1,6 @@
 'use strict'
-
-const { response } = require('express');
 let Alumno = require('../models/alumno.model');
+const { getPadreByOID } = require('./padre');
 const { getPersonaById, createPersona, asociarRol } = require('./persona');
 const { getResponsableByOID } = require('./responsable');
 
@@ -43,6 +42,7 @@ const createAlumno = async (alumno, legajo, oidResponsable) => {
             nombre, apellido, dni, genero
         });
     }
+    //TODO: virificar que no sea alumno
     response = await asociarRol("alumno", alumnoDB._id, dni);
 
     if (response !== false) {
@@ -71,11 +71,51 @@ const getAlumnoById = async (dni) => {
     return alumno;
 }
 
+const getAlumnoByOID = async (oid) => {
+    let alumno;
+
+    alumno = await Alumno.findById(oid).exec();
+
+    if (alumno === null) {
+        alumno = false;
+    }
+
+    return alumno;
+}
+
 const getAllAlumnos = async () => {
 
     const alumnosDB = await Alumno.find().exec();
 
     return alumnosDB;
+}
+
+//FIXME: usar solo un update, verificar si se puede llevar todo a oid
+/**
+ * actualiza un atributo genérico del primer alumno con el dni ingresado
+ * @param {*} atributo 
+ * @param {*} valor 
+ * @param {*} dni 
+ */
+const updateAlumnoOID = async (atributo, valor, oid) => {
+    let alumno = false;
+    let response;
+    //TODO: ver si armar error personalizado
+    //FIXME: refactor para separar o no.
+
+    if (atributo === "padres" || atributo === "hermanos") {
+        var $push = { $push: { [atributo]: valor } };
+        response = await Alumno.updateOne({ _id: oid }, $push);
+    } else {
+        var $set = { $set: { [atributo]: valor } };
+        response = await Alumno.updateOne({ _id: oid }, $set);
+    }
+
+    if (response.n === 1) {
+        alumno = await getAlumnoByOID(oid);
+    }
+
+    return alumno;
 }
 
 /**
@@ -85,7 +125,9 @@ const getAllAlumnos = async () => {
  * @param {*} dni 
  */
 const updateAlumno = async (atributo, valor, dni) => {
-    let alumno;
+    let alumno = false;
+    //TODO: ver si armar error personalizado
+    //FIXME: revisar si todos los updates se hacen por oid asi queda solo el de arriba
 
     var $set = { $set: { [atributo]: valor } };
 
@@ -105,15 +147,42 @@ const deleteAlumno = async (dni) => {
     return true;
 }
 
-const generarLegajo = async () => {    
+const generarLegajo = async () => {
     //El legajo es un string, por eso el orden desc lo hace de forma alfabetica y no de integer
 
-    const alumnosBD = await Alumno.find().select('legajo -_id').sort({ legajo: "desc" }).exec();    
-    let nuevoLegajo = parseInt(alumnosBD[0].legajo) + 1;
+    const alumnosDB = await Alumno.find().select('legajo -_id').sort({ legajo: "desc" }).exec();
+    let nuevoLegajo = parseInt(alumnosDB[0].legajo) + 1;
     if (Number.isNaN(nuevoLegajo)) {
         nuevoLegajo = 1;
     }
     return nuevoLegajo
+}
+
+const getPadres = async (oidAlumno) => {
+    let response = false;
+    let responseAux = [];
+
+    const alumnoDB = JSON.parse(JSON.stringify(await getAlumnoByOID(oidAlumno)));
+
+    console.log(alumnoDB.padres)
+
+    if (alumnoDB !== false && alumnoDB.padres.length > 0) {
+
+        console.log("hola")
+        alumnoDB.padres.forEach(async (oidPadre)=>{
+            await getPadreByOID(oidPadre).then(data => {
+                responseAux.push(data);
+                console.log(responseAux.length)
+            });
+        });
+
+        response = responseAux
+
+        //response = Promise.all(responseAux).then(data => {console.log(data)});
+        console.log("res" + response);
+    }
+
+    return response;
 }
 
 /**
@@ -143,5 +212,8 @@ module.exports = {
     deleteAlumno,
     getAllAlumnos,
     getAlumnoById,
-    generarLegajo
+    generarLegajo,
+    updateAlumnoOID,
+    getAlumnoByOID,
+    getPadres
 }

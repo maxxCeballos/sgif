@@ -120,7 +120,7 @@ const registrarAlumno = async (alumno, oidResponsable) => {
  * @param {*} anioReinscripcion 
  * @param {*} dniAlumno 
  */
-const reinscribirAlumno = async (anioReinscripcion, dniAlumno) => {
+const reinscribirAlumno = async (anioReinscripcion, dniAlumno) => {    
 
     const response1 = await updateAlumno("anioCorrespondiente", anioReinscripcion, dniAlumno);
 
