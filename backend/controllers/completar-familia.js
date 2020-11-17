@@ -143,7 +143,7 @@ const asociarHermano = async (dniHermano, oidAlumno) => {
         message: "No existe el hermano, no se pudo asociar con el alumno"
     }
 
-    if (!getAlumnoByOID(oidAlumno)) {
+    if (!await getAlumnoByOID(oidAlumno)) {
         return {
             exito: false,
             message: "El OID recibido no corresponde a un alumno, envíelo nuevamente."
