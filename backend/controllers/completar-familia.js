@@ -95,7 +95,6 @@ const createPadreNuevo = async (datosPadre, oidAlumno) => {
             throw "No se pudo deshacer la creación del padre. ¡Inconsistencia!"
         }
     }
-
     return response;
 }
 

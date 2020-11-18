@@ -6,6 +6,7 @@ const createPersona = async (datosPersona, nombreRol, datosRol) => {
     const { nombre, apellido, dni, genero } = datosPersona;
 
     //TODO: que la persona no exista antes, unique lo deberia controlar
+    //TODO: verificar que no tenga el rol antes
 
     if (!datosBasicos(datosPersona)) {
         throw "Datos básicos Persona incompletos, verifíquelos nuevamente."
@@ -19,12 +20,7 @@ const createPersona = async (datosPersona, nombreRol, datosRol) => {
         [nombreRol]: datosRol,
     });
 
-    const personaDB = await newPersona.save(/*function (err, doc) { 
-        //TODO: revisar
-        if(err){
-            throw "Ocurrió un error al insertar una Persona" + err;
-        }
-    }*/);
+    const personaDB = await newPersona.save();
 
     return personaDB;
 }
@@ -100,15 +96,22 @@ const asociarRol = async (nombreRol, datosRol, dniPersona) => {
     return response;
 }
 
-
+/*
+ * Metodo que asocia el nuevo rol de la persona, segun el nombre del mismo y datos que se reciben por parámetro
+ * Retorna la persona luego de modificarse.
+ */
 const asociarRolOID = async (nombreRol, datosRol, oidPersona) => {
     let response = false;
 
+    let personaRol = await Persona.find({ _id: oidPersona, [nombreRol]: { $exists: true } })
+    if (personaRol.length != 0) {
+        throw "La persona ya posee el rol "+ nombreRol+ "."
+    }
+
     var $set = { $set: { [nombreRol]: datosRol } };
+    const responsable = await Persona.updateOne({ _id: oidPersona }, $set);
 
-    const resUpdate = await Persona.updateOne({ _id: oidPersona }, $set);
-
-    if (resUpdate.n === 1) {
+    if (responsable.n === 1) {
         response = await getPersonaByOID(oidPersona);
     };
 
@@ -148,5 +151,5 @@ module.exports = {
     updatePersona,
     deletePersonaOID,
     asociarRol,
-    asociarRolOID    
+    asociarRolOID
 }

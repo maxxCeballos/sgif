@@ -5,7 +5,7 @@ const asyncHandler = require('../middlewares/asynchandler');
 
 const router = express.Router();
 
-const { createAlumno, updateAlumno, getAllAlumnos, getAlumnoById, deleteAlumno } = require('../controllers/alumno');
+const { createAlumno, updateAlumnoOID, getAllAlumnos, getAlumnoById, deleteAlumno } = require('../controllers/alumno');
 const { response } = require('express');
 
 router.post('/alumno', asyncHandler(async (req, res) => {
@@ -37,11 +37,11 @@ router.get('/alumno', asyncHandler(async (req, res) => {
 
 }));
 
-router.put('/alumno/:dni', asyncHandler(async (req, res) => {
-    const dniAlumno = req.params.dni;
+router.put('/alumno/:oidAlumno', asyncHandler(async (req, res) => {
+    const oidAlumno = req.params.oidAlumno;
     const { atributo, valor } = req.query;    
 
-    const response = await updateAlumno(atributo, valor, dniAlumno);
+    const response = await updateAlumnoOID(atributo, valor, oidAlumno);
 
     res.send({ ok: true, response });
 }));

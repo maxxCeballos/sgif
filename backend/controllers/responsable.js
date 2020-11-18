@@ -2,81 +2,37 @@
 
 const Persona = require('../models/persona.model');
 const persona = require('./persona');
-const { getPersonaById, createPersona, asociarRol, getAllPersonas, getPersonaByOID } = require('./persona');
-
-const createResponsable = async (datosResponsable) => {
-
-    //FIXME: !!!se puede crear un responsable vacio
-
-    const { nombre, apellido, dni, genero, cuitCuil, telefono, email, calle, altura,
-        barrio, piso, depto, tira, modulo, localidad, codigoPostal, provincia } = datosResponsable;
-
-    const persona = { nombre, apellido, dni, genero };
-
-    const responsable = {
-        legajo: await generarLegajo(),
-        cuitCuil, telefono, email, calle, altura,
-        barrio, piso, depto, tira, modulo, localidad, codigoPostal, provincia
-    }
-
-    //verifico si la persona existe    
-    let personaDB = await getPersonaById(dni);
-
-    if (personaDB === false) {
-        personaDB = await createPersona(persona);
-    }
-
-    //si la persona existe o se creó, se realiza esto
-    let actualizoRol = false;
-    if (!esResponsable(personaDB)) {
-        actualizoRol = await asociarRol("responsable", responsable, dni);
-    } else {
-        throw "La persona ya esta registrada como responsable"
-    }
-
-    let response;
-    if (actualizoRol !== false) {
-        //lo busco para devolverlo despues de crearlo
-        response = await getResponsableById(dni);
-    } else {
-        throw "Ocurrió un error al asignar el rol, reintente nuevamente";
-    }
-
-    return response;
-}
 
 const getResponsableById = async (dni) => {
+    let responsable = await Persona.find({ dni: dni, responsable: { $exists: true } }).exec()
 
-    const personaDB = await getPersonaById(dni);
-
-    if (personaDB !== false && esResponsable(personaDB)) {
-        return personaDB;
+    if (responsable.length < 1) {
+        responsable = false;
+    } else if (responsable.length > 1) {
+        throw "Hay mas de un responsable con el mismo DNI."
     }
-    return false;
 
+    return responsable
 }
 
-const getResponsableByOID = async (oid) => {    
-    const personaDB = await getPersonaByOID(oid);
+const getResponsableByOID = async (oid) => {
+    let responsable = await Persona.find({ _id: oid, responsable: { $exists: true } }).exec()
 
-    if (personaDB !== false && esResponsable(personaDB)) {
-        return personaDB;
+    if (responsable.length < 1) {
+        responsable = false;
     }
-    return false;
+
+    return responsable;
 }
 
 const getAllResponsables = async () => {
-    let responsablesDB = [];
-    let j = 0;
-    const personasDB = await getAllPersonas();
+    let responsables = await Persona.find({ responsable: { $exists: true } }).exec();
 
-    for (let i = 0; i < personasDB.length; i++) {
-        if (esResponsable(personasDB[i])) {
-            responsablesDB[j] = personasDB[i];
-            j++;
-        }
+    if (responsables.length < 1) {
+        responsables = false;
     }
-    return responsablesDB;
+
+    return responsables;
 }
 
 const updateResponsable = async (responsable) => {
@@ -102,8 +58,8 @@ const deleteResponsable = async (dni) => {
     return true;
 }
 
-const generarLegajo = async () => {
-    const responsablesBD = await Persona.find().select('responsable.legajo -_id').sort({ 'responsable.legajo': "desc" }).exec();
+const generarLegajoResp = async () => {
+    const responsablesBD = await Persona.find({ responsable: { $exists: true } }).select('responsable.legajo -_id').sort({ 'responsable.legajo': "desc" }).exec();
     let nuevoLegajo = parseInt(responsablesBD[0].responsable.legajo) + 1;
     if (Number.isNaN(nuevoLegajo)) {
         nuevoLegajo = 1;
@@ -115,11 +71,11 @@ const esResponsable = (personaObj) => {
     return JSON.parse(JSON.stringify(personaObj)).hasOwnProperty('responsable');
 }
 
-module.exports = {
-    createResponsable,
+module.exports = {    
     updateResponsable,
     deleteResponsable,
     getAllResponsables,
     getResponsableById,
-    getResponsableByOID
+    getResponsableByOID,
+    generarLegajoResp
 }

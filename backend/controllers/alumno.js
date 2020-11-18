@@ -1,15 +1,16 @@
 'use strict'
 let Alumno = require('../models/alumno.model');
 const { getPadreByOID } = require('./padre');
-const { getPersonaById, createPersona, asociarRol } = require('./persona');
-const { getResponsableByOID } = require('./responsable');
 
-const createAlumno = async (alumno, legajo, oidResponsable) => {
-    const { dni, tipoDni, nombre, apellido, genero, fechaNacimiento,
+const createAlumno = async (alumno, oidResponsable) => {
+    const { dni, tipoDni, nombre, apellido, genero, legajo, fechaNacimiento,
         lugarNacimiento, fechaEgreso, nombreEscuelaAnt, foto,
         sacramentos, anioCorrespondiente } = alumno;
 
-    let response;
+    let response = {
+        exito: false,
+        alumno
+    };
 
     //TODO: verificar que la persona no sea un alumno ya
 
@@ -32,30 +33,10 @@ const createAlumno = async (alumno, legajo, oidResponsable) => {
         responsable: oidResponsable
     });
 
-    const alumnoDB = await newAlumno.save()
+    response.alumno = await newAlumno.save()
+    response.exito = true;
 
-    //creacion/asociacion de rol alumno a persona
-    //TODO: separar en varios endpoint como la creación de los padres y hermano
-    let personaDB = await getPersonaById(dni);
-    if (personaDB === false) {
-        personaDB = createPersona({
-            nombre, apellido, dni, genero
-        });
-    }
-    //TODO: virificar que no sea alumno
-    response = await asociarRol("alumno", alumnoDB._id, dni);
-
-    if (response !== false) {
-        return {
-            exito: true,
-            alumno: alumnoDB,
-        };
-    } else {
-        return {
-            exito: false,
-            message: "No se pudo asignar el rol de alumno a la persona, intentelo nuevamente."
-        }
-    }
+    return response;
 }
 
 const getAlumnoById = async (dni) => {
@@ -90,9 +71,8 @@ const getAllAlumnos = async () => {
     return alumnosDB;
 }
 
-//FIXME: usar solo un update, verificar si se puede llevar todo a oid
 /**
- * actualiza un atributo genérico del primer alumno con el dni ingresado
+ * actualiza un atributo genérico del primer alumno con el oid ingresado
  * @param {*} atributo 
  * @param {*} valor 
  * @param {*} dni 
@@ -118,27 +98,6 @@ const updateAlumnoOID = async (atributo, valor, oid) => {
     return alumno;
 }
 
-/**
- * actualiza un atributo genérico del primer alumno con el dni ingresado
- * @param {*} atributo 
- * @param {*} valor 
- * @param {*} dni 
- */
-const updateAlumno = async (atributo, valor, dni) => {
-    let alumno = false;
-    //TODO: ver si armar error personalizado
-    //FIXME: revisar si todos los updates se hacen por oid asi queda solo el de arriba
-
-    var $set = { $set: { [atributo]: valor } };
-
-    const response = await Alumno.updateOne({ dni: dni }, $set);
-    if (response.n === 1) {
-        alumno = await getAlumnoById(dni);
-    }
-
-    return alumno;
-}
-
 const deleteAlumno = async (dni) => {
     //TODO: tiene que borrarlo de la persona tambien
 
@@ -147,7 +106,7 @@ const deleteAlumno = async (dni) => {
     return true;
 }
 
-const generarLegajo = async () => {
+const generarLegajoAl = async () => {
     //El legajo es un string, por eso el orden desc lo hace de forma alfabetica y no de integer
 
     const alumnosDB = await Alumno.find().select('legajo -_id').sort({ legajo: "desc" }).exec();
@@ -159,17 +118,19 @@ const generarLegajo = async () => {
 }
 
 const getPadres = async (oidAlumno) => {
+    //TODO: testear
     let response = false;
     let responseAux = [];
 
     const alumnoDB = JSON.parse(JSON.stringify(await getAlumnoByOID(oidAlumno)));
+    //TODO: await Alumno.findById(oidAlumno).select('padres').exec().populate({'persona'});
 
     console.log(alumnoDB.padres)
 
     if (alumnoDB !== false && alumnoDB.padres.length > 0) {
 
         console.log("hola")
-        alumnoDB.padres.forEach(async (oidPadre)=>{
+        alumnoDB.padres.forEach(async (oidPadre) => {
             await getPadreByOID(oidPadre).then(data => {
                 responseAux.push(data);
                 console.log(responseAux.length)
@@ -177,42 +138,18 @@ const getPadres = async (oidAlumno) => {
         });
 
         response = responseAux
-
-        //response = Promise.all(responseAux).then(data => {console.log(data)});
         console.log("res" + response);
     }
 
     return response;
 }
 
-/**
- * Metodo que verifica que el alumno recibido, tenga sus atributos básicos y no estén vacíos
- * @param {*} alumno recibe un alumno a inscribir, con todos los datos que se hayan recibido
- */
-function tieneDatosBasicos(alumno) {
-    const datosBasicos = ['dni', 'tipoDni', 'nombre', 'apellido', 'genero',
-        'fechaNacimiento', 'lugarNacimiento', 'fechaEgreso', 'nombreEscuelaAnt'];
-
-    const valido = datosBasicos.every(atributo => {
-        if (!alumno.hasOwnProperty(atributo)) {
-            //console.log(atributo + " No existe")
-            return false;
-        } else if (alumno[atributo] === "" || alumno[atributo] === null) {
-            //console.log(atributo + " Está Vacío")
-            return false;
-        } else return true
-    });
-
-    return valido;
-}
-
 module.exports = {
     createAlumno,
-    updateAlumno,
     deleteAlumno,
     getAllAlumnos,
     getAlumnoById,
-    generarLegajo,
+    generarLegajoAl,
     updateAlumnoOID,
     getAlumnoByOID,
     getPadres
