@@ -1,18 +1,41 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <body>
+    <div class="home">
+      <Header />
+      <div class="wrapper">
+       <SideNavBar></SideNavBar>
+       
+      </div>
+    </div>
+  </body>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+//import HelloWorld from '@/components/HelloWorld.vue'
+import SideNavBar from "@/components/SideNavBar.vue";
+import Header from "@/components/Header.vue";
 
 export default {
-  name: 'Home',
-  components: {
-    HelloWorld
-  }
+  name: "Home",
+  components: { Header,SideNavBar }
 }
 </script>
+<style>
+@import url("https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap");
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  list-style: none;
+  text-decoration: none;
+  font-family: "Josefin Sans", sans-serif;
+}
+.body {
+  display: block;
+}
+.wrapper {
+  display: flex;
+  position: relative;
+}
+</style>
