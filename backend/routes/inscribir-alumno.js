@@ -9,7 +9,8 @@ const { validarFechaInscripcion, validarAlumno, registrarAlumnoNuevo, registrarA
     reinscribirAlumno, createResponsableRol, createResponsableNuevo } = require('../controllers/inscribir-alumno');
 const { getResponsableById } = require('../controllers/responsable');
 const { getPersonaById } = require('../controllers/persona');
-const { vDni, vResponsableNuevo, vResponsableRol, vRegistrarAlumnoNuevo, vRegistrarAlumnoRol, vReinscribirAlumno } = require('../middlewares/validaReqInscAl');
+const { vDni } = require('../middlewares/validaRequests');
+const { vResponsableNuevo, vResponsableRol, vRegistrarAlumnoNuevo, vRegistrarAlumnoRol, vReinscribirAlumno } = require('../middlewares/validaInscribirAlumno');
 
 router.get('/insc-alumno/validar-fecha', asyncHandler(async (req, res) => {
 
@@ -86,11 +87,13 @@ router.put('/insc-alumno/alumno/persona/:oidPersona', vRegistrarAlumnoRol, async
     res.send({ ok: true, response });
 }))
 
-router.put('/insc-alumno/alumno/:oidAlumno', vReinscribirAlumno, asyncHandler(async (req, res) => {    
+router.put('/insc-alumno/alumno/:oidAlumno', vReinscribirAlumno, asyncHandler(async (req, res) => {
     const oidAlumno = req.params.oidAlumno;
-    const valorAnio = req.query.anio;    
-    const response = await reinscribirAlumno(valorAnio, oidAlumno);    
-    //TODO: poner el completar familia alumno, no lo gestionaria el front llamando al otro endpoint
+    const valorAnio = req.query.anio;
+
+    const response = await reinscribirAlumno(valorAnio, oidAlumno);
+
+    // No se agrega el completar familia alumno, porque lo gestiona el front al llamar al otro endpoint por OID
 
     res.send({ ok: true, response })
 }))

@@ -111,7 +111,6 @@ const createPadreRol = async (datosPadre, oidPersona, oidAlumno) => {
         throw "El OID recibido no corresponde a un alumno, envíelo nuevamente."
     }
 
-    //TODO:verificar que la persona no tenga el rol antes
     const padre = await asociarRolOID('padre', datosPadre, oidPersona);
     if (padre !== false) {
         //TODO: set padres
@@ -134,8 +133,7 @@ const createPadreRol = async (datosPadre, oidPersona, oidAlumno) => {
 }
 
 
-const asociarHermano = async (dniHermano, oidAlumno) => {
-    //TODO: buscar al hermano, si existe lo une y lo retorna despues, si no existe devuelve mensaje
+const asociarHermano = async (dniHermano, oidAlumno) => {    
     let actualizoAlumno = false;
     let response = {
         valido: false,
@@ -171,9 +169,7 @@ const asociarHermano = async (dniHermano, oidAlumno) => {
     return response;
 }
 
-const createHermanoNuevo = async (datosHermano, oidAlumno) => {
-    //TODO: buscar la persona, si existe agregar nuevo rol y asocia con al; sino crea, asigna y asocia con alumno
-
+const createHermanoNuevo = async (datosHermano, oidAlumno) => {   
     const { dni, nombre, apellido, genero,
         fechaNacimiento, escuelaActual, grado } = datosHermano;
 
@@ -213,8 +209,6 @@ const createHermanoRol = async (datosHermano, oidPersona, oidAlumno) => {
     let response = false;
     //TODO: refactor respuestas con throw  
 
-    //TODO: validar parametros nulos y estructura, etc
-
     const personaDB = await getPersonaByOID(oidPersona);
     if (!personaDB) {
         return {
@@ -231,7 +225,6 @@ const createHermanoRol = async (datosHermano, oidPersona, oidAlumno) => {
         }
     }
 
-    //TODO:verificar que la persona no tenga el rol antes
     const hermano = await asociarRolOID('hermano', datosHermano, oidPersona);
     if (hermano !== false) {
         //TODO: set hermanos

@@ -59,14 +59,6 @@ const getAllPersonas = async () => {
 const updatePersona = async (persona) => {
     const { dni, nombre, apellido, } = persona;
 
-    //TODO: verificar que la persona no tenga el rol antes
-
-    /*if (poseeRol(dni, nombreRol)) {
-        
-        //TODO: verificar que el rol sea valido y sus datos también, los controllers ya lo hacen        
-        throw "La persona ya posee el rol " + nombreRol
-    }*/
-
     const response = await Persona.updateOne({ dni: dni }, {
         nombre: nombre,
         apellido: apellido,
@@ -75,25 +67,6 @@ const updatePersona = async (persona) => {
     if (response.n === 1) return true
 
     return false
-}
-
-/*
- * Metodo que asocia el nuevo rol de la persona, segun el nombre del mismo y datos que se reciben por parámetro
- * Retorna la persona luego de modificarse.
- */
-//FIXME: ver que se use el oid
-const asociarRol = async (nombreRol, datosRol, dniPersona) => {
-    let response = false;
-
-    var $set = { $set: { [nombreRol]: datosRol } };
-
-    const resUpdate = await Persona.updateOne({ dni: dniPersona }, $set);
-
-    if (resUpdate.n === 1) {
-        response = await getPersonaById(dniPersona);
-    };
-
-    return response;
 }
 
 /*
@@ -138,18 +111,12 @@ function datosBasicos(persona) {
     return valido;
 }
 
-function poseeRol(dni, nombreRol) {
-    //TODO: usar en create y asociar rol
-    return JSON.parse(JSON.stringify(getPersonaById(dni))).hasOwnProperty(nombreRol);
-}
-
 module.exports = {
     createPersona,
     getPersonaById,
     getPersonaByOID,
     getAllPersonas,
     updatePersona,
-    deletePersonaOID,
-    asociarRol,
+    deletePersonaOID,    
     asociarRolOID
 }

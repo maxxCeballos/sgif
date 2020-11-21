@@ -1,11 +1,5 @@
 'use strict'
-
-const vDni = (req, res, next) => {
-    //TODO: solucionar ""
-    const dni = req.params.dni
-    console.log("implementar vDni");
-    next();
-}
+var mongoose = require('mongoose');
 
 const vResponsableNuevo = (req, res, next) => {
     const datosResponsable = req.body.responsable;
@@ -28,8 +22,9 @@ const vResponsableRol = (req, res, next) => {
     const oidPersona = req.params.oidPersona;
     const datosResponsable = req.body.responsable;
 
-    //TODO: resolver params
-    if (datosResponsable === "" || datosResponsable === undefined || datosResponsable === null) {
+    if (oidPersona === undefined || !mongoose.Types.ObjectId.isValid(oidPersona)) {
+        throw "OID Persona Inválido";
+    } else if (datosResponsable === "" || datosResponsable === undefined || datosResponsable === null) {
         throw "Faltó enviar los datos del Responsable.";
     }
 
@@ -59,12 +54,12 @@ const vRegistrarAlumnoNuevo = (req, res, next) => {
 
 const vRegistrarAlumnoRol = (req, res, next) => {
     const oidPersona = req.params.oidPersona;
-    //TODO: resolver params
-
     const datosAlumno = req.body.alumno;
     const oidResponsable = req.body.oidResponsable;
 
-    if (datosAlumno === "" || datosAlumno === undefined || datosAlumno === null) {
+    if (oidPersona === undefined || !mongoose.Types.ObjectId.isValid(oidPersona)) {
+        throw "OID Persona Inválido";
+    } else if (datosAlumno === "" || datosAlumno === undefined || datosAlumno === null) {
         throw "Faltó enviar los datos del Alumno.";
     } else if (oidResponsable === "" || oidResponsable === undefined || oidResponsable === null) {
         throw "Faltó enviar OID Responsable.";
@@ -77,11 +72,16 @@ const vRegistrarAlumnoRol = (req, res, next) => {
     next();
 }
 
-const vReinscribirAlumno = (req, res, next) => {
-    //TODO: resolver params y query
+const vReinscribirAlumno = (req, res, next) => {    
     const oidAlumno = req.params.oidAlumno;
     const valorAnio = req.query.anio;
-    console.log("Validar reinscripción, falta ver los query y params")
+
+    if (oidAlumno === undefined || !mongoose.Types.ObjectId.isValid(oidAlumno)) {
+        throw "OID Alumno Inválido";
+    } else if (valorAnio === null || valorAnio === undefined ||
+        isNaN(parseInt(valorAnio)) || parseInt(valorAnio) < 1 || parseInt(valorAnio) > 5) {
+        throw "Año Reinscripción Inválido";
+    }
     next();
 }
 
@@ -133,8 +133,7 @@ function vPersona(datosPersona) {
 
     return valido;
 }
-module.exports = {
-    vDni,
+module.exports = {    
     vResponsableNuevo,
     vResponsableRol,
     vRegistrarAlumnoNuevo,

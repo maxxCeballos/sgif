@@ -80,8 +80,7 @@ const getAllAlumnos = async () => {
 const updateAlumnoOID = async (atributo, valor, oid) => {
     let alumno = false;
     let response;
-    //TODO: ver si armar error personalizado
-    //FIXME: refactor para separar o no.
+    //TODO: ver si armar error personalizado    
 
     if (atributo === "padres" || atributo === "hermanos") {
         var $push = { $push: { [atributo]: valor } };
