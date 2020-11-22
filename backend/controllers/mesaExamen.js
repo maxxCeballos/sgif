@@ -7,7 +7,7 @@ const createMesaExamen = () => {
 
 }
 
-const updateMesaExamen = (oidMesa, atributo, valor) => {
+const updateMesaExamen = async (oidMesa, atributo, valor) => {
     var $set = { $set: {} };
     $set.$set[atributo] = valor;
 

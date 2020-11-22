@@ -2,7 +2,7 @@
 
 const { getAlumnoByLegajo, addResultadoMesa: addResultadoMesaAlumno } = require('../../controllers/alumno');
 const { createResultadoMesaBasico } = require('../../controllers/resultadoMesa');
-const { getMesaExamenByDictado, addResultadoMesa, getMesaExamenByOid } = require('../../controllers/mesaExamen');
+const { createMesaExamen, getMesaExamenByDictado, addResultadoMesa, getMesaExamenByOid } = require('../../controllers/mesaExamen');
 const { getDictadoByParams } = require('../../controllers/dictado');
 const { verificarLegajo, verificarDictado } = require('../../utils/verificaciones');
 
@@ -43,13 +43,16 @@ const registrarMesa = async (oidAlumno, valoresDictado) => {
             esCompartida: false
         }
 
+        //TODO: Crear mesa
+
         fueCreada = true;
     } else {
-        let responseAgregarResultadoMesa = await addResultadoMesaAlumno(
+        //TODO: esta mal, fijarse
+        let responseAddResultadoMesa = await addResultadoMesaAlumno(
             objMesaDeExamen._id, responseResultado._id);
 
         // Si el resultado dio mal
-        if (responseAgregarResultadoMesa) {
+        if (responseAddResultadoMesa) {
             throw "Error al Inscribirse a la Mesa"
         }
     }
