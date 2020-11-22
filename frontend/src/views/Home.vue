@@ -3,10 +3,13 @@
     <div class="home">
       <Header />
       <div class="wrapper">
-       <SideNavBar></SideNavBar>
-       
+        <SideNavBar />
+      <router-view/>  
+      
       </div>
+      
     </div>
+    
   </body>
 </template>
 
@@ -15,11 +18,12 @@
 //import HelloWorld from '@/components/HelloWorld.vue'
 import SideNavBar from "@/components/SideNavBar.vue";
 import Header from "@/components/Header.vue";
+//import TagregarDM from "@/components/transacciones/agregarDatosMesa/MesasSolicitadas.vue";
 
 export default {
   name: "Home",
-  components: { Header,SideNavBar }
-}
+  components: { Header, SideNavBar },
+};
 </script>
 <style>
 @import url("https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap");

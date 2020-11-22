@@ -21,17 +21,21 @@
       <h3>
         Mesas de Examen</h3>
         <ul>
-          <li v-for="item in mesa" :key="item.id">
-            <a href="#">{{ item }}</a>
-          </li>
-        </ul>
-      
+            <li><a href="#">Inscribir Alumno en Mesa de Examen</a></li>
+           <router-link :to="{name: 'transaccionADME' }"><li>Agregar Datos Mesa de Examen</li></router-link>
+            <li><a href="#">Cerrar Mesa de Examen</a></li>
+
+          </ul>
+     
     </ul>
+
   </div>
+
 </template>
 
 
 <script>
+//<router-link :to="{name:transaccionADME}" }> <li>Agregar Datos Mesa de Examen</li></router-link>
 export default {
   name: "Sidebar",
   data: function () {
@@ -69,9 +73,7 @@ export default {
   margin-bottom: 30px;
 }
 
-/*La lista*/
-.wrapper .sidebar ul {
-}
+
 
 .wrapper .sidebar ul li {
   color: #0e332f;

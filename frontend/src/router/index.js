@@ -8,7 +8,20 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Home,
+    children:[
+      {
+        path: 'agregarDatosMesaExamen',
+        name: 'transaccionADME',
+        component:()=> import('../components/transacciones/agregarDatosMesa/MesasSolicitadas.vue' )
+      },
+      {
+        path: 'mesasCompartidas',
+        name: 'transaccionADMEC',
+        component:()=> import('../components/transacciones/agregarDatosMesa/MesasCompartidas.vue' )
+      }
+
+    ]
   },
   {
     path: '/about',

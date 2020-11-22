@@ -11,6 +11,9 @@ const inscribirAlumnoHandler = require('./inscribir-alumno');
 const inscribirMesaHandler = require('./inscribir-mesa');
 const responsableHandler = require('./responsable');
 const cerrarMesaHandler = require('./cerrar-mesa');
+const agregarDatosMesaHandler = require('./agregarDatosMesa');
+const dictadoHandler =require('./dictado');
+
 
 const app = express();
 
@@ -19,14 +22,18 @@ app.get('/', (req, res) => {
 });
 
 //recursos independientes
+app.use(dictadoHandler);
 app.use(alumnosHandler);
 app.use(mesaExamenHandler);
 app.use(cicloLectivoHandler);
 app.use(responsableHandler);
 
+
 //movimientos
 app.use(inscribirAlumnoHandler);
 app.use(inscribirMesaHandler);
 app.use(cerrarMesaHandler);
+app.use(agregarDatosMesaHandler);
+
 
 module.exports = app;

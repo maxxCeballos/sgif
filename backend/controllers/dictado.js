@@ -26,7 +26,39 @@ const getDictadoByParams = async (valoresDictado) => {
     return dictadoDB;
 }
 
+//Controllers yaupe
+
+
+const getDictado = async (oid) => {
+    
+    const dictadoDB = await Dictado.findById(oid);
+    
+    return dictadoDB
+}
+
+
+
+
+const createDictado = async (dictado) => {
+    const { cicloLectivo, programa, profesor, horarios, materia } = dictado;
+
+    const newDictado = new Dictado({
+        cicloLectivo,
+        programa,
+        profesor,
+        horarios,
+        materia
+    });
+
+
+    const dictadoDB = await newDictado.save()
+
+    return dictadoDB;
+}
 module.exports = {
+    createDictado,
     getDictadoByOid,
     getDictadoByParams,
+    getDictado
+ 
 }
