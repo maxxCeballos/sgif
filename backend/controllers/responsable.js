@@ -12,7 +12,7 @@ const getResponsableById = async (dni) => {
         throw "Hay mas de un responsable con el mismo DNI."
     }
 
-    return responsable
+    return responsable[0]
 }
 
 const getResponsableByOID = async (oid) => {
@@ -22,7 +22,7 @@ const getResponsableByOID = async (oid) => {
         responsable = false;
     }
 
-    return responsable;
+    return responsable[0];
 }
 
 const getAllResponsables = async () => {
@@ -39,7 +39,7 @@ const updateResponsable = async (responsable) => {
 
     const { dni, nombre, apellido } = responsable
 
-    const response = await Responsable.updateOne({ dni: dni }, {
+    const response = await Persona.updateOne({ dni: dni }, {
         nombre: nombre,
         apellido: apellido,
     })
@@ -53,7 +53,7 @@ const updateResponsable = async (responsable) => {
 const deleteResponsable = async (dni) => {
     //PARA ELIMINAR UN RESPONSABLE, SE DEBE ELIMINAR A LOS ALUMNOS QUE LO TENGAN PRIMERO
 
-    await Responsable.deleteOne({ dni: dni }).exec();
+    await Persona.deleteOne({ dni: dni }).exec();
 
     return true;
 }
@@ -65,10 +65,6 @@ const generarLegajoResp = async () => {
         nuevoLegajo = 1;
     }
     return nuevoLegajo;
-}
-
-const esResponsable = (personaObj) => {
-    return JSON.parse(JSON.stringify(personaObj)).hasOwnProperty('responsable');
 }
 
 module.exports = {    

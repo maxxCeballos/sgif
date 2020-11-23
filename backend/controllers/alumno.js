@@ -33,7 +33,7 @@ const createAlumno = async (alumno, oidResponsable) => {
         responsable: oidResponsable
     });
 
-    response.alumno = await newAlumno.save()
+    response.alumno = await newAlumno.save().exec()
     response.exito = true;
 
     return response;
@@ -80,14 +80,17 @@ const getAllAlumnos = async () => {
 const updateAlumnoOID = async (atributo, valor, oid) => {
     let alumno = false;
     let response;
-    //TODO: ver si armar error personalizado    
+    //TODO: ver si armar error personalizado
+    //TODO: ver para el del final para que use set padre, sin throw
 
-    if (atributo === "padres" || atributo === "hermanos") {
+    if (atributo === "hermanos") {
         var $push = { $push: { [atributo]: valor } };
-        response = await Alumno.updateOne({ _id: oid }, $push);
-    } else {
+        response = await Alumno.updateOne({ _id: oid }, $push).exec();
+    } else if (atributo !== "padres") {
         var $set = { $set: { [atributo]: valor } };
-        response = await Alumno.updateOne({ _id: oid }, $set);
+        response = await Alumno.updateOne({ _id: oid }, $set).exec();
+    } else {
+        return false;
     }
 
     if (response.n === 1) {
@@ -117,27 +120,39 @@ const generarLegajoAl = async () => {
 }
 
 const getPadres = async (oidAlumno) => {
-    //TODO: testear
-    let response = false;
-    let responseAux = [];
+    let padresDB = await Alumno.
+        findById(oidAlumno).
+        select('padres').
+        populate({ path: 'padres', select: 'dni nombre apellido genero padre' });
 
-    const alumnoDB = JSON.parse(JSON.stringify(await getAlumnoByOID(oidAlumno)));
-    //TODO: await Alumno.findById(oidAlumno).select('padres').exec().populate({'persona'});
+    return padresDB.padres;
+}
 
-    console.log(alumnoDB.padres)
+const setPadre = async (oidPadre, oidAlumno) => {
+    let response = {
+        exito: false
+    };
+    let res;
+    let padreAux = await getPadreByOID(oidPadre);
+    let padres = await getPadres(oidAlumno);    
 
-    if (alumnoDB !== false && alumnoDB.padres.length > 0) {
+    //si el arreglo es menor a 2 y mayor a 0, entonces tiene 1 padre y tienen que tener dnis diferentes al que ya tiene
+    if (padres.length < 2) {
+        if (padres.length === 0 || padres[0].dni !== padreAux.dni) {
+            let $push = { $push: { 'padres': oidPadre } }
+            res = await Alumno.updateOne({ _id: oidAlumno }, $push).exec();
 
-        console.log("hola")
-        alumnoDB.padres.forEach(async (oidPadre) => {
-            await getPadreByOID(oidPadre).then(data => {
-                responseAux.push(data);
-                console.log(responseAux.length)
-            });
-        });
-
-        response = responseAux
-        console.log("res" + response);
+            if (res.n === 1) {
+                response.exito = true;
+                response.message = "Padre Asociado Exitosamente."
+            } else {
+                response.message = "No se pudo asociar padre con alumno."
+            }
+        }else{
+            response.message = "El alumno ya tiene un padre con ese DNI."
+        }
+    } else {
+        response.message = "El alumno ya posee 2 padres.";
     }
 
     return response;
@@ -151,5 +166,6 @@ module.exports = {
     generarLegajoAl,
     updateAlumnoOID,
     getAlumnoByOID,
-    getPadres
+    getPadres,
+    setPadre
 }

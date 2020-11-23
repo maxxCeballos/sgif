@@ -1,30 +1,30 @@
 'use strict'
 
-const { getPersonaById, getPersonaByOID } = require("./persona");
+const Persona = require("../models/persona.model");
 
-const getPadreByID = async (dni) => {    
-    const personaDB = await getPersonaById(dni);    
+const getPadreByID = async (dni) => {
+    let padre = await Persona.find({ dni: dni, padre: { $exists: true } }).exec()
 
-    if (personaDB !== false && esPadre(personaDB)) {
-        return personaDB;
+    if (padre.length < 1) {
+        padre = false;
+    } else if (padre.length > 1) {
+        throw "Hay mas de un padre con el mismo DNI."
     }
-    return false;
+
+    return padre[0];
 }
 
-const getPadreByOID = async (oid) => {    
-    const personaDB = await getPersonaByOID(oid);    
+const getPadreByOID = async (oid) => {
+    let padre = await Persona.find({ _id: oid, padre: { $exists: true } }).exec();
 
-    if (personaDB !== false && esPadre(personaDB)) {
-        return personaDB;
+    if (padre.length < 1) {
+        padre = false;
     }
-    return false;
+
+    return padre[0];
 }
 
-const esPadre = (personaObj) => {
-    return JSON.parse(JSON.stringify(personaObj)).hasOwnProperty('padre');
-}
-
-module.exports = {    
+module.exports = {
     getPadreByID,
     getPadreByOID
 }

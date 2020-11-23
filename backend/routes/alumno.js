@@ -5,7 +5,7 @@ const asyncHandler = require('../middlewares/asynchandler');
 
 const router = express.Router();
 
-const { createAlumno, updateAlumnoOID, getAllAlumnos, getAlumnoById, deleteAlumno } = require('../controllers/alumno');
+const { createAlumno, updateAlumnoOID, getAllAlumnos, getAlumnoById, deleteAlumno, setPadre, getPadres } = require('../controllers/alumno');
 const { response } = require('express');
 
 router.post('/alumno', asyncHandler(async (req, res) => {
@@ -39,7 +39,7 @@ router.get('/alumno', asyncHandler(async (req, res) => {
 
 router.put('/alumno/:oidAlumno', asyncHandler(async (req, res) => {
     const oidAlumno = req.params.oidAlumno;
-    const { atributo, valor } = req.query;    
+    const { atributo, valor } = req.query;
 
     const response = await updateAlumnoOID(atributo, valor, oidAlumno);
 
@@ -50,8 +50,25 @@ router.delete('/alumno/:dni', asyncHandler(async (req, res) => {
 
     const dni = req.params.dni
 
-    const response = await deleteAlumno(dni)    
+    const response = await deleteAlumno(dni)
 
+    res.send({ ok: true, response })
+}));
+
+router.put('/alumno/setPadre/:oid', asyncHandler(async (req, res,) => {
+    const oidAlumno = req.params.oid;
+    const oidPadre = req.query.oidPadre;
+
+    const response = await setPadre(oidPadre, oidAlumno);
+
+    res.send({ ok: true, response })
+}));
+
+router.get('/alumno/getPadres/:oid', asyncHandler(async (req, res,) => {
+    const oidAlumno = req.params.oid;    
+
+    const response = await getPadres(oidAlumno);
+    
     res.send({ ok: true, response })
 }));
 

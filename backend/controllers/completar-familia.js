@@ -1,7 +1,7 @@
 'use strict'
 
 const { getPadreByID, getPadreByOID } = require("./padre");
-const { updateAlumnoOID, getAlumnoByOID, getPadres } = require("./alumno");
+const { updateAlumnoOID, getAlumnoByOID, setPadre} = require("./alumno");
 const { createPersona, deletePersonaOID, asociarRolOID, getPersonaByOID } = require("./persona");
 const { getHermanoById } = require("./hermano");
 
@@ -22,11 +22,10 @@ const asociarPadre = async (dniPadre, oidAlumno) => {
 
     const padre = await getPadreByID(dniPadre);
     if (padre !== false) {
-        //FIXME: llevar a setPadre
-        actualizoAlumno = await updateAlumnoOID('padres', padre._id, oidAlumno);
-
+        let response = await setPadre(padre._id,oidAlumno);    
+        //TODO: testear
         //TODO: Ver con ifaz si devuelve el padre o no (que solo devuelva el ok)
-        if (actualizoAlumno !== false) { //si se pudo actualizar el alumno, devuelvo el padre
+        if (response.exito) { //si se pudo actualizar el alumno, devuelvo el padre
             response = {
                 valido: true,
                 padre
@@ -67,21 +66,13 @@ const createPadreNuevo = async (datosPadre, oidAlumno) => {
             message: "El OID recibido no corresponde a un alumno, envíelo nuevamente."
         }
     }
-    
-    /*if (!await padreValido(dni, oidAlumno)) {
-        console.log("invalido")
-        return {
-            exito: false,
-            message: "El alumno, ya posee un padre con el dni recibido"
-        }
-    }*/
 
     const personaDB = await createPersona(persona, 'padre', padre);
     //TODO: controlar cuando no puede crear la persona
 
-    //FIXME: llevar a setPadre en padre o alumno? para que se revisen las restricciones ahi
-    let response = await updateAlumnoOID('padres', personaDB._id, oidAlumno);
-    if (response !== false) {
+    let response = await setPadre(personaDB._id,oidAlumno);    
+    //TODO: testear
+    if (response.exito) {        
         response = {
             valido: true,
             message: "Se pudo crear el nuevo padre y se asoció con su alumno.",
@@ -112,10 +103,10 @@ const createPadreRol = async (datosPadre, oidPersona, oidAlumno) => {
     }
 
     const padre = await asociarRolOID('padre', datosPadre, oidPersona);
-    if (padre !== false) {
-        //TODO: set padres
-        const alumnoHijo = await updateAlumnoOID('padres', padre._id, oidAlumno);
-        if (alumnoHijo !== false) {
+    if (padre !== false) {                
+        const res = await setPadre(padre._id,oidAlumno);    
+        //TODO: testear
+        if (res.exito) {        
             response = {
                 valido: true,
                 message: "Se pudo crear el nuevo padre y se asoció con su alumno.",
@@ -244,68 +235,6 @@ const createHermanoRol = async (datosHermano, oidPersona, oidAlumno) => {
     }
 
     return response;
-}
-
-function datosBasicos(padre) {
-    const datosBasicos = ['fechaNacimiento', 'nacionalidad',
-        'telefono', 'ocupacion', 'relacionParentesco'];
-
-    const valido = datosBasicos.every(atributo => {
-        if (padre[atributo] === undefined) {
-            //console.log(atributo + " No existe")
-            return false;
-        } else if (padre[atributo] === "") {
-            //console.log(atributo + " Está Vacío")
-            return false;
-        } else return true
-    });
-
-    return valido;
-}
-
-/*async function padreValido(dni, oidAlumno) {
-    //TODO: verificar que no tenga al mismo padre ya registrado el alumno
-    //TODO: verificar que no tenga mas de 2 padres
-    //FIXME: llevar todo a set padre en controller alumno
-    let valido = true;
-
-    const padres = await getPadres(oidAlumno);
-    console.log("padres " + padres)
-
-    /*if (padres !== false) {
-         valido = await padres.every(async (padre) => {
-            //let aux = ;
-            if ((await getPadreByOID(padre)).dni !== dni) {
-                console.log("no coincide")
-                return true;
-            } else {
-                console.log("coincide")
-                return false;
-            }
-        })
-        console.log ("hola ");
-    }*-/
-
-    return false;
-}*/
-
-async function validarParametros(datosPadre, oidAlumno) {
-    if (datosPadre === undefined) {
-        return {
-            exito: false,
-            message: "Faltó enviar los datos del Padre."
-        }
-    } else if (oidAlumno === null || oidAlumno === "" || oidAlumno === undefined) {
-        return {
-            exito: false,
-            message: "Faltó enviar OID Alumno."
-        }
-    } else if (!await getAlumnoByOID(oidAlumno)) {
-        return {
-            exito: false,
-            message: "El OID recibido no corresponde a un alumno, envíelo nuevamente."
-        }
-    }
 }
 
 module.exports = {
