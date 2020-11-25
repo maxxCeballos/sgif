@@ -7,7 +7,6 @@ const router = express.Router();
 
 const obtenerDictados = require('../transacciones/inscribir-mesa/obtenerDictados');
 const registrarMesa = require('../transacciones/inscribir-mesa/registrarMesa');
-const setTestInscribirMesa = require('../test/setTestInscribirMesa.js');
 
 /**
  * Obtiene los dictados en estado "desaprobado" del alumno recibido.
