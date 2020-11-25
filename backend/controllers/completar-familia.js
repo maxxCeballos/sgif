@@ -1,7 +1,7 @@
 'use strict'
 
 const { getPadreByID, getPadreByOID } = require("./padre");
-const { updateAlumnoOID, getAlumnoByOID, setPadre} = require("./alumno");
+const { updateAlumnoOID, getAlumnoByOID, setPadre, setHermano } = require("./alumno");
 const { createPersona, deletePersonaOID, asociarRolOID, getPersonaByOID } = require("./persona");
 const { getHermanoById } = require("./hermano");
 
@@ -22,7 +22,7 @@ const asociarPadre = async (dniPadre, oidAlumno) => {
 
     const padre = await getPadreByID(dniPadre);
     if (padre !== false) {
-        let response = await setPadre(padre._id,oidAlumno);    
+        let response = await setPadre(padre._id, oidAlumno);
         //TODO: testear
         //TODO: Ver con ifaz si devuelve el padre o no (que solo devuelva el ok)
         if (response.exito) { //si se pudo actualizar el alumno, devuelvo el padre
@@ -70,9 +70,9 @@ const createPadreNuevo = async (datosPadre, oidAlumno) => {
     const personaDB = await createPersona(persona, 'padre', padre);
     //TODO: controlar cuando no puede crear la persona
 
-    let response = await setPadre(personaDB._id,oidAlumno);    
+    let response = await setPadre(personaDB._id, oidAlumno);
     //TODO: testear
-    if (response.exito) {        
+    if (response.exito) {
         response = {
             valido: true,
             message: "Se pudo crear el nuevo padre y se asoció con su alumno.",
@@ -90,11 +90,11 @@ const createPadreNuevo = async (datosPadre, oidAlumno) => {
 }
 
 const createPadreRol = async (datosPadre, oidPersona, oidAlumno) => {
-    let response = false;        
+    let response = false;
 
     const personaDB = await getPersonaByOID(oidPersona);
     if (!personaDB) {
-        throw "El OID recibido no corresponde a una persona, envíelo nuevamente."        
+        throw "El OID recibido no corresponde a una persona, envíelo nuevamente."
     }
 
     const alumnoDB = await getAlumnoByOID(oidAlumno);
@@ -103,10 +103,10 @@ const createPadreRol = async (datosPadre, oidPersona, oidAlumno) => {
     }
 
     const padre = await asociarRolOID('padre', datosPadre, oidPersona);
-    if (padre !== false) {                
-        const res = await setPadre(padre._id,oidAlumno);    
+    if (padre !== false) {
+        const res = await setPadre(padre._id, oidAlumno);
         //TODO: testear
-        if (res.exito) {        
+        if (res.exito) {
             response = {
                 valido: true,
                 message: "Se pudo crear el nuevo padre y se asoció con su alumno.",
@@ -124,7 +124,7 @@ const createPadreRol = async (datosPadre, oidPersona, oidAlumno) => {
 }
 
 
-const asociarHermano = async (dniHermano, oidAlumno) => {    
+const asociarHermano = async (dniHermano, oidAlumno) => {
     let actualizoAlumno = false;
     let response = {
         valido: false,
@@ -140,11 +140,10 @@ const asociarHermano = async (dniHermano, oidAlumno) => {
 
     const hermano = await getHermanoById(dniHermano);
     if (hermano !== false) {
-        //FIXME: llevar a setHermano
-        actualizoAlumno = await updateAlumnoOID('hermanos', hermano._id, oidAlumno);
-
+        //TODO: testear
+        const res = await setHermano(hermano._id, oidAlumno);
         //TODO: Ver con ifaz si devuelve el hermano o no (que solo devuelva el ok)
-        if (actualizoAlumno !== false) { //si se pudo actualizar el alumno, devuelvo el hermano
+        if (res.exito) { //si se pudo actualizar el alumno, devuelvo el hermano
             response = {
                 valido: true,
                 hermano
@@ -160,7 +159,7 @@ const asociarHermano = async (dniHermano, oidAlumno) => {
     return response;
 }
 
-const createHermanoNuevo = async (datosHermano, oidAlumno) => {   
+const createHermanoNuevo = async (datosHermano, oidAlumno) => {
     const { dni, nombre, apellido, genero,
         fechaNacimiento, escuelaActual, grado } = datosHermano;
 
@@ -177,9 +176,9 @@ const createHermanoNuevo = async (datosHermano, oidAlumno) => {
     const personaDB = await createPersona(persona, 'hermano', hermano);
     //TODO: controlar cuando no puede crear la persona
 
-    //FIXME: llevar a setHermano en herman o alumno? para que se revisen las restricciones ahi
-    let response = await updateAlumnoOID('hermanos', personaDB._id, oidAlumno);
-    if (response !== false) {
+    //TODO: testear
+    const res = await setHermano(personaDB._id, oidAlumno);
+    if (res.exito) {
         response = {
             valido: true,
             message: "Se pudo crear el nuevo hermano y se asoció con su alumno.",
@@ -218,9 +217,9 @@ const createHermanoRol = async (datosHermano, oidPersona, oidAlumno) => {
 
     const hermano = await asociarRolOID('hermano', datosHermano, oidPersona);
     if (hermano !== false) {
-        //TODO: set hermanos
-        const alumnoHermano = await updateAlumnoOID('hermanos', hermano._id, oidAlumno);
-        if (alumnoHermano !== false) {
+        //TODO: testear
+        const res = await setHermano(hermano._id, oidAlumno);
+        if (res.exito) {
             response = {
                 valido: true,
                 message: "Se pudo crear el nuevo hermano y se asoció con su alumno.",

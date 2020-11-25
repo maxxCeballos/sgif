@@ -1,5 +1,8 @@
 'use strict'
+
 let Alumno = require('../models/alumno.model');
+const Persona = require('../models/persona.model');
+const { getHermanoByOID } = require('./hermano');
 const { getPadreByOID } = require('./padre');
 
 const createAlumno = async (alumno, oidResponsable) => {
@@ -134,7 +137,7 @@ const setPadre = async (oidPadre, oidAlumno) => {
     };
     let res;
     let padreAux = await getPadreByOID(oidPadre);
-    let padres = await getPadres(oidAlumno);    
+    let padres = await getPadres(oidAlumno);
 
     //si el arreglo es menor a 2 y mayor a 0, entonces tiene 1 padre y tienen que tener dnis diferentes al que ya tiene
     if (padres.length < 2) {
@@ -148,11 +151,49 @@ const setPadre = async (oidPadre, oidAlumno) => {
             } else {
                 response.message = "No se pudo asociar padre con alumno."
             }
-        }else{
+        } else {
             response.message = "El alumno ya tiene un padre con ese DNI."
         }
     } else {
         response.message = "El alumno ya posee 2 padres.";
+    }
+
+    return response;
+}
+
+const getHermanos = async (oidAlumno) => {
+    //TODO: testear
+    const hermanosDB = await Persona.
+        findById(oidAlumno).
+        select('hermanos').
+        populate({ path: 'hermanos', select: 'dni nombre apellido genero hermano' }).exec();
+
+    return hermanosDB.hermanos;
+}
+
+const setHermano = async (oidHermano, oidAlumno) => {
+    //TODO: testear
+    let response = {
+        exito: false
+    }
+    const hermanoAux = getHermanoByOID(oidHermano);
+    const hermanos = getHermanos(oidAlumno);
+    const valido = hermanos.every(hermano => {
+        return hermano.dni !== hermanoAux.dni
+    })
+
+    if (valido) {
+        let $push = { $push: { 'hermanos': oidHermano } }
+        const res = Alumno.updateOne({ _id, oidAlumno }, $push).exec();
+
+        if (res.n === 1) {
+            response.message = "Hermano Asociado Exitosamente."
+        } else {
+            response.message = "No se pudo asociar hermano con alumno."
+        }
+
+    } else {
+        response.message = "El alumno ya tiene un hermano con ese DNI."
     }
 
     return response;
@@ -167,5 +208,7 @@ module.exports = {
     updateAlumnoOID,
     getAlumnoByOID,
     getPadres,
-    setPadre
+    setPadre,
+    getHermanos,
+    setHermano,
 }
