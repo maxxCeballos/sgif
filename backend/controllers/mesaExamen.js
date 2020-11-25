@@ -102,8 +102,10 @@ const getMesasSolicitadas = async () => {
     //Devuelve las mesas en estado solicitada
     const mesas = await MesaExamen.find({ "estado": "Solicitada" });
     if (mesas.length == 0) {
-        const response = { message: "No se encontraron mesas en estado Solicitada" }; //#TODO ver si puede hacer de otra manera
-        return response;
+        //const response = { message: "No se encontraron mesas en estado Solicitada" }; //#TODO ver si puede hacer de otra manera
+        //return response;
+        throw '{ "code":0 , "message": "No se encontraron mesas en estado Solicitada" }'
+       
     }
     return mesas
 }
@@ -121,7 +123,7 @@ const getMesasCompletadas = async () => {
     }
     else {
         response = {
-            message: "Se encontraron mesas completadas",
+            message: "Se encontraron mesas completadas que no son compartidas",
             mesas: mesas
         };
 
@@ -140,7 +142,7 @@ const getMesasCompletadasCompartidas = async () => {
         return response;
     } else {
          response = {
-            message: "Se encontraron mesas completadas",
+            message: "Se encontraron mesas completadas compartidas",
             mesas: mesas
         };
 

@@ -1,7 +1,11 @@
 <template>
   <div class="mdc-data-table" style="border: 1px solid black">
     <div class="mdc-data-table__table-container">
-      <table class="mdc-data-table__table" aria-label="Dessert calories">
+      <table
+        class="mdc-data-table__table"
+        aria-label="Dessert calories"
+        style="border-collapse: collapse"
+      >
         <caption>
           Seleccione la Mesa de Examen a Compartir
         </caption>
@@ -66,15 +70,26 @@
           </tr>
         </thead>
         <tbody class="mdc-data-table__content">
-          <tr data-row-id="u0" class="mdc-data-table__row"  v-for="mesa in mesas" :key="mesa-id" v-on:click="gg('el id es')">
-            <td class="mdc-data-table__cell" >{{mesa.mesa.acta}}</td>
-            <td class="mdc-data-table__cell" >{{mesa.mesa.fechaHora}}</td>
-            <td class="mdc-data-table__cell" >{{mesa.mesa.fechaHora}}</td>
-            <td class="mdc-data-table__cell" >{{mesa.dictado.materia.nombre}}</td>
-            <td class="mdc-data-table__cell" >{{mesa.dictado.materia.anio}}</td>
-            <td class="mdc-data-table__cell" >{{mesa.dictado.cicloLectivo}}</td>
-            <td class="mdc-data-table__cell" >{{mesa.mesa.aula}}</td>
-
+          <tr
+            data-row-id="u0"
+            class="mdc-data-table__row"
+            v-for="mesa in mesas"
+            :key="mesa - id"
+            v-on:click="gg(materiaMesaElegida+anioMateriaMesaElegida+oidMesaElegida)"
+          >
+            <td class="mdc-data-table__cell">{{ mesa.mesa.acta }}</td>
+            <td class="mdc-data-table__cell">{{ mesa.mesa.fechaHora }}</td>
+            <td class="mdc-data-table__cell">{{ mesa.mesa.fechaHora }}</td>
+            <td class="mdc-data-table__cell">
+              {{ mesa.dictado.materia.nombre }}
+            </td>
+            <td class="mdc-data-table__cell">
+              {{ mesa.dictado.materia.anio }}
+            </td>
+            <td class="mdc-data-table__cell">
+              {{ mesa.dictado.cicloLectivo }}
+            </td>
+            <td class="mdc-data-table__cell">{{ mesa.mesa.aula }}</td>
           </tr>
         </tbody>
       </table>
@@ -91,26 +106,43 @@ import axios from "axios";
 
 export default {
   name: "TagregarDMC",
+  props: {
+    oidMesaElegida: { type: String, required: true },
+    materiaMesaElegida: { type: String, required: true },
+    anioMateriaMesaElegida: { type: String, required: true },
+  },
   data: function () {
     return {
       mesas: [],
     };
   },
   methods: {
-    
+    gg: function (mensaje) {
+      alert(mensaje);
+    },
   },
   mounted() {
-    
-    axios.get('http://localhost:3000/agregarDatosMesaExamen/mesasCompartidas')
-        .then((res) => (this.mesas = res.data.mesasConDictados))
-        .catch(error => {
+    axios
+      .get("http://localhost:3000/agregarDatosMesaExamen/mesasParaCompartir")
+      .then((res) => (this.mesas = res.data.mesasConDictados))
+      .catch((error) => {
         if (!error.response) {
-            // network error
-            this.errorStatus = 'Error: Network Error';
+          // network error
+          this.errorStatus = "Error: Network Error";
         } else {
-            this.errorStatus = error.response.data.message;
+          this.errorStatus = error.response.data.message;
         }
-      })
+      });
   },
 };
 </script>
+
+
+<style >
+tr {
+  border-top: 1px thin solid;
+}
+tbody :hover {
+  background-color: beige;
+}
+</style>

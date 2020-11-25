@@ -18,6 +18,7 @@ const routes = [
       {
         path: 'mesasCompartidas',
         name: 'transaccionADMEC',
+        props: true,
         component:()=> import('../components/transacciones/agregarDatosMesa/MesasCompartidas.vue' )
       }
 

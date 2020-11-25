@@ -1,9 +1,11 @@
 <template>
   <body>
+    
     <div class="home">
       <Header />
       <div class="wrapper">
         <SideNavBar />
+    
       <router-view/>  
       
       </div>

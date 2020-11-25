@@ -6,7 +6,7 @@ const router = express.Router();
 
 const { createResultadoMesa } = require('../controllers/resultadoMesa');
 const { createMesa, updateMesa, getUltimaActa, getMesasCompletadas} = require('../controllers/mesaExamen');
-createMesa, updateMesa, getUltimaActa, getMesasCompletadas
+
 
 router.post('/mesa-examen', (req, res) => {
 

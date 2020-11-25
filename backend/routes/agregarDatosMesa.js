@@ -33,22 +33,24 @@ router.get('/agregarDatosMesaExamen/mesasSolicitadas', asyncHandler(async (req, 
 
 }));
 
-router.get('/agregarDatosMesaExamen/mesasCompartidas', asyncHandler(async (req, res) => {
-    //Obtiene las mesas cen estado completada que son compartidas y padres
+router.get('/agregarDatosMesaExamen/mesasParaCompartir', asyncHandler(async (req, res) => {
+    //Obtiene las mesas cen estado completada que pueden ser compartidas
 
 
     //Obtenemos las mesas en estado completadas y que son padres
     const compartidas = await getMesasCompletadasCompartidas();
+    //Obtenemos las mesas en estado completadas y que no son padres y tampoco compartidas
+    const completadas= await  getMesasCompletadas();
 
-
+    const mesas=Array.prototype.concat(compartidas.mesas,completadas.mesas);
     //Obtener dictados de cada mesaDeExamen (si se haace aparte llevar esto, PD: si se queda hay que ver como corroborar si trajo mesas o la respuesta)
     var i;
     let mesaActual, dictadoActual, mesasConDictados = [];
     mesasConDictados = [];
-    console.log(compartidas);
-    for (i in compartidas.mesas) {
+    console.log(mesas);
+    for (i in mesas) {
         //Genero una lista con tuplas de mesa y su dictado correspondiente
-        mesaActual = compartidas.mesas[i];
+        mesaActual = mesas[i];
         dictadoActual = await getDictado(mesaActual.dictado);
         mesasConDictados.push({ "mesa": mesaActual, "dictado": dictadoActual });
     }

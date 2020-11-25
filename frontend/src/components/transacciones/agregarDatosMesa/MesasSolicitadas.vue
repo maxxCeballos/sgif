@@ -1,8 +1,14 @@
 <template>
   <div>
+
+
     <div class="mdc-data-table" style="border: 1px solid black">
       <div class="mdc-data-table__table-container">
-        <table class="mdc-data-table__table" aria-label="Dessert calories">
+        <table
+          class="mdc-data-table__table"
+          aria-label="Dessert calories"
+          style="border-collapse: collapse"
+        >
           <caption>
             Seleccione una mesa solicitada
           </caption>
@@ -12,7 +18,7 @@
                 class="mdc-data-table__header-cell"
                 role="columnheader"
                 scope="col"
-                style="padding: 50px"
+                style="padding: 25px"
               >
                 Materia
               </th>
@@ -20,7 +26,7 @@
                 class="mdc-data-table__header-cell mdc-data-table__header-cell--numeric"
                 role="columnheader"
                 scope="col"
-                style="padding: 50px"
+                style="padding: 25px"
               >
                 Año
               </th>
@@ -28,7 +34,7 @@
                 class="mdc-data-table__header-cell"
                 role="columnheader"
                 scope="col"
-                style="padding: 50px"
+                style="padding: 25px"
               >
                 CicloLectivo
               </th>
@@ -39,8 +45,7 @@
               data-row-id="u0"
               class="mdc-data-table__row"
               v-for="mesa in mesas"
-              :key="mesa - id"
-              v-on:click="gg('el id es')"
+              :key="mesa._id"
             >
               <td class="mdc-data-table__cell">
                 {{ mesa.dictado.materia.nombre }}
@@ -51,12 +56,23 @@
               <td class="mdc-data-table__cell">
                 {{ mesa.dictado.cicloLectivo }}
               </td>
+              <router-link
+                :to="{
+                  name: 'transaccionADMEC',
+                  params: {
+                    oidMesaElegida: mesa._id,
+                    materiaMesaElegida: mesa.dictado.materia.nombre,
+                    anioMateriaMesaElegida: mesa.dictado.materia.anio,
+                  },
+                }"
+              >
+                <v-icon>mdi-arrow-right-circle-outline </v-icon>
+              </router-link>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
-    <v-btn depressed> Normal </v-btn>
   </div>
 </template>
 
@@ -96,8 +112,10 @@ export default {
 </script>
 
 <style >
-@include checkbox.core-styles;
-@include icon-button.core-styles;
-@include data-table.core-styles;
-@include data-table.theme-baseline;
+tr {
+  border-top: 1px thin solid;
+}
+tbody :hover {
+  background-color: beige;
+}
 </style>

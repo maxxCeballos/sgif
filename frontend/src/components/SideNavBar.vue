@@ -36,6 +36,7 @@
 
 <script>
 //<router-link :to="{name:transaccionADME}" }> <li>Agregar Datos Mesa de Examen</li></router-link>
+
 export default {
   name: "Sidebar",
   data: function () {
