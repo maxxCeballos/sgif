@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="show">
+    <div v-if="show && !apagar">
       <md-table>
         <md-table-row>
           <md-table-head>Nombre</md-table-head>
@@ -22,6 +22,10 @@
 
         <!-- </div> -->
       </md-table>
+
+      <button @click="$emit('select-apagar')">
+        Apagar
+      </button>
     </div>
   </div>
 </template>
@@ -29,7 +33,7 @@
 <script>
 export default {
   name: "TablaInscripcion",
-  props: ["show", "materias"],
+  props: ["show", "materias", "apagar"],
 };
 </script>
 

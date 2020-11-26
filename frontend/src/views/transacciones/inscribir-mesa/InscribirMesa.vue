@@ -15,7 +15,15 @@
     <TablaInscripcion
       v-bind:show="mostrarTabla"
       v-bind:materias="materias"
+      v-bind:apagar="apagarT"
       v-on:select-materia="selectMateria"
+      v-on:select-apagar="apagarTabla"
+    />
+
+    <ComponenteTest
+      v-bind:apagar="apagarT"
+      v-bind:show="mostrarTabla"
+      v-on:select-apagar="apagarTabla"
     />
   </div>
 </template>
@@ -23,6 +31,7 @@
 <script>
 // import axios from "axios";
 import TablaInscripcion from "@/components/inscribir-mesa/TablaInscripcion";
+import ComponenteTest from "@/components/inscribir-mesa/ComponenteTest";
 
 export default {
   name: "InscribirMesa",
@@ -30,11 +39,13 @@ export default {
     return {
       legajo: "",
       mostrarTabla: false,
+      apagarT: false,
       materias: [],
     };
   },
   components: {
     TablaInscripcion,
+    ComponenteTest,
   },
 
   methods: {
@@ -61,6 +72,7 @@ export default {
           cicloLectivo: 2019,
         },
       ];
+      // TODO: el mostrarTabla tiene q ir en then
       // axios
       //   .get("https://localhost:5000/inscribir-mesa/obtener-dictados/:legajo")
       //   .then((res) => (this.todos = res.data))
@@ -74,6 +86,10 @@ export default {
         (materia) => materia.id === idMateria
       );
       console.log(materiaSeleccionada.nombre);
+    },
+
+    apagarTabla() {
+      this.apagarT = !this.apagarT;
     },
   },
 };
