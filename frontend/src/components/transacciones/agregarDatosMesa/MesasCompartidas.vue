@@ -139,10 +139,5 @@ export default {
 
 
 <style >
-tr {
-  border-top: 1px thin solid;
-}
-tbody :hover {
-  background-color: beige;
-}
+
 </style>

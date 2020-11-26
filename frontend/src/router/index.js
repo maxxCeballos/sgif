@@ -13,13 +13,19 @@ const routes = [
       {
         path: 'agregarDatosMesaExamen',
         name: 'transaccionADME',
-        component:()=> import('../components/transacciones/agregarDatosMesa/MesasSolicitadas.vue' )
+        component:()=> import('../components/transacciones/agregarDatosMesa/MesasSolicitadas2.vue' )
       },
       {
         path: 'mesasCompartidas',
         name: 'transaccionADMEC',
         props: true,
-        component:()=> import('../components/transacciones/agregarDatosMesa/MesasCompartidas.vue' )
+        component:()=> import('../components/transacciones/agregarDatosMesa/MesasCompartidas2.vue' )
+      },
+      {
+        path: 'crearIndividual',
+        name: 'transaccionADMEI',
+        props: true,
+        component:()=> import('../components/transacciones/agregarDatosMesa/MesaIndividual.vue' )
       }
 
     ]

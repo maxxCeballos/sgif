@@ -25,7 +25,7 @@ router.get('/agregarDatosMesaExamen/mesasSolicitadas', asyncHandler(async (req, 
         //Genero una lista con tuplas de mesa y su dictado correspondiente
         mesaActual = solicitadas[i];
         dictadoActual = await getDictado(mesaActual.dictado);
-        mesasConDictados.push({ "mesa": mesaActual, "dictado": dictadoActual });
+        mesasConDictados.push({ "mesaId": mesaActual._id, "materia": dictadoActual.materia.nombre, "anio": dictadoActual.materia.anio, "cicloLectivo": dictadoActual.cicloLectivo });
     }
     console.log(mesasConDictados);
 
@@ -40,9 +40,9 @@ router.get('/agregarDatosMesaExamen/mesasParaCompartir', asyncHandler(async (req
     //Obtenemos las mesas en estado completadas y que son padres
     const compartidas = await getMesasCompletadasCompartidas();
     //Obtenemos las mesas en estado completadas y que no son padres y tampoco compartidas
-    const completadas= await  getMesasCompletadas();
+    const completadas = await getMesasCompletadas();
 
-    const mesas=Array.prototype.concat(compartidas.mesas,completadas.mesas);
+    const mesas = Array.prototype.concat(compartidas.mesas, completadas.mesas);
     //Obtener dictados de cada mesaDeExamen (si se haace aparte llevar esto, PD: si se queda hay que ver como corroborar si trajo mesas o la respuesta)
     var i;
     let mesaActual, dictadoActual, mesasConDictados = [];
@@ -52,7 +52,21 @@ router.get('/agregarDatosMesaExamen/mesasParaCompartir', asyncHandler(async (req
         //Genero una lista con tuplas de mesa y su dictado correspondiente
         mesaActual = mesas[i];
         dictadoActual = await getDictado(mesaActual.dictado);
-        mesasConDictados.push({ "mesa": mesaActual, "dictado": dictadoActual });
+        mesasConDictados.push({
+            "idMesa": mesaActual._id,
+            "materia": dictadoActual.materia.nombre,
+            "anio": dictadoActual.materia.anio,
+            "cicloLectivo": dictadoActual.cicloLectivo,
+            "acta":mesaActual.acta,
+            "fecha":mesaActual.fechaHora,
+            "hora":mesaActual.fechaHora,
+            "aula":mesaActual.aula,
+            "esCompartida":mesaActual.esCompartida,
+            "esPadre":mesaActual.esPadre,
+            "profesores":mesaActual.profesores,
+            "preceptores":mesaActual.preceptores
+            
+        });
     }
     console.log(mesasConDictados);
 
@@ -104,17 +118,30 @@ router.put('/agregarDatosMesaExamen/mesaIndividual/agregarDatos', asyncHandler(a
 }));
 
 router.get('/agregarDatosMesaExamen/obtenerProfesoresMateria/mesa', asyncHandler(async (req, res) => {
-    let response, materia, anio;
+    let response=[], materia, anio,profesores,profe,profesFormat=[],profeActual;
     console.log(req.params.materia);
     materia = req.query.materia;
     anio = req.query.anio;
-    response = await getProfesorMateria(materia, anio);
+    profesores = await getProfesorMateria(materia, anio);
+    console.log(profesores);
+    for(profe in profesores){
+        profeActual=profesores[profe];
+        
+        profesFormat.push({"nombre":profeActual.nombre+" "+profeActual.apellido,"idProfe":profeActual._id});
+    };
+    response=profesFormat;
     res.send({ ok: true, response });
 }));
 
 router.get('/agregarDatosMesaExamen/obtenerProfesores', asyncHandler(async (req, res) => {
-    let response;
-    response = await getProfesores();
+    let response=[],profesores,profe,profesFormat=[],profeActual;
+    profesores = await getProfesores();
+    for(profe in profesores){
+        profeActual=profesores[profe];
+        
+        profesFormat.push({"nombre":profeActual.nombre+" "+profeActual.apellido,"idProfe":profeActual._id});
+    };
+    response=profesFormat;
     res.send({ ok: true, response });
 }));
 

@@ -1,9 +1,42 @@
 
 
 <template>
-  <v-data-table :headers="headers" :items="mesas" :items-per-page="10" class="elevation-1">
-    
-  ></v-data-table>
+  <v-data-table
+    caption="Mesas Solicitadas"
+    :headers="headers"
+    :items="mesas"
+    :items-per-page="10"
+    item-key="mesaId"
+    class="elevation-1"
+    :loading="loading"
+    loading-text="Cargando.. porfavor espere"
+  >
+    <template v-slot:item="{ item }">
+      <tr>
+        <td>{{ item.materia }}</td>
+        <td>{{ item.anio }}</td>
+        <td>{{ item.cicloLectivo }}</td>
+        <td>
+          <router-link
+            :to="{
+              name: 'transaccionADMEC',
+              params: {
+                oidMesaElegida: item.mesaId,
+                materiaMesaElegida: item.materia,
+                anioMateriaMesaElegida: item.anio,
+              },
+            }"
+          >
+            <v-icon medium class="mr-2">
+              mdi-arrow-right-circle-outline
+            </v-icon>
+          </router-link>
+        </td>
+      </tr>
+    </template>
+
+    ></v-data-table
+  >
 </template>
 
 
@@ -21,12 +54,10 @@ export default {
         { text: "Materia", value: "materia" },
         { text: "Año", value: "anio" },
         { text: "CicloLectivo", value: "cicloLectivo" },
+        { text: "Seleccionar Mesa", value: "accion", sortable: false },
       ],
-      mesas: [{
-        "materia":"Gg",
-        "anio":2,
-        "cicloLectivo": 2020
-      }],
+      mesas: [],
+      loading: true,
     };
   },
   methods: {
@@ -34,11 +65,15 @@ export default {
       alert(mensaje);
     },
   },
-  
+
   mounted() {
     axios
       .get("http://localhost:3000/agregarDatosMesaExamen/mesasSolicitadas")
-      .then((res) => (this.mesas = res.data.mesasConDictados))
+      .then((res) => {
+        console.log(res.data);
+        this.mesas = res.data.mesasConDictados;
+        this.loading=false;
+      })
       .catch((error) => {
         if (!error.response) {
           // network error
