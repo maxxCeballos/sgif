@@ -1,36 +1,47 @@
 <template>
-  <div>
-    <div>
-      <md-table>
-        <md-table-row>
-          <md-table-head>Nombre</md-table-head>
-          <md-table-head md-numeric>Año</md-table-head>
-          <md-table-head>Ciclo Lectivo</md-table-head>
-        </md-table-row>
+  <div class="inscribir-mesa">
+    <!-- Buscador de Legajos -->
+    <form @submit="buscarLegajo">
+      <input
+        type="text"
+        v-model="legajo"
+        name="legajo"
+        placeholder="Ingrese el Legajo"
+      />
 
-        <!-- <div v-bind:key="materia.id" v-for="materia in materias"> -->
-          <md-table-row v-bind:key="materia.id" v-for="materia in materias">
-            <md-table-cell> {{materia.nombre}} </md-table-cell>
-            <md-table-cell md-numeric> {{materia.anio}} </md-table-cell>
-            <md-table-cell> {{materia.cicloLectivo}} </md-table-cell>
-          </md-table-row>
-        <!-- </div> -->
-      </md-table>
-    </div>
+      <button>Buscar Materias</button>
+    </form>
 
-    <div v-bind:key="materia.id" v-for="materia in materias">
-      {{ materia.nombre }}
-    </div>
+    <TablaInscripcion
+      v-bind:show="mostrarTabla"
+      v-bind:materias="materias"
+      v-on:select-materia="selectMateria"
+    />
   </div>
 </template>
 
 <script>
+// import axios from "axios";
+import TablaInscripcion from "@/components/inscribir-mesa/TablaInscripcion";
+
 export default {
   name: "InscribirMesa",
-  component: {},
   data() {
     return {
-      materias: [
+      legajo: "",
+      mostrarTabla: false,
+      materias: [],
+    };
+  },
+  components: {
+    TablaInscripcion,
+  },
+
+  methods: {
+    buscarLegajo(e) {
+      e.preventDefault();
+
+      this.materias = [
         {
           id: 1,
           nombre: "Matematicas",
@@ -49,8 +60,21 @@ export default {
           anio: 2,
           cicloLectivo: 2019,
         },
-      ],
-    };
+      ];
+      // axios
+      //   .get("https://localhost:5000/inscribir-mesa/obtener-dictados/:legajo")
+      //   .then((res) => (this.todos = res.data))
+      //   .catch((err) => console.log(err));
+
+      this.mostrarTabla = true;
+    },
+
+    selectMateria(idMateria) {
+      let materiaSeleccionada = this.materias.find(
+        (materia) => materia.id === idMateria
+      );
+      console.log(materiaSeleccionada.nombre);
+    },
   },
 };
 </script>
