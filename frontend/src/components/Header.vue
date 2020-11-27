@@ -2,7 +2,7 @@
   <div class="header">
     <div class="header_logo">
       <img src="../assets/fatima.png" alt="logo">
-      <h3>Instituto Nuestra Señora de Fátima</h3>
+      <h1>Instituto Nuestra Señora de Fátima</h1>
     </div>
 
     <div class="perfil_container">
@@ -45,7 +45,7 @@ export default {
   display: inline;
 }
 .header h1 {
-  position: absolute;
+  
   top: 18px;
   left: 10px;
 }

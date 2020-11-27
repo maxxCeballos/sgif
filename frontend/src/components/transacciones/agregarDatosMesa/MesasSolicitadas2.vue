@@ -8,7 +8,7 @@
     :items-per-page="10"
     item-key="mesaId"
     class="elevation-1"
-    :loading="loading"
+    :loading="isLoading"
     loading-text="Cargando.. porfavor espere"
   >
     <template v-slot:item="{ item }">
@@ -57,7 +57,7 @@ export default {
         { text: "Seleccionar Mesa", value: "accion", sortable: false },
       ],
       mesas: [],
-      loading: true,
+      isLoading: true,
     };
   },
   methods: {
@@ -72,7 +72,7 @@ export default {
       .then((res) => {
         console.log(res.data);
         this.mesas = res.data.mesasConDictados;
-        this.loading=false;
+        this.isLoading=false;
       })
       .catch((error) => {
         if (!error.response) {
