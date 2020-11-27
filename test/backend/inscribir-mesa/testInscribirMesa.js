@@ -1,7 +1,8 @@
 const axios = require('axios');
 const assert = require("chai").assert;
-const { Assertion } = require("chai");
-const urlBackend = "http://localhost:5000"
+const alumnoDB = require('../controllers/alumno');
+
+const urlBackend = "http://localhost:5000";
 
 describe('Legajo Incorrecto', () => {
     it('Deberia solicitar legajo', async function () {
@@ -25,10 +26,26 @@ describe('Legajo Incorrecto', () => {
     })
 })
 
-it(' ', async function () {
-    let consulta = await obtenerDictados("99999");
+describe('Prueba de DB', () => {
 
-    assert.equal(consulta.expanded, "No existe el Alumno");
+    it('Deberia crear alumno y borrarlo', async function () {
+        this.timeout(0);
+
+        let alumnoCreado = await alumnoDB.createAlumno({
+            dni: 50000000,
+            tipoDni: "dni",
+            nombre: "jorge",
+            apellido: "perez",
+            legajo: 7999,
+        })
+
+        console.log("el alumno" + alumnoCreado);
+
+        assert.equal(true, true);
+
+        await alumnoDB.deleteAlumno()
+    })
+
 })
 
 async function obtenerDictados(legajo) {
