@@ -1,8 +1,14 @@
 const axios = require('axios');
 const assert = require("chai").assert;
 const alumnoDB = require('../controllers/alumno');
+const databaseHandler = require('../databaseHandler');
 
 const urlBackend = "http://localhost:5000";
+
+before(async function () {
+    console.log("se conecta");
+    await databaseHandler.conectar();
+});
 
 describe('Legajo Incorrecto', () => {
     it('Deberia solicitar legajo', async function () {
@@ -31,7 +37,7 @@ describe('Prueba de DB', () => {
     it('Deberia crear alumno y borrarlo', async function () {
         this.timeout(0);
 
-        let alumnoCreado = await alumnoDB.createAlumno({
+        let alumnoCrear = await alumnoDB.createAlumno({
             dni: 50000000,
             tipoDni: "dni",
             nombre: "jorge",
@@ -39,14 +45,31 @@ describe('Prueba de DB', () => {
             legajo: 7999,
         })
 
-        console.log("el alumno" + alumnoCreado);
+        console.log(alumnoCrear);
 
-        assert.equal(true, true);
+        assert.exists(alumnoCrear._id);
 
-        await alumnoDB.deleteAlumno()
+        let idCreado = alumnoCrear._id;
+
+        let alumnoConsultar = await alumnoDB.getAlumno(alumnoCrear._id);
+
+        console.log(alumnoConsultar)
+
+        assert.equal(alumnoConsultar, alumnoConsultar);
+
+        let response = (await alumnoDB.deleteAlumno(alumnoCrear._id));
+
+        console.log(response);
+
+        assert.equal(response.deletedCount, 1)
     })
 
 })
+
+after(function () {
+    console.log("se desconecta")
+    databaseHandler.desconectar();
+});
 
 async function obtenerDictados(legajo) {
     return await axios

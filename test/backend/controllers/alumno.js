@@ -11,7 +11,6 @@ const createAlumno = async (alumno) => {
         legajo,
     } = alumno;
 
-
     const newAlumno = new Alumno({
         dni,
         tipoDni,
@@ -22,10 +21,10 @@ const createAlumno = async (alumno) => {
 
     try {
         const alumnoDB = await newAlumno.save();
+        console.log("llego3")
 
         return alumnoDB;
     } catch (error) {
-        console.log("error")
         return error;
     }
 }
