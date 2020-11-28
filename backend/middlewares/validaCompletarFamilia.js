@@ -2,6 +2,7 @@
 var mongoose = require('mongoose');
 
 const { vDni } = require('./validaRequests');
+const { BadRequest } = require('./errores')
 
 const vAsociarPadre = (req, res, next) => {
     const dniPadre = req.params.dniPadre;
@@ -124,7 +125,7 @@ function tieneDatosBasicosP(datosPadre) {
 }
 
 module.exports = {
-    vAsociarPadre,    
+    vAsociarPadre,
     vPadreNuevo,
     vPadreRol,
     vAsociarHermano,

@@ -4,6 +4,7 @@ const { createAlumno, getAlumnoById, getAlumnoByOID, generarLegajoAl, updateAlum
 const { getCicloLectivo } = require('./ciclo-lectivo');
 const { createPersona, getPersonaByOID, asociarRolOID } = require('./persona');
 const { getResponsableByOID, generarLegajoResp } = require('./responsable');
+const { NotFound, BadRequest } = require('../middlewares/errores');
 
 /**
  * modulo que verifica si se encuentra dentro del período de inscripción o no
@@ -193,8 +194,12 @@ const registrarAlumnoRol = async (datosAlumno, oidPersona, oidResponsable) => {
  */
 const reinscribirAlumno = async (anioReinscripcion, oidAlumno) => {
 
-    if (!await getAlumnoByOID(oidAlumno)) {
-        throw "El OID recibido no corresponde a un alumno, envíelo nuevamente."
+    const alumno = await getAlumnoByOID(oidAlumno);
+
+    if (!alumno) {
+        throw new NotFound("El OID recibido no corresponde a un alumno, envíelo nuevamente.");
+    } else if (anioReinscripcion < alumno.anioCorrespondiente) {
+        throw new BadRequest("El alumno no se puede reinscribir con el anio recibido.")
     }
 
     const response1 = await updateAlumnoOID("anioCorrespondiente", anioReinscripcion, oidAlumno);

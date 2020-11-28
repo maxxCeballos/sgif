@@ -1,6 +1,6 @@
 'use strict'
 var mongoose = require('mongoose');
-const BadRequest = require('./errores');
+const {BadRequest} = require('./errores');
 
 const vResponsableNuevo = (req, res, next) => {
     const datosResponsable = req.body.responsable;
