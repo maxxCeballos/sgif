@@ -1,7 +1,6 @@
 'use strict'
 
 let CicloLectivo = require("../models/cicloLectivo.model");
-const { trace } = require('../routes/ciclo-lectivo');
 
 const getCicloLectivo = async () => {
     const cicloLectivoDB = await CicloLectivo.find().sort({ cicloLectivo: -1 }).exec();

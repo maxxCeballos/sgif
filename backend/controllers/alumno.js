@@ -36,7 +36,7 @@ const createAlumno = async (alumno, oidResponsable) => {
         responsable: oidResponsable
     });
 
-    response.alumno = await newAlumno.save().exec()
+    response.alumno = await newAlumno.save()
     response.exito = true;
 
     return response;
