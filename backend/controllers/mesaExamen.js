@@ -33,8 +33,10 @@ const getMesasSolicitadas = async () => {
     //Devuelve las mesas en estado solicitada
     const mesas = await Mesa.find({ "estado": "Solicitada" });
     if (mesas.length == 0) {
-        const response = { message: "No se encontraron mesas en estado Solicitada" }; //#TODO ver si puede hacer de otra manera
-        return response;
+        throw {
+            status:204,
+            message:"No se encontraron mesas en estado Solicitada"
+        }
     }
     return mesas
 }
@@ -62,14 +64,15 @@ const getMesasCompletadas = async () => {
 const getMesasCompletadasCompartidas = async () => {
     //Devuelve las mesas en estado completada y que son padre
     const mesas = await Mesa.find({ "estado": "Completada", "esPadre": true });
+    let response;
     if (mesas.length == 0) {
-        const response = {
+         response = {
             message: "No se encontraron mesas en estado Completada",
             mesas: []
         }; //#TODO ver si puede hacer de otra manera
         return response;
     } else {
-        const response = {
+         response = {
             message: "Se encontraron mesas completadas",
             mesas: mesas
         };

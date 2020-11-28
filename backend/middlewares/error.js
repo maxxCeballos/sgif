@@ -1,14 +1,21 @@
 'use strict';
 
 const errorHandler = (err, req, res, next) => {
+    if (err.status != undefined) {
+        res.status(err.status).json({
+            message: err.message
 
-    console.log('el error ', err)
+        });
 
-    res.status(500).json({
-        message: 'internal server error'
-        
-    });
 
+    } else {
+        console.log('el error ', err)
+
+        res.status(500).json({
+            message: 'internal server error'
+
+        });
+    }
 }
 
 

@@ -33,6 +33,46 @@ router.get('/agregarDatosMesaExamen/mesasSolicitadas', asyncHandler(async (req, 
 
 }));
 
+router.get('/agregarDatosMesaExamen/mesasParaCompartir', asyncHandler(async (req, res) => {
+    //Obtiene las mesas cen estado completada que pueden ser compartidas
+
+
+    //Obtenemos las mesas en estado completadas y que son padres
+    const compartidas = await getMesasCompletadasCompartidas();
+    //Obtenemos las mesas en estado completadas y que no son padres y tampoco compartidas
+    const completadas = await getMesasCompletadas();
+
+    const mesas = Array.prototype.concat(compartidas.mesas, completadas.mesas);
+    //Obtener dictados de cada mesaDeExamen (si se haace aparte llevar esto, PD: si se queda hay que ver como corroborar si trajo mesas o la respuesta)
+    var i;
+    let mesaActual, dictadoActual, mesasConDictados = [];
+    mesasConDictados = [];
+    console.log(mesas);
+    for (i in mesas) {
+        //Genero una lista con tuplas de mesa y su dictado correspondiente
+        mesaActual = mesas[i];
+        dictadoActual = await getDictado(mesaActual.dictado);
+        mesasConDictados.push({
+            "idMesa": mesaActual._id,
+            "materia": dictadoActual.materia.nombre,
+            "anio": dictadoActual.materia.anio,
+            "cicloLectivo": dictadoActual.cicloLectivo,
+            "acta":mesaActual.acta,
+            "fecha":mesaActual.fechaHora,
+            "hora":mesaActual.fechaHora,
+            "aula":mesaActual.aula,
+            "esCompartida":mesaActual.esCompartida,
+            "esPadre":mesaActual.esPadre,
+            "profesores":mesaActual.profesores,
+            "preceptores":mesaActual.preceptores
+            
+        });
+    }
+    console.log(mesasConDictados);
+
+    res.send({ ok: true, mesasConDictados });
+
+}));
 router.put('/agregarDatosMesaExamen/mesaIndividual/agregarDatos', asyncHandler(async (req, res) => {
     //Esta ruta es llamada cuando decide completar una mesa de tipo individual
     let oidMesa, profesorTitular, profesor2, profesor3, preceptor, preceptor2, fechaHora, aula, update, profesores, preceptores, response, mesas1, mesas2, verifPrecep, verifProfes;
@@ -68,8 +108,10 @@ router.put('/agregarDatosMesaExamen/mesaIndividual/agregarDatos', asyncHandler(a
         console.log(update);
         response.mesaActualizada = await updateMesa(update.mesa, update);
     } else {
-        response = {
-            message: "No es posible posible crear la mesa"
+        console.log("no se actualizo men to bad");
+        throw{
+            status:200,
+            message:"No es posible completar la Mesa porque un profesor o preceptor se encuentran asignados a otra en la misma fecha y hora"
         }
     }
 
