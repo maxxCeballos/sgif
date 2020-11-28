@@ -9,6 +9,7 @@ const createAlumno = async (alumno) => {
         nombre,
         apellido,
         legajo,
+        calificaciones,
     } = alumno;
 
     const newAlumno = new Alumno({
@@ -17,11 +18,11 @@ const createAlumno = async (alumno) => {
         nombre,
         apellido,
         legajo,
+        calificaciones,
     });
-
+    
     try {
         const alumnoDB = await newAlumno.save();
-        console.log("llego3")
 
         return alumnoDB;
     } catch (error) {
@@ -29,12 +30,12 @@ const createAlumno = async (alumno) => {
     }
 }
 
-const getAlumno = async (oidAlumno) => {
-    return await Alumno.findById(oidAlumno).exec();
+const getAlumno = async (dni) => {
+    return await Alumno.findOne({ dni }).exec();
 }
 
-const deleteAlumno = async (oidAlumno) => {
-    return await Alumno.deleteOne({ _id: oidAlumno }).exec();
+const deleteAlumno = async (dni) => {
+    return await Alumno.deleteOne({ dni }).exec();
 }
 
 module.exports = {

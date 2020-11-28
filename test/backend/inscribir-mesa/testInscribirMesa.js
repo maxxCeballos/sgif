@@ -6,14 +6,15 @@ const databaseHandler = require('../databaseHandler');
 const urlBackend = "http://localhost:5000";
 
 before(async function () {
-    console.log("se conecta");
     await databaseHandler.conectar();
+});
+
+after(function () {
+    databaseHandler.desconectar();
 });
 
 describe('Legajo Incorrecto', () => {
     it('Deberia solicitar legajo', async function () {
-        // this.timeout(0)
-
         let consulta = await obtenerDictados("");
 
         assert.equal(consulta.expanded, "Por Favor, Ingrese un Legajo");
@@ -25,51 +26,92 @@ describe('Legajo Incorrecto', () => {
         assert.equal(consulta.expanded, "El Legajo no es Correcto");
     })
 
-    it('Deberia solicitar legajo existente', async function () {
+    it('Deberia informar que no existe el Alumno', async function () {
         let consulta = await obtenerDictados("99999");
 
         assert.equal(consulta.expanded, "No existe el Alumno");
     })
 })
 
-describe('Prueba de DB', () => {
+describe('Sin Materias para rendir', () => {
+    it('Deberia informar que no tiene materias', async function () {
+        this.timeout(0);
 
+        let alumno = {
+            dni: 50123001,
+            tipoDni: "dni",
+            nombre: "Guido",
+            apellido: "Canevello",
+            legajo: 1501,
+        }
+
+        await alumnoDB.createAlumno(alumno);
+
+        let consulta = await obtenerDictados(alumno.legajo);
+
+        let response = (await alumnoDB.deleteAlumno(alumno.dni));
+        assert.equal(response.deletedCount, 1)
+        assert.equal(consulta.expanded, "Alumno sin Calificaciones");
+    })
+
+    it('Deberia informar que tiene materias pero no desaprobadas', async function () {
+        this.timeout(0);
+
+        let alumno = {
+            dni: 50123002,
+            tipoDni: "dni",
+            nombre: "Guido",
+            apellido: "Canevello",
+            legajo: 1502,
+            calificaciones: [{
+                nota1T: 7,
+                nota2T: 7,
+                nota3T: 7,
+                cicloLectivo: 2019,
+                promedio: 7,
+                notaFinal: 7,
+                condicion: "Aprobado",
+            }]
+        }
+
+        await alumnoDB.createAlumno(alumno);
+
+        let consulta = await obtenerDictados(alumno.legajo);
+
+        let response = (await alumnoDB.deleteAlumno(alumno.dni));
+        assert.equal(response.deletedCount, 1)
+        assert.equal(consulta.expanded, "Alumno sin Calificaciones Desaprobadas");
+    })
+})
+
+// TODO: cambios de diseño
+
+describe('Prueba de DB', () => {
     it('Deberia crear alumno y borrarlo', async function () {
         this.timeout(0);
 
-        let alumnoCrear = await alumnoDB.createAlumno({
-            dni: 50000000,
+        let alumnoTest = {
+            dni: 50123000,
             tipoDni: "dni",
-            nombre: "jorge",
-            apellido: "perez",
-            legajo: 7999,
-        })
+            nombre: "Guido",
+            apellido: "Canevello",
+            legajo: 1500,
+        }
 
-        console.log(alumnoCrear);
+        let alumnoCrear = await alumnoDB.createAlumno(alumnoTest)
+
+        // console.log(alumnoCrear);
+
+        let alumnoConsultar = await alumnoDB.getAlumno(alumnoTest.dni);
+
+        let response = (await alumnoDB.deleteAlumno(alumnoTest.dni));
+
+        // console.log(response);
 
         assert.exists(alumnoCrear._id);
-
-        let idCreado = alumnoCrear._id;
-
-        let alumnoConsultar = await alumnoDB.getAlumno(alumnoCrear._id);
-
-        console.log(alumnoConsultar)
-
-        assert.equal(alumnoConsultar, alumnoConsultar);
-
-        let response = (await alumnoDB.deleteAlumno(alumnoCrear._id));
-
-        console.log(response);
-
         assert.equal(response.deletedCount, 1)
     })
-
 })
-
-after(function () {
-    console.log("se desconecta")
-    databaseHandler.desconectar();
-});
 
 async function obtenerDictados(legajo) {
     return await axios
