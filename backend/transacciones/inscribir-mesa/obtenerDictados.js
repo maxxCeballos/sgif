@@ -104,20 +104,21 @@ async function estuvoAusenteCalificacionIndiv(unaCalificacion) {
 
     let i = 0;
     let result = false;
+    let objetoResultado;
     while (i < resultadoMesasExamen.length && !result) {
-        result = await estuvoAusenteMesaIndiv(resultadoMesasExamen[i]);
+        objetoResultado = await getResultadoMesaByOid(resultadoMesasExamen[i]);
+        result = await estuvoAusenteMesaIndiv(objetoResultado);
         i++;
     }
 
     if (result) {
-        return resultadoMesasExamen[i - 1];
+        return objetoResultado.mesaDeExamen;
     } else {
         return undefined;
     }
 }
 
-async function estuvoAusenteMesaIndiv(oidResultado) {
-    let objetoResultado = await getResultadoMesaByOid(oidResultado);
+async function estuvoAusenteMesaIndiv(objetoResultado) {
     let objetoMesa = await getMesaExamenByOid(objetoResultado.mesaDeExamen);
 
     return (objetoResultado.condicion === "Ausente"

@@ -5,8 +5,7 @@ const ERROR_FORMATO_MSG = "Mira hermano, te las mandaste, que queres q te diga";
 
 const errorHandler = (err, req, res, next) => {
 
-    console.log('el error ', err)
-
+    // console.log('el error ', err)
     switch (err.codigo) {
         case ERROR_FORMATO:
             //DEVOLVER ERROR DE FORMATO

@@ -81,7 +81,6 @@ const updateResultadoMesa = async (oidResultado, atributo, valor) => {
 }
 
 const deleteResultadoMesa = async (dni) => {
-
     await ResultadoMesa.deleteOne({ dni: dni }).exec();
 
     return true;

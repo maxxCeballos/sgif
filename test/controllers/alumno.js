@@ -1,6 +1,6 @@
 'use strict';
 
-let Alumno = require('../../../backend/models/alumno.model');
+let Alumno = require('../../backend/models/alumno.model');
 
 const createAlumno = async (alumno) => {
     const {
@@ -20,14 +20,10 @@ const createAlumno = async (alumno) => {
         legajo,
         calificaciones,
     });
-    
-    try {
-        const alumnoDB = await newAlumno.save();
 
-        return alumnoDB;
-    } catch (error) {
-        return error;
-    }
+    const alumnoDB = await newAlumno.save();
+
+    return alumnoDB;
 }
 
 const getAlumno = async (dni) => {
