@@ -75,7 +75,6 @@ describe('Inscribir Alumno', function () {
                             .get('/insc-alumno/alumno/' + alumno.dni)
                             .end(function (err, res) {
 
-                                //Se podria verificar que estado tiene el alumno tambien (inscripto o reinscripto)
                                 expect(res.body.response).to.have.property('valido').to.be.equal(false);
                                 expect(res).to.have.status(200);
 
@@ -103,22 +102,77 @@ describe('Inscribir Alumno', function () {
                     expect(res).to.have.status(200);
 
                     alumno.estadoInscripcion = "No Inscripto";
-                    crearAlumno(alumno, oidResponsable).then(response2 => {
+                    crearAlumno(alumno, oidResponsable).then(alumnoDB => {
                         //Verifico que el alumno Exista y se pueda reinscribir
                         requester
                             .get('/insc-alumno/alumno/' + alumno.dni)
                             .end(function (err, res) {
 
-                                expect(res.body.response).to.have.property('valido').to.be.equal(true);
-                                expect(res.body.response).to.include({ operacion: "Reinscribir" })
+                                expect(res.body.response).to.include({
+                                    valido: true,
+                                    operacion: "Reinscribir"
+                                })
                                 expect(res).to.have.status(200);
+
+                                const oidAlumno = res.body.response.alumnoDB._id;
 
                                 //Envío Año Reinscripción Inválido
                                 requester
-                                    .put('/insc-alumno/alumno/' + alumno._id)
-                                    .query({anio:7})
+                                    .put('/insc-alumno/alumno/' + oidAlumno)
+                                    .query({ anio: 7 })
                                     .end(function (err, res) {
                                         expect(res).to.have.status(400);
+
+                                        //Elimino Recursos
+                                        Promise.all([eliminarCicloLectivo(), eliminarAlumno()])
+                                            .then(resp => {
+                                                console.log("Recursos eliminados")
+                                                done();
+                                            });
+                                    });
+                            });
+                    });
+                });
+        });
+    }).timeout(0);
+
+    //Camino 4
+    it('Debería Reinscribir Alumno', (done) => {
+
+        crearCicloLectivo(cicloValido).then(response1 => {
+            requester
+                .get('/insc-alumno/validar-fecha')
+                .end(function (err, res) {
+
+                    expect(res.body.response).to.have.property('valido').to.be.equal(true);
+                    expect(res).to.have.status(200);
+
+                    alumno.estadoInscripcion = "No Inscripto";
+                    crearAlumno(alumno, oidResponsable).then(alumnoDB => {
+                        requester
+                            .get('/insc-alumno/alumno/' + alumno.dni)
+                            .end(function (err, res) {
+
+                                expect(res.body.response).to.include({
+                                    valido: true,
+                                    operacion: "Reinscribir"
+                                })
+                                expect(res).to.have.status(200);
+
+                                const oidAlumno = res.body.response.alumnoDB._id;
+                                //Envío Año Reinscripción Válido
+                                const anioR = 3;
+                                requester
+                                    .put('/insc-alumno/alumno/' + oidAlumno)
+                                    .query({ anio: anioR })
+                                    .end(function (err, res) {
+                                        expect(res.body.response).to.include({
+                                            _id: oidAlumno,
+                                            dni: alumno.dni,
+                                            anioCorrespondiente: anioR,
+                                            estadoInscripcion: "Reinscripto"
+                                        });
+                                        expect(res).to.have.status(200);
 
                                         //Elimino Recursos
                                         Promise.all([eliminarCicloLectivo(), eliminarAlumno()])
