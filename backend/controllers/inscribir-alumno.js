@@ -58,7 +58,7 @@ const validarAlumno = async (dni) => {
             //TODO: verificar que no se haya egresado
             response = {
                 valido: true,
-                operacion: "Inscribir",
+                operacion: "Reinscribir",
                 alumnoDB
             };
         }

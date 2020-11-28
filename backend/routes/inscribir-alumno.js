@@ -14,9 +14,7 @@ const { vResponsableNuevo, vResponsableRol, vRegistrarAlumnoNuevo, vRegistrarAlu
 
 router.get('/insc-alumno/validar-fecha', asyncHandler(async (req, res) => {
 
-    const response = await validarFechaInscripcion();
-
-    //console.log(response);
+    const response = await validarFechaInscripcion();    
 
     res.send({ ok: true, response })
 }))
