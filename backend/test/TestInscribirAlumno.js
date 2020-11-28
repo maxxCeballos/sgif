@@ -29,7 +29,7 @@ const alumno = {
     fechaNacimiento: "2006-05-10T00:00:00.000+00:00",
     lugarNacimiento: "Cipolletti",
     legajo: "5000",
-    anioCorrespondiente: 2,    
+    anioCorrespondiente: 2,
 };
 
 //TESTING
@@ -110,14 +110,22 @@ describe('Inscribir Alumno', function () {
                             .end(function (err, res) {
 
                                 expect(res.body.response).to.have.property('valido').to.be.equal(true);
-                                expect(res.body.response).to.have.include({})
+                                expect(res.body.response).to.include({ operacion: "Reinscribir" })
                                 expect(res).to.have.status(200);
 
-                                //Elimino Recursos
-                                Promise.all([eliminarCicloLectivo(), eliminarAlumno()])
-                                    .then(resp => {
-                                        console.log("Recursos eliminados")
-                                        done();
+                                //Envío Año Reinscripción Inválido
+                                requester
+                                    .put('/insc-alumno/alumno/' + alumno._id)
+                                    .query({anio:7})
+                                    .end(function (err, res) {
+                                        expect(res).to.have.status(400);
+
+                                        //Elimino Recursos
+                                        Promise.all([eliminarCicloLectivo(), eliminarAlumno()])
+                                            .then(resp => {
+                                                console.log("Recursos eliminados")
+                                                done();
+                                            });
                                     });
                             });
                     });
