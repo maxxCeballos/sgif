@@ -58,9 +58,15 @@ const crearAlumno = async (datosAlumno, oidResponsable) => {
     return alumno;
 }
 
-const eliminarAlumno = async () => {
+/*const eliminarAlumno = async () => {
     const response = await Alumno.deleteOne({ _id: oidAlumno }).exec();
     console.log("Alumno Testing Eliminado")
+    return response;
+}*/
+
+const eliminarAlumnoOID = async (oid) => {
+    const response = await Alumno.deleteOne({ _id: oid }).exec();
+    console.log("Alumno Eliminado");
     return response;
 }
 
@@ -92,7 +98,7 @@ const crearPersonaRol = async (datosPersona, nombreRol, datosRol) => {
 
 const eliminarPersonaOID = async (oid) => {
     const response = await Persona.deleteOne({ _id: oid }).exec();
-    console.log("Persona Creada Eliminada");
+    console.log("Persona Eliminada");
     return response
 }
 
@@ -100,7 +106,7 @@ module.exports = {
     crearCicloLectivo,
     eliminarCicloLectivo,
     crearAlumno,
-    eliminarAlumno,
+    eliminarAlumnoOID,
     crearPersona,    
     crearPersonaRol,
     eliminarPersonaOID

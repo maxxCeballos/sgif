@@ -18,17 +18,39 @@ const alumno = {
     nombre: "Agustín",
     apellido: "Gutierrez",
     genero: "Masculino",
-    fechaNacimiento: "2006-05-10T00:00:00.000+00:00",
+    fechaNacimiento: "2006-05-10T00:00:00.000Z",
     lugarNacimiento: "Cipolletti",
     legajo: "5000",
+    nombreEscuelaAnt: "Limay",
     anioCorrespondiente: 2,
 };
 
 const personaAlumno = {
-    dni: "98765432",
-    nombre: "Agustín",
-    apellido: "Gutierrez",
-    genero: "Masculino",
+    dni: alumno.dni,
+    nombre: alumno.nombre,
+    apellido: alumno.apellido,
+    genero: alumno.genero,
+}
+
+const datosAlumno = {
+    tipoDni: alumno.tipoDni,
+    fechaNacimiento: alumno.fechaNacimiento,
+    lugarNacimiento: alumno.lugarNacimiento,
+    nombreEscuelaAnt: alumno.nombreEscuelaAnt,
+    anioCorrespondiente: alumno.anioCorrespondiente,
+}
+
+const alumnoEsperado = {
+    dni: personaAlumno.dni,
+    tipoDni: alumno.tipoDni,
+    nombre: alumno.nombre,
+    apellido: alumno.apellido,
+    genero: alumno.genero,
+    fechaNacimiento: alumno.fechaNacimiento,
+    legajo: '7',    
+    nombreEscuelaAnt: alumno.nombreEscuelaAnt,
+    anioCorrespondiente: alumno.anioCorrespondiente,
+    estadoInscripcion: 'Inscripto'
 }
 
 const personaResponsable = {
@@ -92,6 +114,8 @@ module.exports = {
     oidResponsable,
     alumno,
     personaAlumno,
+    datosAlumno,
+    alumnoEsperado,
     personaResponsable,
     datosResponsable,
     responsableCompleto,

@@ -98,8 +98,7 @@ function tieneDatosBasicosA(datosAlumno) {
             //console.log(atributo + " Está Vacío")
             return false;
         } else return true
-    });
-    console.log("validador datos basicos ", valido);
+    });    
 
     return valido;
 }
@@ -125,14 +124,13 @@ function vPersona(datosPersona) {
 
     const valido = datosBasicos.every(atributo => {
         if (datosPersona[atributo] === undefined) {
-            console.log(atributo + " No existe")
+            //console.log(atributo + " No existe")
             return false;
         } else if (datosPersona[atributo] === "") {
-            console.log(atributo + " Está Vacío")
+            //console.log(atributo + " Está Vacío")
             return false;
         } else return true;
-    });
-    console.log("validador datos persona ",valido)
+    });    
 
     return valido;
 }
