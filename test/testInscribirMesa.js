@@ -1,10 +1,13 @@
-const axios = require('axios');
-const assert = require("chai").assert;
 const alumnoDB = require('./controllers/alumno');
 const resultadoMesaDB = require('./controllers/resultadoMesa');
 const mesaExamenDB = require('./controllers/mesaExamen');
-const databaseHandler = require('./databaseHandler');
+const dictadoDB = require('./controllers/dictado');
+
+const axios = require('axios');
+const assert = require("chai").assert;
 const urlBackend = "http://localhost:5000";
+const databaseHandler = require('./databaseHandler');
+const { expect } = require('chai');
 
 const serverOn = false;
 
@@ -151,6 +154,211 @@ describe('Mesa de Castigo', () => {
     })
 })
 
+describe('Transacciones Correctas', () => {
+    it('Deberia informar que se anoto en una Solicitada y no tener problemas con la ausencia',
+        async function () {
+            this.timeout(0);
+
+            let resultadoMesa = {
+                condicion: "Ausente",
+            }
+
+            let resultadoMesaObj = await resultadoMesaDB.createResultadoMesa(resultadoMesa);
+
+            let dictado = {
+                cicloLectivo: 2018,
+                materia: {
+                    nombre: "Matematicas",
+                    anio: 3
+                }
+            }
+
+            let dictadoObj = await dictadoDB.createDictado(dictado);
+
+            let alumno = {
+                dni: 50123004,
+                tipoDni: "dni",
+                nombre: "Guido",
+                apellido: "Canevello",
+                legajo: 1504,
+                calificaciones: [{
+                    nota1T: 4,
+                    nota2T: 4,
+                    nota3T: 4,
+                    cicloLectivo: 2019,
+                    promedio: 4,
+                    condicion: "Desaprobado",
+                    resultadoMesaExamen: [resultadoMesaObj._id],
+                    dictado: dictadoObj._id
+                }]
+            }
+
+            let fechaHora = crearFecha(-3);
+
+            let mesaExamen = {
+                acta: 5001,
+                fechaHora,
+                estado: "Cerrada",
+                resultados: [resultadoMesaObj._id],
+                dictado: dictadoObj._id
+            }
+
+            let alumnoObj = await alumnoDB.createAlumno(alumno);
+            let mesaExamenObj = await mesaExamenDB.createMesaExamen(mesaExamen);
+
+            await resultadoMesaDB.updateResultadoMesa(resultadoMesaObj._id, {
+                alumno: alumnoObj._id,
+                mesaDeExamen: mesaExamenObj._id
+            });
+
+            let consulta = await obtenerDictados(alumno.legajo);
+
+            let responseDictado = (await dictadoDB.deleteDictado(dictadoObj._id));
+            let responseResultado = (await resultadoMesaDB.deleteResultadoMesa(resultadoMesaObj._id))
+            let responseMesa = (await mesaExamenDB.deleteMesaExamen(mesaExamen.acta))
+            let responseAlumno = (await alumnoDB.deleteAlumno(alumno.dni));
+
+            let esperado = {
+                dictados: [
+                    {
+                        id: String(dictadoObj._id),
+                        nombreMateria: dictado.materia.nombre,
+                        anioMateria: dictado.materia.anio,
+                        cicloLectivo: dictado.cicloLectivo,
+                    },
+                ],
+            }
+
+            assert.equal(responseDictado.deletedCount, 1)
+            assert.equal(responseResultado.deletedCount, 1)
+            assert.equal(responseMesa.deletedCount, 1)
+            assert.equal(responseAlumno.deletedCount, 1)
+            expect(consulta.response).to.deep.include(esperado);
+        })
+
+    it('Deberia informar que se anoto en una Completada y dar solo dos opciones de Dictado',
+        async function () {
+            this.timeout(0);
+
+            let dictado1 = {
+                cicloLectivo: 2018,
+                materia: {
+                    nombre: "Biologia",
+                    anio: 2
+                }
+            }
+            let dictado1Obj = await dictadoDB.createDictado(dictado1);
+
+            let dictado2 = {
+                cicloLectivo: 2019,
+                materia: {
+                    nombre: "Educacion Física",
+                    anio: 3
+                }
+            }
+            let dictado2Obj = await dictadoDB.createDictado(dictado2);
+
+            let dictado3 = {
+                cicloLectivo: 2019,
+                materia: {
+                    nombre: "Lengua",
+                    anio: 3
+                }
+            }
+            let dictado3Obj = await dictadoDB.createDictado(dictado3);
+
+            let alumno = {
+                dni: 50123005,
+                tipoDni: "dni",
+                nombre: "Guido",
+                apellido: "Canevello",
+                legajo: 1505,
+                calificaciones: [{
+                    nota1T: 4,
+                    nota2T: 4,
+                    nota3T: 4,
+                    cicloLectivo: 2018,
+                    promedio: 4,
+                    condicion: "Desaprobado",
+                    dictado: dictado1Obj._id
+                }, {
+                    nota1T: 4,
+                    nota2T: 4,
+                    nota3T: 4,
+                    cicloLectivo: 2019,
+                    promedio: 4,
+                    condicion: "Desaprobado",
+                    dictado: dictado2Obj._id
+                }, {
+                    nota1T: 7,
+                    nota2T: 7,
+                    nota3T: 7,
+                    cicloLectivo: 2019,
+                    promedio: 7,
+                    notaFinal: 7,
+                    condicion: "Aprobado",
+                    dictado: dictado3Obj._id
+                }]
+            }
+
+            // let fechaHora = crearFecha(0);
+
+            // let mesaExamen = {
+            //     acta: 5002,
+            //     fechaHora,
+            //     estado: "Cerrada",
+            //     dictado: dictado1Obj._id
+            // }
+
+            let alumnoObj = await alumnoDB.createAlumno(alumno);
+            // let mesaExamenObj = await mesaExamenDB.createMesaExamen(mesaExamen);
+
+            let consulta = await obtenerDictados(alumno.legajo);
+
+            let responseDictado1 = (await dictadoDB.deleteDictado(dictado1Obj._id));
+            let responseDictado2 = (await dictadoDB.deleteDictado(dictado2Obj._id));
+            let responseDictado3 = (await dictadoDB.deleteDictado(dictado3Obj._id));
+            // let responseMesa = (await mesaExamenDB.deleteMesaExamen(mesaExamen.acta))
+            let responseAlumno = (await alumnoDB.deleteAlumno(alumno.dni));
+
+            assert.equal(responseDictado1.deletedCount, 1)
+            assert.equal(responseDictado2.deletedCount, 1)
+            assert.equal(responseDictado3.deletedCount, 1)
+            // assert.equal(responseMesa.deletedCount, 1)
+            assert.equal(responseAlumno.deletedCount, 1)
+
+            let esperado = {
+                dictados: [
+                    {
+                        id: String(dictado1Obj._id),
+                        nombreMateria: dictado1.materia.nombre,
+                        anioMateria: dictado1.materia.anio,
+                        cicloLectivo: dictado1.cicloLectivo,
+                    }, {
+                        id: String(dictado2Obj._id),
+                        nombreMateria: dictado2.materia.nombre,
+                        anioMateria: dictado2.materia.anio,
+                        cicloLectivo: dictado2.cicloLectivo,
+                    },
+                ],
+            }
+
+            let noEsperado = {
+                dictados: [
+                    {
+                        id: String(dictado3Obj._id),
+                        nombreMateria: dictado3.materia.nombre,
+                        anioMateria: dictado3.materia.anio,
+                        cicloLectivo: dictado3.cicloLectivo,
+                    },
+                ]
+            }
+
+            expect(consulta.response).to.deep.include(esperado);
+            expect(consulta.response).to.not.include(noEsperado);
+        })
+})
+
 
 // TODO: cambios de diseño de transaccion, anotar
 
@@ -209,7 +417,7 @@ async function obtenerDictados(legajo) {
     return await axios
         .get(`${urlBackend}/inscribir-mesa/obtener-dictados/${legajo}`)
         .then((res) => {
-            return res.response.data;
+            return res.data;
         })
         .catch((res) => {
             return res.response.data;
