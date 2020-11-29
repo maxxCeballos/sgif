@@ -609,7 +609,8 @@ describe('Inscribir Alumno', function () {
                                             .end(function (err, res) {
                                                 expect(res).to.have.status(404);
 
-                                                //Envío datos de persona - alumno válidos                                           
+                                                //Envío datos de persona - alumno válidos                                                
+                                                alumnoEsperado.responsable = oidResponsable;                                                                                     
                                                 requester
                                                     .post('/insc-alumno/alumno')
                                                     .send({ alumno, oidResponsable })
