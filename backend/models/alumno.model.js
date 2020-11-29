@@ -55,6 +55,7 @@ const alumnoEsquema = new Schema({
     apellido: String,
     genero: { type: String, enum: ["Masculino", "Femenino", "Otro"] },
     fechaNacimiento: Date,
+    lugarNacimiento: String,
     legajo: { type: String, unique: true },
     fechaIngreso: Date,
     fechaEgreso: Date,
