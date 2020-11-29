@@ -34,7 +34,7 @@ const eliminarCicloLectivo = async () => {
 
 const crearAlumno = async (datosAlumno, oidResponsable) => {
     const { dni, tipoDni, nombre, apellido, genero, fechaNacimiento,
-        lugarNacimiento, legajo, estadoInscripcion, anioCorrespondiente } = datosAlumno;
+        lugarNacimiento, legajo, estadoInscripcion, anioCorrespondiente, nombreEscuelaAnt } = datosAlumno;
 
     const newAlumno = new Alumno({
         dni,
@@ -48,6 +48,7 @@ const crearAlumno = async (datosAlumno, oidResponsable) => {
         fechaIngreso: new Date().toISOString(),
         estadoInscripcion,
         anioCorrespondiente,
+        nombreEscuelaAnt,
         responsable: oidResponsable
     });
 
@@ -57,12 +58,6 @@ const crearAlumno = async (datosAlumno, oidResponsable) => {
 
     return alumno;
 }
-
-/*const eliminarAlumno = async () => {
-    const response = await Alumno.deleteOne({ _id: oidAlumno }).exec();
-    console.log("Alumno Testing Eliminado")
-    return response;
-}*/
 
 const eliminarAlumnoOID = async (oid) => {
     const response = await Alumno.deleteOne({ _id: oid }).exec();
@@ -79,12 +74,6 @@ const crearPersona = async (datosPersona) => {
     console.log("Persona Testing Creada");    
     return personaDB;
 }
-
-/*const eliminarPersona = async () => {
-    const response = await Persona.deleteOne({ _id: oidPersona }).exec();
-    console.log("Persona Testing Eliminada");
-    return response
-}*/
 
 const crearPersonaRol = async (datosPersona, nombreRol, datosRol) => {
     const { dni, nombre, apellido, genero } = datosPersona;
