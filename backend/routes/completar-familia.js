@@ -58,7 +58,7 @@ router.put('/completar-familia/asociar-padre/:oid', vAsociarPadre, asyncHandler(
     const oidPadre = req.params.oid;
     const oidAlumno = req.query.oidAlumno;
 
-    const response = await asociarPadre(oidPadre, oidAlumno);    
+    const response = await asociarPadre(oidPadre, oidAlumno);
 
     res.send({ ok: true, response });
 }))
@@ -70,9 +70,13 @@ router.put('/completar-familia/asociar-padre/:oid', vAsociarPadre, asyncHandler(
 router.get('/completar-familia/persona/:dni', vDni, asyncHandler(async (req, res) => {
     const dniPersona = req.params.dni;
 
-    const response = await getPersonaById(dniPersona);
+    const persona = await getPersonaById(dniPersona);
 
-    res.send({ ok: true, response });
+    if (persona === false) {
+        throw new NotFound("No existe una Persona con el DNI recibido.");
+    }
+
+    res.send({ ok: true, persona });
 }))
 
 /**
@@ -90,12 +94,12 @@ router.post('/completar-familia/padre', vPadreNuevo, asyncHandler(async (req, re
 /** * 
  * ruta que asocia el rol del padre si la persona ya existe en el sistema
  */
-router.put('/completar-familia/padre/persona/:oidPersona', vPadreRol, asyncHandler(async (req, res) => {
+router.put('/completar-familia/padre/persona/:oidPersona', vPadreRol, asyncHandler(async (req, res) => {    
     const oidPersona = req.params.oidPersona;
     const datosPadre = req.body.padre;
     const oidAlumno = req.body.oidAlumno;
 
-    const response = await createPadreRol(datosPadre, oidPersona, oidAlumno);
+    const response = await createPadreRol(datosPadre, oidPersona, oidAlumno);    
 
     res.send({ ok: true, response });
 
