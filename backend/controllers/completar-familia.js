@@ -4,32 +4,22 @@ const { getPadreByID, getPadreByOID } = require("./padre");
 const { updateAlumnoOID, getAlumnoByOID, setPadre, setHermano } = require("./alumno");
 const { createPersona, deletePersonaOID, asociarRolOID, getPersonaByOID } = require("./persona");
 const { getHermanoById } = require("./hermano");
+const { NotFound } = require("../middlewares/errores");
 
-const asociarPadre = async (dniPadre, oidAlumno) => {
-    //TODO: refactor respuestas
-    let actualizoAlumno = false;
-    let response = {
-        valido: false,
-        message: "No existe el padre, no se pudo asociar con el alumno"
-    };
+const asociarPadre = async (oidPadre, oidAlumno) => {
+    let response;
 
     if (!await getAlumnoByOID(oidAlumno)) {
-        return {
-            exito: false,
-            message: "El OID recibido no corresponde a un alumno, envíelo nuevamente."
-        }
+        throw new NotFound("El OID recibido no corresponde a un alumno, envíelo nuevamente.")
     }
 
-    const padre = await getPadreByID(dniPadre);
+    const padre = await getPadreByOID(oidPadre);    
     if (padre !== false) {
-        let response = await setPadre(padre._id, oidAlumno);
-        //TODO: testear
-        //TODO: Ver con ifaz si devuelve el padre o no (que solo devuelva el ok)
-        if (response.exito) { //si se pudo actualizar el alumno, devuelvo el padre
+        let res = await setPadre(padre._id, oidAlumno);        
+        if (res.exito) { // si pudo actualizar solo devuelve ok
             response = {
                 valido: true,
-                padre
-                //message: "El padre fue asociado con exito"
+                message: "El padre fue asociado con exito"
             };
         } else {
             response = {
@@ -37,7 +27,10 @@ const asociarPadre = async (dniPadre, oidAlumno) => {
                 message: "No se pudo actualizar el alumno, verifique si existe"
             };
         }
+    } else {
+        throw new NotFound("El OID recibido no corresponde a un padre, envíelo nuevamente.")
     }
+
     return response;
 }
 

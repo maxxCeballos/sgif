@@ -1,19 +1,19 @@
 'use strict'
 var mongoose = require('mongoose');
 
-const { vDni } = require('./validaRequests');
+const { vDni, vOID } = require('./validaRequests');
 const { BadRequest } = require('./errores')
 
 const vAsociarPadre = (req, res, next) => {
-    const dniPadre = req.params.dniPadre;
+    const oidPadre = req.params.oid;
     const oidAlumno = req.query.oidAlumno;
 
     if (oidAlumno === undefined || !mongoose.Types.ObjectId.isValid(oidAlumno)) {
         throw new BadRequest("OID Alumno Inválido");
     }
-
-    //valida dni padre
-    vDni(req, res, next);
+    
+    //valida oid Padre
+    vOID(req,res,next);
 }
 
 const vPadreNuevo = (req, res, next) => {
