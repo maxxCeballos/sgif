@@ -102,6 +102,12 @@ const eliminarPersonaOID = async (oid) => {
     return response
 }
 
+const eliminarPersonaDNI = async(dni) => {
+    const response = await Persona.deleteOne({dni:dni}).exec();
+    console.log("Persona Eliminada por DNI");
+    return response;
+}
+
 module.exports = {
     crearCicloLectivo,
     eliminarCicloLectivo,
@@ -109,5 +115,6 @@ module.exports = {
     eliminarAlumnoOID,
     crearPersona,    
     crearPersonaRol,
-    eliminarPersonaOID
+    eliminarPersonaOID,
+    eliminarPersonaDNI
 }
