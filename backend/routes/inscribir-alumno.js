@@ -11,10 +11,11 @@ const { getResponsableById } = require('../controllers/responsable');
 const { getPersonaById } = require('../controllers/persona');
 const { vDni } = require('../middlewares/validaRequests');
 const { vResponsableNuevo, vResponsableRol, vRegistrarAlumnoNuevo, vRegistrarAlumnoRol, vReinscribirAlumno } = require('../middlewares/validaInscribirAlumno');
+const { NotFound } = require('../middlewares/errores');
 
 router.get('/insc-alumno/validar-fecha', asyncHandler(async (req, res) => {
 
-    const response = await validarFechaInscripcion();    
+    const response = await validarFechaInscripcion();
 
     res.send({ ok: true, response })
 }))
@@ -30,9 +31,13 @@ router.get('/insc-alumno/alumno/:dni', vDni, asyncHandler(async (req, res) => {
 router.get('/insc-alumno/responsable/:dni', vDni, asyncHandler(async (req, res) => {
     const dni = req.params.dni;
 
-    const response = await getResponsableById(dni);
+    const responsable = await getResponsableById(dni);    
 
-    res.send({ ok: true, response })
+    if (responsable === false) {
+        throw new NotFound("No existe un Responsable con el DNI recibido.");
+    }
+
+    res.send({ ok: true, responsable })
 }))
 
 /**
@@ -42,9 +47,13 @@ router.get('/insc-alumno/responsable/:dni', vDni, asyncHandler(async (req, res) 
 router.get('/insc-alumno/persona/:dni', vDni, asyncHandler(async (req, res) => {
     const dniPersona = req.params.dni;
 
-    const response = await getPersonaById(dniPersona);
+    const persona = await getPersonaById(dniPersona);
 
-    res.send({ ok: true, response });
+    if (persona === false) {
+        throw new NotFound("No existe una Persona con el DNI recibido.");
+    }
+
+    res.send({ ok: true, persona });
 }))
 
 router.post('/insc-alumno/responsable', vResponsableNuevo, asyncHandler(async (req, res) => {
@@ -80,7 +89,6 @@ router.put('/insc-alumno/alumno/persona/:oidPersona', vRegistrarAlumnoRol, async
     const oidResponsable = req.body.oidResponsable;
 
     const response = await registrarAlumnoRol(datosAlumno, oidPersona, oidResponsable);
-    console.log("asdasdad ", response);
 
     res.send({ ok: true, response });
 }))

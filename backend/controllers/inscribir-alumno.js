@@ -12,9 +12,7 @@ const { NotFound, BadRequest } = require('../middlewares/errores');
  */
 const validarFechaInscripcion = async () => {
 
-    const cicloLectivoDB = await getCicloLectivo();
-
-    console.log(cicloLectivoDB);
+    const cicloLectivoDB = await getCicloLectivo();    
 
     let response;
 

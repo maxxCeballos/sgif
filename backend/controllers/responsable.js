@@ -4,10 +4,10 @@ const Persona = require('../models/persona.model');
 const persona = require('./persona');
 
 const getResponsableById = async (dni) => {
-    let responsable = await Persona.find({ dni: dni, responsable: { $exists: true } }).exec()
+    let responsable = await Persona.find({ dni: dni, responsable: { $exists: true } }).exec()    
 
     if (responsable.length < 1) {
-        responsable = false;
+        return false;
     } else if (responsable.length > 1) {
         throw "Hay mas de un responsable con el mismo DNI."
     }
@@ -67,7 +67,7 @@ const generarLegajoResp = async () => {
     return nuevoLegajo;
 }
 
-module.exports = {    
+module.exports = {
     updateResponsable,
     deleteResponsable,
     getAllResponsables,

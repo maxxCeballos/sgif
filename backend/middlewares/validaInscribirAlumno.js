@@ -5,12 +5,12 @@ const {BadRequest} = require('./errores');
 const vResponsableNuevo = (req, res, next) => {
     const datosResponsable = req.body.responsable;
 
-    const { dni, nombre, apellido, genero } = datosResponsable;
-    const datosPersona = { dni, nombre, apellido, genero };
-
     if (datosResponsable === "" || datosResponsable === undefined || datosResponsable === null) {
         throw new BadRequest("Faltó enviar los datos del Responsable.");
     }
+
+    const { dni, nombre, apellido, genero } = datosResponsable;
+    const datosPersona = { dni, nombre, apellido, genero };    
 
     if (!vPersona(datosPersona) || !tieneDatosBasicosR(datosResponsable)) {
         throw new BadRequest("Datos básicos Responsable incompletos, verifíquelos nuevamente.");        
@@ -99,6 +99,7 @@ function tieneDatosBasicosA(datosAlumno) {
             return false;
         } else return true
     });
+    console.log("validador datos basicos ", valido);
 
     return valido;
 }
@@ -124,13 +125,14 @@ function vPersona(datosPersona) {
 
     const valido = datosBasicos.every(atributo => {
         if (datosPersona[atributo] === undefined) {
-            //console.log(atributo + " No existe")
+            console.log(atributo + " No existe")
             return false;
         } else if (datosPersona[atributo] === "") {
-            //console.log(atributo + " Está Vacío")
+            console.log(atributo + " Está Vacío")
             return false;
         } else return true;
     });
+    console.log("validador datos persona ",valido)
 
     return valido;
 }

@@ -2,6 +2,7 @@
 
 const Alumno = require('../../models/alumno.model');
 const CicloLectivo = require('../../models/cicloLectivo.model');
+const Persona = require('../../models/persona.model');
 
 let oidCiclo;
 let oidAlumno;
@@ -26,7 +27,7 @@ const crearCicloLectivo = async (datosCicloLectivo) => {
 }
 
 const eliminarCicloLectivo = async () => {
-    const response = await CicloLectivo.deleteOne({ _id: oidCiclo }).exec();    
+    const response = await CicloLectivo.deleteOne({ _id: oidCiclo }).exec();
     console.log("Ciclo Lectivo Testing Eliminado")
     return response;
 }
@@ -63,9 +64,44 @@ const eliminarAlumno = async () => {
     return response;
 }
 
+const crearPersona = async (datosPersona) => {
+    const { dni, nombre, apellido, genero } = datosPersona;
+    const personaNueva = new Persona({
+        dni, nombre, apellido, genero
+    })
+    const personaDB = await personaNueva.save();
+    console.log("Persona Testing Creada");    
+    return personaDB;
+}
+
+/*const eliminarPersona = async () => {
+    const response = await Persona.deleteOne({ _id: oidPersona }).exec();
+    console.log("Persona Testing Eliminada");
+    return response
+}*/
+
+const crearPersonaRol = async (datosPersona, nombreRol, datosRol) => {
+    const { dni, nombre, apellido, genero } = datosPersona;
+    const personaNueva = new Persona({
+        dni, nombre, apellido, genero, [nombreRol]: datosRol
+    })
+    const personaDB = await personaNueva.save();
+    console.log("Persona Rol Testing Creada");
+    return personaDB;
+}
+
+const eliminarPersonaOID = async (oid) => {
+    const response = await Persona.deleteOne({ _id: oid }).exec();
+    console.log("Persona Creada Eliminada");
+    return response
+}
+
 module.exports = {
     crearCicloLectivo,
     eliminarCicloLectivo,
     crearAlumno,
     eliminarAlumno,
+    crearPersona,    
+    crearPersonaRol,
+    eliminarPersonaOID
 }

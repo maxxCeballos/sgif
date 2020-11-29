@@ -8,31 +8,14 @@ chai.use(chaiHttp);
 const url = 'http://localhost:5000';
 const requester = chai.request(url);
 
-const { crearCicloLectivo, eliminarCicloLectivo, crearAlumno, eliminarAlumno } = require('./generadores/inscribir-alumno');
+const { crearCicloLectivo, eliminarCicloLectivo, crearAlumno,
+    eliminarAlumno, crearPersona, crearPersonaRol,
+    eliminarPersonaOID } = require('./generadores/inscribir-alumno');
 
-//DATOS PARA TESTING
-const cicloValido = {
-    cicloLectivo: 2021,
-    fechaIniClases: "2021-03-02T00:00:00.000Z",
-    fechaCiere1T: "2021-06-01T00:00:00.000Z",
-    fechaCiere2T: "2021-09-01T00:00:00.000Z",
-    fechaCiere3T: "2021-12-02T00:00:00.000Z",
-    fechaFinInscripcion: "2021-02-28T00:00:00.000Z"
-}
-const oidResponsable = "5f99d2b469722c2260d0f290";
-const alumno = {
-    dni: "98765432",
-    tipoDni: "DNI",
-    nombre: "Agustín",
-    apellido: "Gutierrez",
-    genero: "Masculino",
-    fechaNacimiento: "2006-05-10T00:00:00.000+00:00",
-    lugarNacimiento: "Cipolletti",
-    legajo: "5000",
-    anioCorrespondiente: 2,
-};
+const { cicloValido, alumno, oidResponsable, personaResponsable, datosResponsable,
+    responsableEsperado, responsableCompleto, personaAlumno } = require('./datos/datosInscribirAlumno');
+const { response } = require('express');
 
-//TESTING
 before(async function () {
     let espera = new Promise((res, req) => {
         setTimeout(() => res('success'), 5000)
@@ -43,13 +26,12 @@ before(async function () {
 describe('Inscribir Alumno', function () {
 
     //Camino 1
-    it('Debería responder fecha inválida', (done) => {
+    it('Debería Responder fecha inválida', (done) => {
 
         //Verifica que la fecha retornada sea inválida
         requester
             .get('/insc-alumno/validar-fecha')
             .end(function (err, res) {
-
                 expect(res.body.response).to.have.property('valido').to.be.equal(false);
                 expect(res).to.have.status(200);
                 done();
@@ -58,26 +40,23 @@ describe('Inscribir Alumno', function () {
     }).timeout(0);
 
     //Camino 2
-    it('Debería fallar alumno Inscripto, Reinscripto o Egresado', (done) => {
+    it('Debería Fallar alumno Inscripto, Reinscripto o Egresado', (done) => {
 
-        crearCicloLectivo(cicloValido).then(response1 => {
+        crearCicloLectivo(cicloValido).then(cicloLectivo => {
             requester
                 .get('/insc-alumno/validar-fecha')
                 .end(function (err, res) {
-
                     expect(res.body.response).to.have.property('valido').to.be.equal(true);
                     expect(res).to.have.status(200);
 
                     alumno.estadoInscripcion = "Inscripto";
-                    crearAlumno(alumno, oidResponsable).then(response2 => {
+                    crearAlumno(alumno, oidResponsable).then(alumnoDB => {
                         //Verifico que el alumno Exista y no se pueda reinscribir                    
                         requester
                             .get('/insc-alumno/alumno/' + alumno.dni)
                             .end(function (err, res) {
-
                                 expect(res.body.response).to.have.property('valido').to.be.equal(false);
                                 expect(res).to.have.status(200);
-
                                 //Elimino Recursos
                                 Promise.all([eliminarCicloLectivo(), eliminarAlumno()])
                                     .then(resp => {
@@ -91,13 +70,12 @@ describe('Inscribir Alumno', function () {
     }).timeout(0);
 
     //Camino 3
-    it('Debería fallar al reinscribir alumno', (done) => {
+    it('Debería Fallar al reinscribir alumno', (done) => {
 
-        crearCicloLectivo(cicloValido).then(response1 => {
+        crearCicloLectivo(cicloValido).then(cicloLectivo => {
             requester
                 .get('/insc-alumno/validar-fecha')
                 .end(function (err, res) {
-
                     expect(res.body.response).to.have.property('valido').to.be.equal(true);
                     expect(res).to.have.status(200);
 
@@ -107,7 +85,6 @@ describe('Inscribir Alumno', function () {
                         requester
                             .get('/insc-alumno/alumno/' + alumno.dni)
                             .end(function (err, res) {
-
                                 expect(res.body.response).to.include({
                                     valido: true,
                                     operacion: "Reinscribir"
@@ -115,7 +92,6 @@ describe('Inscribir Alumno', function () {
                                 expect(res).to.have.status(200);
 
                                 const oidAlumno = res.body.response.alumnoDB._id;
-
                                 //Envío Año Reinscripción Inválido
                                 requester
                                     .put('/insc-alumno/alumno/' + oidAlumno)
@@ -139,11 +115,10 @@ describe('Inscribir Alumno', function () {
     //Camino 4
     it('Debería Reinscribir Alumno', (done) => {
 
-        crearCicloLectivo(cicloValido).then(response1 => {
+        crearCicloLectivo(cicloValido).then(cicloLectivo => {
             requester
                 .get('/insc-alumno/validar-fecha')
                 .end(function (err, res) {
-
                     expect(res.body.response).to.have.property('valido').to.be.equal(true);
                     expect(res).to.have.status(200);
 
@@ -152,7 +127,6 @@ describe('Inscribir Alumno', function () {
                         requester
                             .get('/insc-alumno/alumno/' + alumno.dni)
                             .end(function (err, res) {
-
                                 expect(res.body.response).to.include({
                                     valido: true,
                                     operacion: "Reinscribir"
@@ -187,4 +161,351 @@ describe('Inscribir Alumno', function () {
         });
     }).timeout(0);
 
+    //TODO: Agregar Camino 5
+    //TODO: Agregar Camino 6    
+
+    //Camino 7
+    it('Debería Fallar al agregar rol Responsable', (done) => {
+
+        crearCicloLectivo(cicloValido).then(cicloLectivo => {
+            requester
+                .get('/insc-alumno/validar-fecha')
+                .end(function (err, res) {
+                    expect(res.body.response).to.have.property('valido').to.be.equal(true);
+                    expect(res).to.have.status(200);
+
+                    requester
+                        .get('/insc-alumno/alumno/' + alumno.dni)
+                        .end(function (err, res) {
+                            expect(res.body.response).to.include({
+                                valido: true,
+                                operacion: "Inscribir"
+                            })
+                            expect(res).to.have.status(200);
+
+                            //Busco un responsable que no existe
+                            const dni = personaResponsable.dni
+                            requester
+                                .get('/insc-alumno/responsable/' + dni)
+                                .end(function (err, res) {
+                                    expect(res).to.have.status(404);
+
+                                    //Busco una persona que si existe, para eso la creo
+                                    crearPersona(personaResponsable).then(personaDB => {
+                                        requester
+                                            .get('/insc-alumno/persona/' + dni)
+                                            .end(function (err, res) {
+                                                expect(res.body.persona).to.deep.include(personaResponsable);
+                                                expect(res).to.have.status(200);
+
+                                                //Envío datos de rol responsable erróneos
+                                                const oidPersona = res.body.persona._id;
+                                                requester
+                                                    .put('/insc-alumno/responsable/persona/' + oidPersona)
+                                                    .send({ responsable: {} })
+                                                    .end(function (err, res) {
+                                                        expect(res).to.have.status(400)
+
+                                                        //Elimino Recursos
+                                                        Promise.all([eliminarCicloLectivo(), eliminarPersonaOID(personaDB._id)])
+                                                            .then(resp => {
+                                                                console.log("Recursos eliminados")
+                                                                done();
+                                                            });
+                                                    });
+                                            })
+                                    });
+                                })
+                        });
+                });
+        });
+    }).timeout(0);
+
+    //Camino 8
+    it('Debería Fallar al Crear una Persona Responsable', (done) => {
+
+        crearCicloLectivo(cicloValido).then(cicloLectivo => {
+            requester
+                .get('/insc-alumno/validar-fecha')
+                .end(function (err, res) {
+                    expect(res.body.response).to.have.property('valido').to.be.equal(true);
+                    expect(res).to.have.status(200);
+
+                    requester
+                        .get('/insc-alumno/alumno/' + alumno.dni)
+                        .end(function (err, res) {
+                            expect(res.body.response).to.include({
+                                valido: true,
+                                operacion: "Inscribir"
+                            })
+                            expect(res).to.have.status(200);
+
+                            //Busco un responsable que no existe
+                            const dni = personaResponsable.dni;
+                            requester
+                                .get('/insc-alumno/responsable/' + dni)
+                                .end(function (err, res) {
+                                    expect(res).to.have.status(404);
+
+                                    //Busco una persona que no existe
+                                    requester
+                                        .get('/insc-alumno/persona/' + dni)
+                                        .end(function (err, res) {
+                                            expect(res).to.have.status(404);
+
+                                            //Envío datos de persona - responsable erróneos                                            
+                                            requester
+                                                .post('/insc-alumno/responsable')
+                                                .send({ responsable: {} })
+                                                .end(function (err, res) {
+                                                    expect(res).to.have.status(400)
+
+                                                    //Elimino Recursos
+                                                    Promise.all([eliminarCicloLectivo()])
+                                                        .then(resp => {
+                                                            console.log("Recursos eliminados")
+                                                            done();
+                                                        });
+                                                });
+                                        })
+                                })
+                        });
+                });
+        });
+    }).timeout(0);
+
+    //Camino 9
+    it('Debería Agregar rol Responsable', (done) => {
+
+        crearCicloLectivo(cicloValido).then(cicloLectivo => {
+            requester
+                .get('/insc-alumno/validar-fecha')
+                .end(function (err, res) {
+                    expect(res.body.response).to.have.property('valido').to.be.equal(true);
+                    expect(res).to.have.status(200);
+
+                    requester
+                        .get('/insc-alumno/alumno/' + alumno.dni)
+                        .end(function (err, res) {
+                            expect(res.body.response).to.include({
+                                valido: true,
+                                operacion: "Inscribir"
+                            })
+                            expect(res).to.have.status(200);
+
+                            //Busco un responsable que no existe
+                            const dni = personaResponsable.dni
+                            requester
+                                .get('/insc-alumno/responsable/' + dni)
+                                .end(function (err, res) {
+                                    expect(res).to.have.status(404);
+
+                                    //Busco una persona que si existe, para eso la creo
+                                    crearPersona(personaResponsable).then(personaDB => {
+                                        requester
+                                            .get('/insc-alumno/persona/' + dni)
+                                            .end(function (err, res) {
+                                                expect(res.body.persona).to.deep.include(personaResponsable);
+                                                expect(res).to.have.status(200);
+
+                                                //Envío datos de rol responsable válidos
+                                                const oidPersona = res.body.persona._id;
+                                                requester
+                                                    .put('/insc-alumno/responsable/persona/' + oidPersona)
+                                                    .send({ responsable: datosResponsable })
+                                                    .end(function (err, res) {
+                                                        expect(res.body.response).to.deep.include(responsableEsperado)
+                                                        expect(res).to.have.status(200)
+
+                                                        //Elimino Recursos
+                                                        Promise.all([eliminarCicloLectivo(), eliminarPersonaOID(personaDB._id)])
+                                                            .then(resp => {
+                                                                console.log("Recursos eliminados")
+                                                                done();
+                                                            });
+                                                    });
+                                            })
+                                    });
+                                })
+                        });
+                });
+        });
+    }).timeout(0);
+
+    //Camino 10
+    it('Debería Agregar un Responsable Completo', (done) => {
+
+        crearCicloLectivo(cicloValido).then(cicloLectivo => {
+            requester
+                .get('/insc-alumno/validar-fecha')
+                .end(function (err, res) {
+                    expect(res.body.response).to.have.property('valido').to.be.equal(true);
+                    expect(res).to.have.status(200);
+
+                    requester
+                        .get('/insc-alumno/alumno/' + alumno.dni)
+                        .end(function (err, res) {
+                            expect(res.body.response).to.include({
+                                valido: true,
+                                operacion: "Inscribir"
+                            })
+                            expect(res).to.have.status(200);
+
+                            //Busco un responsable que no existe
+                            const dni = personaResponsable.dni;
+                            requester
+                                .get('/insc-alumno/responsable/' + dni)
+                                .end(function (err, res) {
+                                    expect(res).to.have.status(404);
+
+                                    //Busco una persona que no existe
+                                    requester
+                                        .get('/insc-alumno/persona/' + dni)
+                                        .end(function (err, res) {
+                                            expect(res).to.have.status(404);
+
+                                            //Envío datos de persona - responsable válidos                                                                                       
+                                            requester
+                                                .post('/insc-alumno/responsable')
+                                                .send(responsableCompleto)
+                                                .end(function (err, res) {
+                                                    expect(res.body.response).to.deep.include(responsableEsperado);
+                                                    expect(res).to.have.status(200)
+
+                                                    //Elimino Recursos
+                                                    Promise.all([eliminarCicloLectivo(), eliminarPersonaOID(res.body.response._id)])
+                                                        .then(resp => {
+                                                            console.log("Recursos eliminados")
+                                                            done();
+                                                        });
+                                                });
+                                        })
+                                })
+                        });
+                });
+        });
+    }).timeout(0);
+
+    //Camino 11    
+    it('Debería Fallar al agregar rol Alumno', (done) => {
+
+        crearCicloLectivo(cicloValido).then(cicloLectivo => {
+            requester
+                .get('/insc-alumno/validar-fecha')
+                .end(function (err, res) {
+                    expect(res.body.response).to.have.property('valido').to.be.equal(true);
+                    expect(res).to.have.status(200);
+
+                    requester
+                        .get('/insc-alumno/alumno/' + alumno.dni)
+                        .end(function (err, res) {
+                            expect(res.body.response).to.include({
+                                valido: true,
+                                operacion: "Inscribir"
+                            })
+                            expect(res).to.have.status(200);
+
+                            //Busco un responsable que existe, para eso lo creo
+                            const dniResponsable = personaResponsable.dni;
+                            datosResponsable.legajo = responsableEsperado.responsable.legajo;
+                            crearPersonaRol(personaResponsable, 'responsable', datosResponsable).then(responsable => {
+                                requester
+                                    .get('/insc-alumno/responsable/' + dniResponsable)
+                                    .end(function (err, res) {
+                                        expect(res.body.responsable).to.deep.include(responsableEsperado);
+                                        expect(res).to.have.status(200);
+                                        const oidResponsable = res.body.responsable._id;
+
+                                        //Busco una persona que existe, entonces la creo                                        
+                                        crearPersona(personaAlumno).then(personaDB => {
+                                            requester
+                                                .get('/insc-alumno/persona/' + alumno.dni)
+                                                .end(function (err, res) {
+                                                    expect(res.body.persona).to.deep.include(personaAlumno);
+                                                    expect(res).to.have.status(200);
+
+                                                    //Envío datos de rol alumno erróneos
+                                                    const oidPersona = res.body.persona._id;
+                                                    requester
+                                                        .put('/insc-alumno/alumno/persona/' + oidPersona)
+                                                        .send({ alumno: {}, oidResponsable })
+                                                        .end(function (err, res) {
+                                                            expect(res).to.have.status(400);
+
+                                                            //Elimino Recursos                                                            
+                                                            Promise.all([eliminarCicloLectivo(), eliminarPersonaOID(responsable._id),
+                                                            eliminarPersonaOID(personaDB._id)])
+                                                                .then(resp => {
+                                                                    console.log("Recursos eliminados")
+                                                                    done();
+                                                                })
+                                                        });
+                                                });
+                                        });
+                                    });
+                            });
+                        });
+                });
+        });
+    }).timeout(0);
+
+    //Camino 12
+    it('Debería Fallar al Crear una Persona Alumno', (done) => {
+
+        crearCicloLectivo(cicloValido).then(cicloLectivo => {
+            requester
+                .get('/insc-alumno/validar-fecha')
+                .end(function (err, res) {
+                    expect(res.body.response).to.have.property('valido').to.be.equal(true);
+                    expect(res).to.have.status(200);
+
+                    requester
+                        .get('/insc-alumno/alumno/' + alumno.dni)
+                        .end(function (err, res) {
+                            expect(res.body.response).to.include({
+                                valido: true,
+                                operacion: "Inscribir"
+                            })
+                            expect(res).to.have.status(200);
+
+                            //Busco un responsable que existe, para eso lo creo
+                            const dniResponsable = personaResponsable.dni;
+                            datosResponsable.legajo = responsableEsperado.responsable.legajo;
+                            crearPersonaRol(personaResponsable, 'responsable', datosResponsable).then(responsable => {
+                                requester
+                                    .get('/insc-alumno/responsable/' + dniResponsable)
+                                    .end(function (err, res) {
+                                        expect(res.body.responsable).to.deep.include(responsableEsperado);
+                                        expect(res).to.have.status(200);
+                                        const oidResponsable = res.body.responsable._id;                                        
+
+                                        //Busco una persona que no existe
+                                        const dniAlumno = personaAlumno.dni
+                                        requester
+                                            .get('/insc-alumno/persona/' + dniAlumno)
+                                            .end(function (err, res) {
+                                                expect(res).to.have.status(404);
+
+                                                //Envío datos de persona - responsable erróneos                                            
+                                                requester
+                                                    .post('/insc-alumno/alumno')
+                                                    .send({ alumno: {}, oidResponsable })
+                                                    .end(function (err, res) {
+                                                        expect(res).to.have.status(400)
+
+                                                        //Elimino Recursos
+                                                        Promise.all([eliminarCicloLectivo(), eliminarPersonaOID(responsable._id)])
+                                                            .then(resp => {
+                                                                console.log("Recursos eliminados")
+                                                                done();
+                                                            });
+                                                    });
+                                            })
+                                    })
+                            });
+                        });
+                });
+        });
+    }).timeout(0);
 });
+
