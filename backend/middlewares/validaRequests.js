@@ -13,10 +13,10 @@ const vDni = (req, res, next) => {
     next();
 }
 
-const vOID = (req, res, next) => {
+const vOID = (req, res, next) => {    
 
-    let oidAlumno = req.params.oid;
-    if (oidAlumno === undefined || !mongoose.Types.ObjectId.isValid(oidAlumno)) {
+    let oid = req.params.oid;    
+    if (oid === undefined || !mongoose.Types.ObjectId.isValid(oid)) {
         throw new BadRequest("OID Inválido");
     }
     next();
