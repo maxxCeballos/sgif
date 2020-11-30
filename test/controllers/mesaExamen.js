@@ -32,11 +32,16 @@ const createMesaExamen = async (mesaExamen) => {
     return mesaExamenDB;
 }
 
+const getMesaExamen = async (acta) => {
+    return await MesaExamen.findOne({ acta }).exec();
+}
+
 const deleteMesaExamen = async (acta) => {
     return await MesaExamen.deleteOne({ acta }).exec();
 }
 
 module.exports = {
     createMesaExamen,
+    getMesaExamen,
     deleteMesaExamen,
 }

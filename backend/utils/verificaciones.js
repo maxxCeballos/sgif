@@ -15,17 +15,19 @@ const verificarLegajo = (legajoAlumno) => {
  * @param {*} valoresDictado incluye los valores de {nombreMateria, anioMateria, cicloLectivo}
  */
 const verificarDictado = (valoresDictado) => {
+    let verificarId = valoresDictado.id !== undefined;
+
     let verificarCicloLectivo = valoresDictado.cicloLectivo
         && !isNaN(valoresDictado.cicloLectivo);
 
-    let verificarNombreMateria = valoresDictado.nombreMateria;
+    let verificarNombreMateria = valoresDictado.nombreMateria !== undefined;
 
     let verificarAnioMateria = valoresDictado.anioMateria
         && !isNaN(valoresDictado.anioMateria) 
         && valoresDictado.anioMateria >= 1 
         && valoresDictado.anioMateria <= 5;
 
-    return verificarCicloLectivo && verificarNombreMateria && verificarAnioMateria;
+    return verificarId && verificarCicloLectivo && verificarNombreMateria && verificarAnioMateria;
 }
 
 module.exports = {

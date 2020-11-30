@@ -1,5 +1,6 @@
 'use strict'
 
+const alumno = require('../../test/controllers/alumno');
 let Alumno = require('../models/alumno.model');
 const { getPersonaById, createPersona, asociarRol } = require('./persona');
 
@@ -132,16 +133,12 @@ const getAllAlumnos = async () => {
 }
 
 const addResultadoMesa = async (oidAlumno, oidDictado, oidResultadoMesa) => {
-    const alumnoDB = (await getAlumnoByOid(oidAlumno))[0];
-    const indiceCalificacion = alumnoDB.calificaciones.findIndex(
-        calificacion => calificacion.dictado === oidDictado);
-    const calificacionDB = alumnoDB.calificaciones[indiceCalificacion];
+    const alumnoDB = await getAlumnoByOid(oidAlumno);
+
+    const calificacionDB = alumnoDB.calificaciones.find(calificacion =>
+        calificacion.dictado == oidDictado)
 
     calificacionDB.resultadoMesaExamen.push(oidResultadoMesa);
-
-    // alumnoDB.calificaciones.splice(indiceCalificacion, 1, calificacionDB);
-    //FIXME: TEST
-    alumnoDB.calificaciones.push(calificacionDB);
 
     const response = await Alumno.updateOne({ _id: oidAlumno }, alumnoDB);
 

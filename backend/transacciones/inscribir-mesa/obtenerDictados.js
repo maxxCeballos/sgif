@@ -44,7 +44,7 @@ const obtenerDictados = async (legajoAlumno) => {
         throw "Alumno estuvo Ausente en la Ultima Mesa con id: " + idMesaAusente;
     }
 
-    let dictadosDesaprobados = await getDictadosDesaprobados(calificacionesDesaprobadas);
+    let dictadosDesaprobados = await getDictadosDesaprobados(alumno._id, calificacionesDesaprobadas);
 
     return dictadosDesaprobados;
 }
@@ -53,8 +53,9 @@ const obtenerDictados = async (legajoAlumno) => {
 /**
  * Devuelve dictados con el formato {id, nombreMateria, anioMateria, cicloLectivo} de un conjunto de calificaciones
  */
-async function getDictadosDesaprobados(calificacionesDesaprobadas) {
+async function getDictadosDesaprobados(idAlumno, calificacionesDesaprobadas) {
     let dictadosDesaprobados = {
+        idAlumno,
         dictados: [],
     };
 
@@ -130,7 +131,6 @@ function esDeMesPasado(fechaPrevia) {
     let hoy = new Date();
 
     if (!(fechaPrevia.getYear() < hoy.getYear())) {
-        //FIXME: ver que pasa si es de este mes
         return fechaPrevia.getMonth() === hoy.getMonth() - 1;
     }
 
