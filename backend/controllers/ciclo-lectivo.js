@@ -5,6 +5,7 @@ const { trace } = require('../routes/ciclo-lectivo');
 
 const getCicloLectivo = async () => {
     const cicloLectivoDB = await CicloLectivo.find().sort({ cicloLectivo: -1 }).exec();
+    
     //TODO: CUIDADO hay un ciclo lectivo del 2021
     return cicloLectivoDB[1];
 }

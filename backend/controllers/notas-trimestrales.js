@@ -1,15 +1,12 @@
 'use strict'
 
+const Curso = require('../models/curso.model');
+const Dictado = require('../models/dictado.model');
+const Alumno = require('../models/alumno.model');
+
 const { getCicloLectivo } = require('./ciclo-lectivo');
-const { getCursosCicloLectivo } = require('./curso');
 
 const registrarNotasTrimestrales = async (curso) => {    
-
-    // obtener dictados y alumnos del curso seleccionado
-
-    // obtener materias de cada dictado
-
-    // (=>) el usuario selecciona un dictado
 
     // obtener calificaciones del alumno del dictado seleccionado
 
@@ -25,18 +22,68 @@ const registrarNotasTrimestrales = async (curso) => {
 }
 
 const getCursos = async () => {
-    cicloLectivo = getCicloLectivo();
     
+    const cicloLectivo = await getCicloLectivo();
+
     // validar fecha de cierre. ? obtener fecha del sistema y comparar que este entre las fechas definidas en ciclo lectivo.
+    
+    const cursosCicloLectivo = await getCursosCicloLectivo(cicloLectivo.cicloLectivo)
 
-    cursosCicloLectivo = getCursosCicloLectivo(cicloLectivo.anio)
-
-    // (=>) de los cursos obtenidos el usuario selecciona uno
+    return cursosCicloLectivo;
 }
+
+const getDetalleCurso = async (idCurso) => {
+
+    const detalle = await Curso.findById(idCurso, 'dictados');
+
+    const dictados = detalle.dictados
+
+    const dictadosDB = [];
+
+    for ( let i = 0 ; i < dictados.length ; i++ ) {
+
+        let dictado = await Dictado.findById(dictados[i]).populate({ path : 'materia'});
+
+        dictadosDB.push(dictado);
+
+    }
+
+    return dictadosDB;
+
+}
+
+
+const getCursosCicloLectivo = async (anioCiclo) => {
+    
+    const cursosCiclo = await Curso.find({ cicloLectivo : anioCiclo })
+
+    return cursosCiclo;
+
+}
+
+
+const getNotasHorariosDictado = async (idDictado) => {
+
+    const notas = await Alumno.find({ 'calificaciones' : {$elemMatch: {dictado: idDictado}}})
+
+    const horarios = await Dictado.findById(idDictado, 'horarios');
+
+    const response = {
+        notas,
+        horarios: horarios.horarios
+    }
+
+    return response;
+}
+
+
 
 
 
 
 module.exports = {
     registrarNotasTrimestrales,
+    getCursos,
+    getDetalleCurso,
+    getNotasHorariosDictado,
 }

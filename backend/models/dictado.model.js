@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Horario = require('./horario.model');
 
 const Schema = mongoose.Schema;
 
@@ -13,7 +12,7 @@ const dictadoEsquema = new Schema({
         anio: { type: Number, min: 1, max: 5 }
     },
     //TODO testear
-    horarios: [Horario]
+    horarios: [{type: Schema.Types.ObjectId, ref: 'Horario'}]
 }, { timestamps: true });
 
 const Dictado = mongoose.model('Dictado', dictadoEsquema);

@@ -6,10 +6,7 @@ const asyncHandler = require('../middlewares/asynchandler');
 const router = express.Router();
 
 const { createAlumno, updateAlumno, getAllAlumnos, getAlumnoById, deleteAlumno } = require('../controllers/alumno');
-<<<<<<< HEAD
-=======
 const { response } = require('express');
->>>>>>> transacciones-gaston
 
 router.post('/alumno', asyncHandler(async (req, res) => {
 
@@ -41,18 +38,9 @@ router.get('/alumno', asyncHandler(async (req, res) => {
 }));
 
 router.put('/alumno/:dni', asyncHandler(async (req, res) => {
-<<<<<<< HEAD
-    //TODO:revisar no me anduvo req.query usando postman, dio undefined por consola
     const dniAlumno = req.params.dni;
     const { atributo, valor } = req.query;    
 
-    console.log(atributo + " " + valor + " " + dniAlumno);
-
-=======
-    const dniAlumno = req.params.dni;
-    const { atributo, valor } = req.query;    
-
->>>>>>> transacciones-gaston
     const response = await updateAlumno(atributo, valor, dniAlumno);
 
     res.send({ ok: true, response });
