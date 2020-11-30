@@ -11,6 +11,7 @@ const inscribirAlumnoHandler = require('./inscribir-alumno');
 const responsableHandler = require('./responsable');
 const altaCurso = require('./alta-curso');
 const notasTrimestrales = require('./registrar-notas-tri');
+const completarFamiliaHandler = require('./completar-familia');
 
 const app = express();
 
@@ -29,5 +30,6 @@ app.use(inscribirAlumnoHandler);
 app.use(altaCurso);
 
 app.use(notasTrimestrales);
+app.use(completarFamiliaHandler);
 
 module.exports = app;

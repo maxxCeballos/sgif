@@ -1,37 +1,19 @@
 'use strict'
 
-const { response } = require('express');
 let Alumno = require('../models/alumno.model');
-const { getPersonaById, createPersona, asociarRol } = require('./persona');
-const { getResponsableByOID } = require('./responsable');
+const Persona = require('../models/persona.model');
+const { getHermanoByOID } = require('./hermano');
+const { getPadreByOID } = require('./padre');
 
-const createAlumno = async (alumno, legajo, oidResponsable) => {
-    const { dni, tipoDni, nombre, apellido, genero, fechaNacimiento,
+const createAlumno = async (alumno, oidResponsable) => {
+    const { dni, tipoDni, nombre, apellido, genero, legajo, fechaNacimiento,
         lugarNacimiento, fechaEgreso, nombreEscuelaAnt, foto,
         sacramentos, anioCorrespondiente } = alumno;
 
-    let response;
-
-    //FIXME: refactor, poner required en bd    
-    if (!tieneDatosBasicos(alumno)) {
-        return {
-            exito: false,
-            message: "Datos básicos incompletos, verifiquelos nuevamente."
-        }
-    } else if (oidResponsable === null || oidResponsable === "") {
-        return {
-            exito: false,
-            message: "Faltó enviar OID Responsable."
-        }
-    }
-
-    //verifico que el oid recibido sea válido.
-    if(!getResponsableByOID(oidResponsable)){
-        return {
-            exito: false,
-            message: "OID responsable inválido."
-        }
-    }
+    let response = {
+        exito: false,
+        alumno
+    };
 
     //TODO: verificar que la persona no sea un alumno ya
 
@@ -54,28 +36,10 @@ const createAlumno = async (alumno, legajo, oidResponsable) => {
         responsable: oidResponsable
     });
 
-    const alumnoDB = await newAlumno.save()
+    response.alumno = await newAlumno.save()
+    response.exito = true;
 
-    //creacion/asociacion de rol alumno a persona
-    let personaDB = await getPersonaById(dni);
-    if (personaDB === false) {
-        personaDB = createPersona({
-            nombre, apellido, dni, sexo: genero
-        });
-    }
-    response = await asociarRol("alumno", alumnoDB._id, dni);
-
-    if (response !== false) {
-        return {
-            exito: true,
-            alumno: alumnoDB,
-        };
-    } else {
-        return {
-            exito: false,
-            message: "No se pudo asignar el rol de alumno a la persona, intentelo nuevamente."
-        }
-    }
+    return response;
 }
 
 const getAlumnoById = async (dni) => {
@@ -91,6 +55,18 @@ const getAlumnoById = async (dni) => {
     return alumno;
 }
 
+const getAlumnoByOID = async (oid) => {
+    let alumno;
+
+    alumno = await Alumno.findById(oid).exec();
+
+    if (alumno === null) {
+        alumno = false;
+    }
+
+    return alumno;
+}
+
 const getAllAlumnos = async () => {
 
     const alumnosDB = await Alumno.find().exec();
@@ -99,19 +75,29 @@ const getAllAlumnos = async () => {
 }
 
 /**
- * actualiza un atributo genérico del primer alumno con el dni ingresado
+ * actualiza un atributo genérico del primer alumno con el oid ingresado
  * @param {*} atributo 
  * @param {*} valor 
  * @param {*} dni 
  */
-const updateAlumno = async (atributo, valor, dni) => {
-    let alumno;
+const updateAlumnoOID = async (atributo, valor, oid) => {
+    let alumno = false;
+    let response;
+    //TODO: ver si armar error personalizado
+    //TODO: ver para el del final para que use set padre, sin throw
 
-    var $set = { $set: { [atributo]: valor } };
+    if (atributo === "hermanos") {
+        var $push = { $push: { [atributo]: valor } };
+        response = await Alumno.updateOne({ _id: oid }, $push).exec();
+    } else if (atributo !== "padres") {
+        var $set = { $set: { [atributo]: valor } };
+        response = await Alumno.updateOne({ _id: oid }, $set).exec();
+    } else {
+        return false;
+    }
 
-    const response = await Alumno.updateOne({ dni: dni }, $set);
     if (response.n === 1) {
-        alumno = await getAlumnoById(dni);
+        alumno = await getAlumnoByOID(oid);
     }
 
     return alumno;
@@ -125,43 +111,104 @@ const deleteAlumno = async (dni) => {
     return true;
 }
 
-const generarLegajo = async () => {    
+const generarLegajoAl = async () => {
     //El legajo es un string, por eso el orden desc lo hace de forma alfabetica y no de integer
 
-    const alumnosBD = await Alumno.find().select('legajo -_id').sort({ legajo: "desc" }).exec();    
-    let nuevoLegajo = parseInt(alumnosBD[0].legajo) + 1;
+    const alumnosDB = await Alumno.find().select('legajo -_id').sort({ legajo: "desc" }).exec();
+    let nuevoLegajo = parseInt(alumnosDB[0].legajo) + 1;
     if (Number.isNaN(nuevoLegajo)) {
         nuevoLegajo = 1;
     }
     return nuevoLegajo
 }
 
-/**
- * Metodo que verifica que el alumno recibido, tenga sus atributos básicos y no estén vacíos
- * @param {*} alumno recibe un alumno a inscribir, con todos los datos que se hayan recibido
- */
-function tieneDatosBasicos(alumno) {
-    const datosBasicos = ['dni', 'tipoDni', 'nombre', 'apellido', 'genero',
-        'fechaNacimiento', 'lugarNacimiento', 'fechaEgreso', 'nombreEscuelaAnt'];
+const getPadres = async (oidAlumno) => {
+    let padresDB = await Alumno.
+        findById(oidAlumno).
+        select('padres').
+        populate({ path: 'padres', select: 'dni nombre apellido genero padre' });
 
-    const valido = datosBasicos.every(atributo => {
-        if (!alumno.hasOwnProperty(atributo)) {
-            //console.log(atributo + " No existe")
-            return false;
-        } else if (alumno[atributo] === "" || alumno[atributo] === null) {
-            //console.log(atributo + " Está Vacío")
-            return false;
-        } else return true
-    });
+    return padresDB.padres;
+}
 
-    return valido;
+const setPadre = async (oidPadre, oidAlumno) => {
+    let response = {
+        exito: false
+    };
+    let res;
+    let padreAux = await getPadreByOID(oidPadre);
+    let padres = await getPadres(oidAlumno);
+
+    //si el arreglo es menor a 2 y mayor a 0, entonces tiene 1 padre y tienen que tener dnis diferentes al que ya tiene
+    if (padres.length < 2) {
+        if (padres.length === 0 || padres[0].dni !== padreAux.dni) {
+            let $push = { $push: { 'padres': oidPadre } }
+            res = await Alumno.updateOne({ _id: oidAlumno }, $push).exec();
+
+            if (res.n === 1) {
+                response.exito = true;
+                response.message = "Padre Asociado Exitosamente."
+            } else {
+                response.message = "No se pudo asociar padre con alumno."
+            }
+        } else {
+            response.message = "El alumno ya tiene un padre con ese DNI."
+        }
+    } else {
+        response.message = "El alumno ya posee 2 padres.";
+    }
+
+    return response;
+}
+
+const getHermanos = async (oidAlumno) => {
+    //TODO: testear
+    const hermanosDB = await Persona.
+        findById(oidAlumno).
+        select('hermanos').
+        populate({ path: 'hermanos', select: 'dni nombre apellido genero hermano' }).exec();
+
+    return hermanosDB.hermanos;
+}
+
+const setHermano = async (oidHermano, oidAlumno) => {
+    //TODO: testear
+    let response = {
+        exito: false
+    }
+    const hermanoAux = getHermanoByOID(oidHermano);
+    const hermanos = getHermanos(oidAlumno);
+    const valido = hermanos.every(hermano => {
+        return hermano.dni !== hermanoAux.dni
+    })
+
+    if (valido) {
+        let $push = { $push: { 'hermanos': oidHermano } }
+        const res = Alumno.updateOne({ _id, oidAlumno }, $push).exec();
+
+        if (res.n === 1) {
+            response.message = "Hermano Asociado Exitosamente."
+        } else {
+            response.message = "No se pudo asociar hermano con alumno."
+        }
+
+    } else {
+        response.message = "El alumno ya tiene un hermano con ese DNI."
+    }
+
+    return response;
 }
 
 module.exports = {
     createAlumno,
-    updateAlumno,
     deleteAlumno,
     getAllAlumnos,
     getAlumnoById,
-    generarLegajo
+    generarLegajoAl,
+    updateAlumnoOID,
+    getAlumnoByOID,
+    getPadres,
+    setPadre,
+    getHermanos,
+    setHermano,
 }

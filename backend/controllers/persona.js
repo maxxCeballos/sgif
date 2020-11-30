@@ -2,15 +2,22 @@
 
 let Persona = require('../models/persona.model');
 
-const createPersona = async (persona) => {
-    //FIXME: !!!! se pueden crear personas vacias
-    const { nombre, apellido, dni, sexo } = persona;
+const createPersona = async (datosPersona, nombreRol, datosRol) => {
+    const { nombre, apellido, dni, genero } = datosPersona;
+
+    //TODO: que la persona no exista antes, unique lo deberia controlar
+    //TODO: verificar que no tenga el rol antes
+
+    if (!datosBasicos(datosPersona)) {
+        throw "Datos básicos Persona incompletos, verifíquelos nuevamente."
+    }
 
     let newPersona = new Persona({
         nombre,
         apellido,
         dni,
-        sexo
+        genero,
+        [nombreRol]: datosRol,
     });
 
     const personaDB = await newPersona.save();
@@ -32,18 +39,12 @@ const getPersonaById = async (dni) => {
 }
 
 const getPersonaByOID = async (oid) => {
-    let personaDB
-    try {
-        personaDB = await Persona.findById(oid).exec();
-    } catch (error) {
-        console.log("hola");
-        return false;
-    }
+    let persona;
 
-    let persona = false;
+    persona = await Persona.findById(oid).exec();
 
-    if (personaDB.length === 1) {
-        persona = personaDB[0];
+    if (persona === null) {
+        persona = false;
     }
 
     return persona;
@@ -72,18 +73,42 @@ const updatePersona = async (persona) => {
  * Metodo que asocia el nuevo rol de la persona, segun el nombre del mismo y datos que se reciben por parámetro
  * Retorna la persona luego de modificarse.
  */
-const asociarRol = async (nombreRol, datosRol, dniPersona) => {
+const asociarRolOID = async (nombreRol, datosRol, oidPersona) => {
     let response = false;
 
+    let personaRol = await Persona.find({ _id: oidPersona, [nombreRol]: { $exists: true } })
+    if (personaRol.length != 0) {
+        throw "La persona ya posee el rol "+ nombreRol+ "."
+    }
+
     var $set = { $set: { [nombreRol]: datosRol } };
+    const responsable = await Persona.updateOne({ _id: oidPersona }, $set);
 
-    const resUpdate = await Persona.updateOne({ dni: dniPersona }, $set);
-
-    if (resUpdate.n === 1) {
-        response = await getPersonaById(dniPersona);
+    if (responsable.n === 1) {
+        response = await getPersonaByOID(oidPersona);
     };
 
     return response;
+}
+
+const deletePersonaOID = async (oid) => {
+    await Persona.deleteOne({ _id: oid }).exec();
+
+    return true;
+}
+
+function datosBasicos(persona) {
+    const datosBasicos = ['nombre', 'apellido', 'dni', 'genero'];
+
+    const valido = datosBasicos.every(atributo => {
+        if (!persona.hasOwnProperty(atributo) || persona[atributo] === undefined) {
+            //console.log(atributo + " No Existe");
+            return false;
+        } else if (persona[atributo] === "") {
+            //console.log(atributo + " Está Vacío");
+        } else { return true }
+    })
+    return valido;
 }
 
 module.exports = {
@@ -92,5 +117,6 @@ module.exports = {
     getPersonaByOID,
     getAllPersonas,
     updatePersona,
-    asociarRol
+    deletePersonaOID,    
+    asociarRolOID
 }
