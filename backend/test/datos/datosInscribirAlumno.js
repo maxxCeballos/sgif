@@ -97,7 +97,7 @@ const responsableEsperado = {
         email: "mariana.estevez@gmail.com",
         calle: "Irigoyen",
         altura: 200,
-        legajo: "8",
+        legajo: "1",
         barrio: "Huliches",
         localidad: "Cipolletti",
         codigoPostal: 8324,

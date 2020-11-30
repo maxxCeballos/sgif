@@ -159,8 +159,8 @@ describe('Inscribir Alumno', function () {
         });
     }).timeout(0);
 
-    //TODO: Agregar Camino 5
-    //TODO: Agregar Camino 6    
+    //TODO: Agregar Camino 5 llamada erronea a completar familia
+    //TODO: Agregar Camino 6 llamada correcta a completar familia, asocio hermano y padre
 
     //Camino 7
     it('Debería Fallar al agregar rol Responsable', (done) => {
@@ -448,65 +448,6 @@ describe('Inscribir Alumno', function () {
     }).timeout(0);
 
     //Camino 12
-    it('Debería Fallar al Crear una Persona Alumno', (done) => {
-
-        crearCicloLectivo(cicloValido).then(cicloLectivo => {
-            requester
-                .get('/insc-alumno/validar-fecha')
-                .end(function (err, res) {
-                    expect(res.body.response).to.have.property('valido').to.be.equal(true);
-                    expect(res).to.have.status(200);
-
-                    requester
-                        .get('/insc-alumno/alumno/' + alumno.dni)
-                        .end(function (err, res) {
-                            expect(res.body.response).to.include({
-                                valido: true,
-                                operacion: "Inscribir"
-                            })
-                            expect(res).to.have.status(200);
-
-                            //Busco un responsable que existe, para eso lo creo
-                            const dniResponsable = personaResponsable.dni;
-                            datosResponsable.legajo = responsableEsperado.responsable.legajo;
-                            crearPersonaRol(personaResponsable, 'responsable', datosResponsable).then(responsable => {
-                                requester
-                                    .get('/insc-alumno/responsable/' + dniResponsable)
-                                    .end(function (err, res) {
-                                        expect(res.body.responsable).to.deep.include(responsableEsperado);
-                                        expect(res).to.have.status(200);
-                                        const oidResponsable = res.body.responsable._id;
-
-                                        //Busco una persona que no existe
-                                        const dniAlumno = personaAlumno.dni
-                                        requester
-                                            .get('/insc-alumno/persona/' + dniAlumno)
-                                            .end(function (err, res) {
-                                                expect(res).to.have.status(404);
-
-                                                //Envío datos de persona - responsable erróneos                                            
-                                                requester
-                                                    .post('/insc-alumno/alumno')
-                                                    .send({ alumno: {}, oidResponsable })
-                                                    .end(function (err, res) {
-                                                        expect(res).to.have.status(400)
-
-                                                        //Elimino Recursos
-                                                        Promise.all([eliminarCicloLectivo(), eliminarPersonaOID(responsable._id)])
-                                                            .then(resp => {
-                                                                console.log("Recursos eliminados")
-                                                                done();
-                                                            });
-                                                    });
-                                            })
-                                    })
-                            });
-                        });
-                });
-        });
-    }).timeout(0);
-
-    //Camino 13
     it('Debería Agregar rol Alumno', (done) => {
 
         crearCicloLectivo(cicloValido).then(cicloLectivo => {
@@ -572,6 +513,65 @@ describe('Inscribir Alumno', function () {
         });
     }).timeout(0);
 
+    //Camino 13
+    it('Debería Fallar al Crear una Persona Alumno', (done) => {
+
+        crearCicloLectivo(cicloValido).then(cicloLectivo => {
+            requester
+                .get('/insc-alumno/validar-fecha')
+                .end(function (err, res) {
+                    expect(res.body.response).to.have.property('valido').to.be.equal(true);
+                    expect(res).to.have.status(200);
+
+                    requester
+                        .get('/insc-alumno/alumno/' + alumno.dni)
+                        .end(function (err, res) {
+                            expect(res.body.response).to.include({
+                                valido: true,
+                                operacion: "Inscribir"
+                            })
+                            expect(res).to.have.status(200);
+
+                            //Busco un responsable que existe, para eso lo creo
+                            const dniResponsable = personaResponsable.dni;
+                            datosResponsable.legajo = responsableEsperado.responsable.legajo;
+                            crearPersonaRol(personaResponsable, 'responsable', datosResponsable).then(responsable => {
+                                requester
+                                    .get('/insc-alumno/responsable/' + dniResponsable)
+                                    .end(function (err, res) {
+                                        expect(res.body.responsable).to.deep.include(responsableEsperado);
+                                        expect(res).to.have.status(200);
+                                        const oidResponsable = res.body.responsable._id;
+
+                                        //Busco una persona que no existe
+                                        const dniAlumno = personaAlumno.dni
+                                        requester
+                                            .get('/insc-alumno/persona/' + dniAlumno)
+                                            .end(function (err, res) {
+                                                expect(res).to.have.status(404);
+
+                                                //Envío datos de persona - responsable erróneos                                            
+                                                requester
+                                                    .post('/insc-alumno/alumno')
+                                                    .send({ alumno: {}, oidResponsable })
+                                                    .end(function (err, res) {
+                                                        expect(res).to.have.status(400)
+
+                                                        //Elimino Recursos
+                                                        Promise.all([eliminarCicloLectivo(), eliminarPersonaOID(responsable._id)])
+                                                            .then(resp => {
+                                                                console.log("Recursos eliminados")
+                                                                done();
+                                                            });
+                                                    });
+                                            })
+                                    })
+                            });
+                        });
+                });
+        });
+    }).timeout(0);
+   
     //Camino 14
     it('Debería Agregar un Alumno Completo', (done) => {
 

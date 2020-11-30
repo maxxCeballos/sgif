@@ -162,8 +162,7 @@ const setPadre = async (oidPadre, oidAlumno) => {
 }
 
 const getHermanos = async (oidAlumno) => {
-    //TODO: testear
-    const hermanosDB = await Persona.
+    let hermanosDB = await Alumno.
         findById(oidAlumno).
         select('hermanos').
         populate({ path: 'hermanos', select: 'dni nombre apellido genero hermano' }).exec();
@@ -171,24 +170,24 @@ const getHermanos = async (oidAlumno) => {
     return hermanosDB.hermanos;
 }
 
-const setHermano = async (oidHermano, oidAlumno) => {
-    //TODO: testear
+const setHermano = async (oidHermano, oidAlumno) => {    
     let response = {
         exito: false
-    }
-    const hermanoAux = getHermanoByOID(oidHermano);
-    const hermanos = getHermanos(oidAlumno);
+    };
+    const hermanoAux = await getHermanoByOID(oidHermano);
+    const hermanos = await getHermanos(oidAlumno);
     const valido = hermanos.every(hermano => {
         return hermano.dni !== hermanoAux.dni
     })
 
     if (valido) {
-        let $push = { $push: { 'hermanos': oidHermano } }
-        const res = Alumno.updateOne({ _id, oidAlumno }, $push).exec();
+        let $push = { $push: { 'hermanos': oidHermano } }        
+        const res = await Alumno.updateOne({ _id: oidAlumno }, $push).exec();        
 
-        if (res.n === 1) {
+        if (res.n === 1) {        
+            response.exito = true;    
             response.message = "Hermano Asociado Exitosamente."
-        } else {
+        } else {            
             response.message = "No se pudo asociar hermano con alumno."
         }
 

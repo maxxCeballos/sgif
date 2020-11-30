@@ -14,6 +14,7 @@ const { getAlumnoById, getAlumnoByOID } = require('../controllers/alumno');
 const { getPersonaById } = require('../controllers/persona');
 const { NotFound } = require('../middlewares/errores');
 const { getPadreByID } = require('../controllers/padre');
+const { getHermanoByID } = require('../controllers/hermano');
 
 router.get('/completar-familia/alumno/oid/:oidAlumno', vOID, asyncHandler(async (req, res) => {
     const oidAlumno = req.params.oid;
@@ -58,7 +59,7 @@ router.put('/completar-familia/asociar-padre/:oid', vAsociarPadre, asyncHandler(
     const oidPadre = req.params.oid;
     const oidAlumno = req.query.oidAlumno;
 
-    const response = await asociarPadre(oidPadre, oidAlumno);    
+    const response = await asociarPadre(oidPadre, oidAlumno);
 
     res.send({ ok: true, response });
 }))
@@ -70,9 +71,13 @@ router.put('/completar-familia/asociar-padre/:oid', vAsociarPadre, asyncHandler(
 router.get('/completar-familia/persona/:dni', vDni, asyncHandler(async (req, res) => {
     const dniPersona = req.params.dni;
 
-    const response = await getPersonaById(dniPersona);
+    const persona = await getPersonaById(dniPersona);
 
-    res.send({ ok: true, response });
+    if (persona === false) {
+        throw new NotFound("No existe una Persona con el DNI recibido.");
+    }
+
+    res.send({ ok: true, persona });
 }))
 
 /**
@@ -101,11 +106,24 @@ router.put('/completar-familia/padre/persona/:oidPersona', vPadreRol, asyncHandl
 
 }))
 
-router.put('/completar-familia/asociar-hermano/:dni', vAsociarHermano, asyncHandler(async (req, res) => {
-    const dniHermano = req.params.dniHermano;
+router.get('/completar-familia/hermano/:dni', vDni, asyncHandler(async (req, res) => {
+    const dniHermano = req.params.dni;
+
+    const hermano = await getHermanoByID(dniHermano);
+
+    if (hermano === false) {
+        throw new NotFound("No existe un Hermano con el DNI recibido.");
+    }
+
+    res.send({ ok: true, hermano })
+
+}))
+
+router.put('/completar-familia/asociar-hermano/:oid', vAsociarHermano, asyncHandler(async (req, res) => {
+    const oidHermano = req.params.oid;
     const oidAlumno = req.query.oidAlumno;
 
-    const response = await asociarHermano(dniHermano, oidAlumno);
+    const response = await asociarHermano(oidHermano, oidAlumno);
 
     res.send({ ok: true, response });
 }))

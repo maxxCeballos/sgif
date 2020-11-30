@@ -19,7 +19,7 @@ const getResponsableByOID = async (oid) => {
     let responsable = await Persona.find({ _id: oid, responsable: { $exists: true } }).exec()
 
     if (responsable.length < 1) {
-        responsable = false;
+        return false;
     }
 
     return responsable[0];

@@ -25,11 +25,26 @@ const datosPadre = {
 }
 
 const padreCompleto = {
+    dni: personaPadre.dni,
+    nombre: personaPadre.nombre,
+    apellido: personaPadre.apellido,
+    genero: personaPadre.genero,
+    fechaNacimiento: datosPadre.fechaNacimiento,
+    nacionalidad: datosPadre.nacionalidad,
+    telefono: datosPadre.telefono,
+    ocupacion: datosPadre.ocupacion,
+    lugarTrabajo: datosPadre.lugarTrabajo,
+    telefonoLaboral: datosPadre.telefonoLaboral,
+    bautismo: datosPadre.bautismo,
+    comunion: datosPadre.comunion,
+    confirmación: datosPadre.confirmación,
+    egresoPrimario: datosPadre.egresoPrimario,
+    egresoSecundario: datosPadre.egresoSecundario,
+    relacionParentesco: datosPadre.relacionParentesco
+}
+
+const padreEsperado = {
     padre: {
-        dni: personaPadre.dni,
-        nombre: personaPadre.nombre,
-        apellido: personaPadre.apellido,
-        genero: personaPadre.genero,
         fechaNacimiento: datosPadre.fechaNacimiento,
         nacionalidad: datosPadre.nacionalidad,
         telefono: datosPadre.telefono,
@@ -42,20 +57,56 @@ const padreCompleto = {
         egresoPrimario: datosPadre.egresoPrimario,
         egresoSecundario: datosPadre.egresoSecundario,
         relacionParentesco: datosPadre.relacionParentesco
-    }
-}
-
-const padreEsperado = {
-    padre: datosPadre,
+    },
     dni: personaPadre.dni,
     nombre: personaPadre.nombre,
     apellido: personaPadre.apellido,
-    genero: personaPadre.genero,
+    genero: personaPadre.genero
+}
+
+const personaHermano = {
+    dni: "98765434",
+    nombre: "Lucía",
+    apellido: "Gimenez",
+    genero: "Femenino",
+}
+
+const datosHermano = {
+    fechaNacimiento: "2005-05-10T00:00:00.000Z",
+    escuelaActual: "Fatima",
+    grado: "3º año"
+}
+
+const hermanoCompleto = {
+    dni: personaHermano.dni,
+    nombre: personaHermano.nombre,
+    apellido: personaHermano.apellido,
+    genero: personaHermano.genero,
+    fechaNacimiento: datosHermano.fechaNacimiento,
+    escuelaActual: datosHermano.escuelaActual,
+    grado: datosHermano.grado
+}
+
+const hermanoEsperado = {
+    hermano: {
+        fechaNacimiento: datosHermano.fechaNacimiento,
+        escuelaActual: datosHermano.escuelaActual,
+        grado: datosHermano.grado,
+        hermanos: []
+    },
+    dni: personaHermano.dni,
+    nombre: personaHermano.nombre,
+    apellido: personaHermano.apellido,
+    genero: personaHermano.genero
 }
 
 module.exports = {
     personaPadre,
     datosPadre,
     padreCompleto,
-    padreEsperado
+    padreEsperado,
+    personaHermano,
+    datosHermano,
+    hermanoCompleto,
+    hermanoEsperado
 }
