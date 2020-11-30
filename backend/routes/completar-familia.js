@@ -16,8 +16,9 @@ const { NotFound } = require('../middlewares/errores');
 const { getPadreByID } = require('../controllers/padre');
 const { getHermanoByID } = require('../controllers/hermano');
 
-router.get('/completar-familia/alumno/oid/:oidAlumno', vOID, asyncHandler(async (req, res) => {
+router.get('/completar-familia/alumno/oid/:oid', vOID, asyncHandler(async (req, res) => {
     const oidAlumno = req.params.oid;
+    console.log("oidAlumno",oidAlumno)
 
     const alumno = await getAlumnoByOID(oidAlumno);
 
@@ -95,8 +96,8 @@ router.post('/completar-familia/padre', vPadreNuevo, asyncHandler(async (req, re
 /** * 
  * ruta que asocia el rol del padre si la persona ya existe en el sistema
  */
-router.put('/completar-familia/padre/persona/:oidPersona', vPadreRol, asyncHandler(async (req, res) => {
-    const oidPersona = req.params.oidPersona;
+router.put('/completar-familia/padre/persona/:oid', vPadreRol, asyncHandler(async (req, res) => {
+    const oidPersona = req.params.oid;
     const datosPadre = req.body.padre;
     const oidAlumno = req.body.oidAlumno;
 
@@ -143,8 +144,8 @@ router.post('/completar-familia/hermano', vHermano, asyncHandler(async (req, res
 /** * 
  * ruta que asocia el rol de hermano si la persona ya existe en el sistema
  */
-router.put('/completar-familia/hermano/persona/:oidPersona', vHermanoRol, asyncHandler(async (req, res) => {
-    const oidPersona = req.params.oidPersona;
+router.put('/completar-familia/hermano/persona/:oid', vHermanoRol, asyncHandler(async (req, res) => {
+    const oidPersona = req.params.oid;
     const datosHermano = req.body.hermano;
     const oidAlumno = req.body.oidAlumno;
 

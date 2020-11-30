@@ -11,12 +11,12 @@ const vAsociarPadre = (req, res, next) => {
     if (oidAlumno === undefined || !mongoose.Types.ObjectId.isValid(oidAlumno)) {
         throw new BadRequest("OID Alumno Inválido");
     }
-    
+
     //valida oid Padre
-    vOID(req,res,next);
+    vOID(req, res, next);
 }
 
-const vPadreNuevo = (req, res, next) => {    
+const vPadreNuevo = (req, res, next) => {
     const datosPadre = req.body.padre;
     const oidAlumno = req.body.oidAlumno;
 
@@ -35,7 +35,7 @@ const vPadreNuevo = (req, res, next) => {
 }
 
 const vPadreRol = (req, res, next) => {
-    const oidPersona = req.params.oidPersona;
+    const oidPersona = req.params.oid;
     const datosPadre = req.body.padre;
     const oidAlumno = req.body.oidAlumno;
 
@@ -43,15 +43,13 @@ const vPadreRol = (req, res, next) => {
         throw new BadRequest("Faltó enviar los datos del Padre.");
     } else if (oidAlumno === undefined || !mongoose.Types.ObjectId.isValid(oidAlumno)) {
         throw new BadRequest("OID Alumno Inválido");
-    } else if (oidPersona === undefined || !mongoose.Types.ObjectId.isValid(oidPersona)) {
-        throw new BadRequest("OID Persona Inválido");
     }
 
     if (!tieneDatosBasicosP(datosPadre)) {
         throw new BadRequest("Datos básicos Padre incompletos, verifíquelos nuevamente.");
     }
 
-    next();
+    vOID(req, res, next);
 }
 
 const vAsociarHermano = (req, res, next) => {
@@ -82,7 +80,7 @@ const vHermano = (req, res, next) => {
 }
 
 const vHermanoRol = (req, res, next) => {
-    const oidPersona = req.params.oidPersona;
+    const oidPersona = req.params.oid;
 
     if (oidPersona === undefined || !mongoose.Types.ObjectId.isValid(oidPersona)) {
         throw new BadRequest("OID Persona Inválido");
