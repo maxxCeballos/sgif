@@ -2,7 +2,6 @@
 
 let Alumno = require('../models/alumno.model');
 const Persona = require('../models/persona.model');
-const { hermanoCompleto } = require('../test/datos/datosCompletarFamilia');
 const { getHermanoByOID } = require('./hermano');
 const { getPadreByOID } = require('./padre');
 
