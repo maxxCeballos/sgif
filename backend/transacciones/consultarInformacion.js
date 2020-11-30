@@ -73,10 +73,12 @@ async function obtenerCalificacionesMateria(materia, calificaciones) {
     var califMateria = [];
     //calificaciones de la materia elegida
     for (i in calificaciones) {
-        califActual = (response[0].calificaciones[i]);
+        califActual = (calificaciones[i]);
         dictadoABuscar = califActual.dictado;
         dictado = await getDictado(dictadoABuscar);
+
         if (dictado.materia.nombre == materia) {
+
             //Si es la materia buscada, lo guardo en el arreglo
             califMateria.push(califActual);
         }
@@ -113,29 +115,29 @@ async function obtenerInasistenciasAlumno(asistencias, cicloLectivo) {
 
 async function obtenerDictadosCalificaciones(calificaciones) {
     //Busca todos los dictados de las calificaciones
-    var i, dictadoABuscar, dictadoActual,califActual;
+    var i, dictadoABuscar, dictadoActual, califActual;
     var tuplaDC = []; //Guarda un json de calificacion junto a su dictado
     for (i in calificaciones) {
         //console.log(i);
-        califActual=calificaciones[i];
+        califActual = calificaciones[i];
         dictadoABuscar = califActual.dictado;
         dictadoActual = await getDictado(dictadoABuscar);
-        tuplaDC.push({'calificacion':califActual, 'dictado':dictadoActual}); 
+        tuplaDC.push({ 'calificacion': califActual, 'dictado': dictadoActual });
         //console.log(tuplaDC);
     }
     return tuplaDC;
 }
 
-function obtenerInasistenciaCiclo(presentismos,cicloLectivo) {
+async function obtenerInasistenciaCiclo(presentismos, cicloLectivo) {
     //Esta función filtra las inasistencias del ciclo lectivo recibido como parametro
     var inasistencias = [], i;
     let presentismoActual;
-   
+
     for (i in presentismos) {
         presentismoActual = presentismos[i];
-       
-        if (JSON.parse(JSON.stringify(presentismoActual)).hasOwnProperty('inasistencia') && presentismoActual.fecha.getFullYear()==cicloLectivo) {
-            
+
+        if (JSON.parse(JSON.stringify(presentismoActual)).hasOwnProperty('inasistencia') && presentismoActual.fecha.getFullYear() == cicloLectivo.cicloLectivo) {
+
             inasistencias.push(presentismoActual);
         }
     }

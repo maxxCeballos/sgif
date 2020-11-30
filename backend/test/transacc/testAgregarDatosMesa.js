@@ -1,5 +1,5 @@
 'use strict';
-const app = require('../server')
+
 const assert = require('chai').assert;
 const chai = require('chai');
 const chaiHttp = require('chai-http');

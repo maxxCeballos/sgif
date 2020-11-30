@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const routesHandler = require('./routes/index');
 const errorHandler = require('./middlewares/error');
 
-
+var bodyParser = require('body-parser');
 require('dotenv').config();
 
 //Init Server

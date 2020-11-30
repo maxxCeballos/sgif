@@ -23,11 +23,11 @@ const createAlumno = async (alumno) => {
         nombre,
         apellido,
         genero,
-         fechaNacimiento,
-         legajo,
-         fechaIngreso,
-         nombreEscuelaAnt,
-         sacramento,
+        fechaNacimiento,
+        legajo,
+        fechaIngreso,
+        nombreEscuelaAnt,
+        sacramento,
         estadoInscripcion,
         anioCorrespondiente,
         observaciones,
@@ -48,7 +48,12 @@ const createAlumno = async (alumno) => {
 const getAlumnoByDni = async (dni) => {
 
     const alumnoDB = await Alumno.find({ dni: dni }).exec();
-
+    if (alumnoDB.length == 0) {
+        throw {
+            status: 204,
+            message: "No se encontro el alumno"
+        }
+    }
     return alumnoDB[0]
 }
 
@@ -74,8 +79,8 @@ const updateAlumno = async (alumno) => {
 
 }
 const updateAlumno2 = async (oid, update) => {
-//Actualiza un alumno y devuevle el valor guardado en la base de datos
-    const alumnoUpdated = Alumno.findOneAndUpdate({_id:oid}, update,{new: true});
+    //Actualiza un alumno y devuevle el valor guardado en la base de datos
+    const alumnoUpdated = Alumno.findOneAndUpdate({ _id: oid }, update, { new: true });
 
     return alumnoUpdated;
 }
