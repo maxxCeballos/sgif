@@ -123,11 +123,10 @@ const createDictado = async (cicloLectivo, programa, horarios, nombreMateria, an
 
     let response = {};
     response.ok = true;
-    let horarioDB;
-
+    
     // chequear que el idProfesor, id sea correcto
-
-
+    
+    let horarioDB;
     horarios = horarios.split(',')
     
     const dictado = new Dictado({
@@ -144,7 +143,7 @@ const createDictado = async (cicloLectivo, programa, horarios, nombreMateria, an
 
         horarioDB = await Horario.findById( horarios[i] );
 
-        if ( !horarioDB ) {
+        if ( horarioDB.length === 0 ) {
 
             response.ok = false;
             response.message = "el horario indicado no es correcto";
@@ -152,23 +151,11 @@ const createDictado = async (cicloLectivo, programa, horarios, nombreMateria, an
 
         }
 
-        console.log("horario ", horarioDB);
         dictado.horarios.push( {
             dia: horarioDB.dia,
             bloqueHorario: horarioDB.bloqueHorario
-        });
-        
-        // arrayObjectID.push(mongoose.Types.ObjectId(horarios[i]));
-        
+        });        
     }
-
-    // dictado.materia = {
-    //     nombre: nombreMateria,
-    //     anio: anioMateria
-    // }
-
-    // await dictado.markModified('materia');
-    // await dictado.markModified('horarios');
 
     const dictadoDB = await dictado.save();
 
@@ -196,12 +183,11 @@ const createDictado = async (cicloLectivo, programa, horarios, nombreMateria, an
         return response;
     }
 
-    response.curso = dictadoDB;
+    response.dictado = dictadoDB;
 
     return response;
-    
-
 }
+
 
 // obtiene los cursos del año solicitado, del ciclo lectivo actual.
 const getCursosCicloLectivo = async (anioCiclo, anioCurso) => {
@@ -209,7 +195,6 @@ const getCursosCicloLectivo = async (anioCiclo, anioCurso) => {
     const cursosCiclo = await Curso.find({ cicloLectivo : anioCiclo, anio: anioCurso }).sort({ division : -1 }).populate({ path : 'preceptor'})
 
     return cursosCiclo;
-
 }
 
 

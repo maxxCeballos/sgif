@@ -1,0 +1,23 @@
+{
+  "name": "sgif-1",
+  "version": "1.0.0",
+  "description": "Sistema de Gestión Fátima",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxxCeballos/sgif.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maxxCeballos/sgif/issues"
+  },
+  "homepage": "https://github.com/maxxCeballos/sgif#readme"
+}

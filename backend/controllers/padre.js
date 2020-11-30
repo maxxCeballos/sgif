@@ -6,7 +6,7 @@ const getPadreByID = async (dni) => {
     let padre = await Persona.find({ dni: dni, padre: { $exists: true } }).exec()
 
     if (padre.length < 1) {
-        padre = false;
+        return false;
     } else if (padre.length > 1) {
         throw "Hay mas de un padre con el mismo DNI."
     }
@@ -26,5 +26,5 @@ const getPadreByOID = async (oid) => {
 
 module.exports = {
     getPadreByID,
-    getPadreByOID
+    getPadreByOID,    
 }

@@ -1,18 +1,19 @@
 'use strict'
 var mongoose = require('mongoose');
+const {BadRequest} = require('./errores');
 
 const vResponsableNuevo = (req, res, next) => {
     const datosResponsable = req.body.responsable;
 
-    const { dni, nombre, apellido, genero } = datosResponsable;
-    const datosPersona = { dni, nombre, apellido, genero };
-
     if (datosResponsable === "" || datosResponsable === undefined || datosResponsable === null) {
-        throw "Faltó enviar los datos del Responsable.";
+        throw new BadRequest("Faltó enviar los datos del Responsable.");
     }
 
+    const { dni, nombre, apellido, genero } = datosResponsable;
+    const datosPersona = { dni, nombre, apellido, genero };    
+
     if (!vPersona(datosPersona) || !tieneDatosBasicosR(datosResponsable)) {
-        throw "Datos básicos Responsable incompletos, verifíquelos nuevamente.";
+        throw new BadRequest("Datos básicos Responsable incompletos, verifíquelos nuevamente.");        
     }
 
     next();
@@ -23,13 +24,13 @@ const vResponsableRol = (req, res, next) => {
     const datosResponsable = req.body.responsable;
 
     if (oidPersona === undefined || !mongoose.Types.ObjectId.isValid(oidPersona)) {
-        throw "OID Persona Inválido";
+        throw new BadRequest("OID Persona Inválido");
     } else if (datosResponsable === "" || datosResponsable === undefined || datosResponsable === null) {
-        throw "Faltó enviar los datos del Responsable.";
+        throw new BadRequest ("Faltó enviar los datos del Responsable.");
     }
 
     if (!tieneDatosBasicosR(datosResponsable)) {
-        throw "Datos básicos Responsable incompletos, verifíquelos nuevamente.";
+        throw new BadRequest ("Datos básicos Responsable incompletos, verifíquelos nuevamente.");
     }
 
     next();
@@ -40,13 +41,13 @@ const vRegistrarAlumnoNuevo = (req, res, next) => {
     const oidResponsable = req.body.oidResponsable;
 
     if (datosAlumno === "" || datosAlumno === undefined || datosAlumno === null) {
-        throw "Faltó enviar los datos del Alumno.";
+        throw new BadRequest ("Faltó enviar los datos del Alumno.");
     } else if (oidResponsable === "" || oidResponsable === undefined || oidResponsable === null) {
-        throw "Faltó enviar OID Responsable.";
+        throw new BadRequest ("Faltó enviar OID Responsable.");
     }
 
     if (!vPersona(datosAlumno) || !tieneDatosBasicosA(datosAlumno)) {
-        throw "Datos básicos Alumno incompletos, verifiquelos nuevamente."
+        throw new BadRequest ("Datos básicos Alumno incompletos, verifiquelos nuevamente.");
     }
 
     next();
@@ -58,29 +59,29 @@ const vRegistrarAlumnoRol = (req, res, next) => {
     const oidResponsable = req.body.oidResponsable;
 
     if (oidPersona === undefined || !mongoose.Types.ObjectId.isValid(oidPersona)) {
-        throw "OID Persona Inválido";
+        throw new BadRequest ("OID Persona Inválido");
     } else if (datosAlumno === "" || datosAlumno === undefined || datosAlumno === null) {
-        throw "Faltó enviar los datos del Alumno.";
+        throw new BadRequest ("Faltó enviar los datos del Alumno.");
     } else if (oidResponsable === "" || oidResponsable === undefined || oidResponsable === null) {
-        throw "Faltó enviar OID Responsable.";
+        throw new BadRequest ("Faltó enviar OID Responsable.");
     }
 
     if (!tieneDatosBasicosA(datosAlumno)) {
-        throw "Datos básicos Alumno incompletos, verifiquelos nuevamente."
+        throw new BadRequest ("Datos básicos Alumno incompletos, verifiquelos nuevamente.");
     }
 
     next();
 }
 
-const vReinscribirAlumno = (req, res, next) => {    
+const vReinscribirAlumno = (req, res, next) => {
     const oidAlumno = req.params.oidAlumno;
     const valorAnio = req.query.anio;
 
     if (oidAlumno === undefined || !mongoose.Types.ObjectId.isValid(oidAlumno)) {
-        throw "OID Alumno Inválido";
+        throw new BadRequest ("OID Alumno Inválido");
     } else if (valorAnio === null || valorAnio === undefined ||
         isNaN(parseInt(valorAnio)) || parseInt(valorAnio) < 1 || parseInt(valorAnio) > 5) {
-        throw "Año Reinscripción Inválido";
+        throw new BadRequest("Año Reinscripción Inválido");
     }
     next();
 }
@@ -97,7 +98,7 @@ function tieneDatosBasicosA(datosAlumno) {
             //console.log(atributo + " Está Vacío")
             return false;
         } else return true
-    });
+    });    
 
     return valido;
 }
@@ -129,11 +130,11 @@ function vPersona(datosPersona) {
             //console.log(atributo + " Está Vacío")
             return false;
         } else return true;
-    });
+    });    
 
     return valido;
 }
-module.exports = {    
+module.exports = {
     vResponsableNuevo,
     vResponsableRol,
     vRegistrarAlumnoNuevo,

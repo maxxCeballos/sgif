@@ -77,8 +77,12 @@ const asociarRolOID = async (nombreRol, datosRol, oidPersona) => {
     let response = false;
 
     let personaRol = await Persona.find({ _id: oidPersona, [nombreRol]: { $exists: true } })
+    
     if (personaRol.length != 0) {
-        throw "La persona ya posee el rol "+ nombreRol+ "."
+        //Solo pasa con hermano porque el esquema tiene un arreglo
+        if (personaRol[0].hermano.fechaNacimiento !== undefined) {
+            throw "La persona ya posee el rol " + nombreRol + "."
+        }
     }
 
     var $set = { $set: { [nombreRol]: datosRol } };
@@ -117,6 +121,6 @@ module.exports = {
     getPersonaByOID,
     getAllPersonas,
     updatePersona,
-    deletePersonaOID,    
+    deletePersonaOID,
     asociarRolOID
 }

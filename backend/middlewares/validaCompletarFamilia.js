@@ -1,34 +1,35 @@
 'use strict'
 var mongoose = require('mongoose');
 
-const { vDni } = require('./validaRequests');
+const { vDni, vOID } = require('./validaRequests');
+const { BadRequest } = require('./errores')
 
 const vAsociarPadre = (req, res, next) => {
-    const dniPadre = req.params.dniPadre;
+    const oidPadre = req.params.oid;
     const oidAlumno = req.query.oidAlumno;
 
     if (oidAlumno === undefined || !mongoose.Types.ObjectId.isValid(oidAlumno)) {
-        throw "OID Alumno Inválido";
+        throw new BadRequest("OID Alumno Inválido");
     }
-
-    //valida dni padre
-    vDni(req, res, next);
+    
+    //valida oid Padre
+    vOID(req,res,next);
 }
 
-const vPadreNuevo = (req, res, next) => {
+const vPadreNuevo = (req, res, next) => {    
     const datosPadre = req.body.padre;
     const oidAlumno = req.body.oidAlumno;
 
     if (datosPadre === "" || datosPadre === undefined || datosPadre === null) {
-        throw "Faltó enviar los datos del Padre.";
+        throw new BadRequest("Faltó enviar los datos del Padre.");
     } else if (oidAlumno === undefined || !mongoose.Types.ObjectId.isValid(oidAlumno)) {
-        throw "OID Alumno Inválido";        
+        throw new BadRequest("OID Alumno Inválido");
     } else if (datosPadre.dni === null || datosPadre.dni === "" || datosPadre.dni === undefined) {
-        throw "Faltó enviar DNI del padre";
+        throw new BadRequest("Faltó enviar DNI del padre");
     }
 
     if (!tieneDatosBasicosP(datosPadre)) {
-        throw "Datos básicos Padre incompletos, verifíquelos nuevamente.";
+        throw new BadRequest("Datos básicos Padre incompletos, verifíquelos nuevamente.");
     }
     next();
 }
@@ -39,15 +40,15 @@ const vPadreRol = (req, res, next) => {
     const oidAlumno = req.body.oidAlumno;
 
     if (datosPadre === "" || datosPadre === undefined || datosPadre === null) {
-        throw "Faltó enviar los datos del Padre.";
+        throw new BadRequest("Faltó enviar los datos del Padre.");
     } else if (oidAlumno === undefined || !mongoose.Types.ObjectId.isValid(oidAlumno)) {
-        throw "OID Alumno Inválido";
+        throw new BadRequest("OID Alumno Inválido");
     } else if (oidPersona === undefined || !mongoose.Types.ObjectId.isValid(oidPersona)) {
-        throw "OID Persona Inválido";
+        throw new BadRequest("OID Persona Inválido");
     }
 
     if (!tieneDatosBasicosP(datosPadre)) {
-        throw "Datos básicos Padre incompletos, verifíquelos nuevamente.";
+        throw new BadRequest("Datos básicos Padre incompletos, verifíquelos nuevamente.");
     }
 
     next();
@@ -57,10 +58,10 @@ const vAsociarHermano = (req, res, next) => {
     const oidAlumno = req.query.oidAlumno;
 
     if (oidAlumno === undefined || !mongoose.Types.ObjectId.isValid(oidAlumno)) {
-        throw "OID Alumno inválido";
+        throw new BadRequest("OID Alumno inválido");
     }
 
-    vDni(req, res, next)
+    vOID(req, res, next);
 }
 
 const vHermano = (req, res, next) => {
@@ -68,13 +69,13 @@ const vHermano = (req, res, next) => {
     const oidAlumno = req.body.oidAlumno;
 
     if (datosHermano === "" || datosHermano === undefined || datosHermano === null) {
-        throw "Faltó enviar los datos del Hermano.";
+        throw new BadRequest("Faltó enviar los datos del Hermano.");
     } else if (oidAlumno === undefined || !mongoose.Types.ObjectId.isValid(oidAlumno)) {
-        throw "OID Alumno Inválido";
+        throw new BadRequest("OID Alumno Inválido");
     }
 
     if (!tieneDatosBasicosH(datosHermano)) {
-        throw "Datos básicos Hermano incompletos, verifíquelos nuevamente.";
+        throw new BadRequest("Datos básicos Hermano incompletos, verifíquelos nuevamente.");
     }
 
     next();
@@ -84,7 +85,7 @@ const vHermanoRol = (req, res, next) => {
     const oidPersona = req.params.oidPersona;
 
     if (oidPersona === undefined || !mongoose.Types.ObjectId.isValid(oidPersona)) {
-        throw "OID Persona Inválido";
+        throw new BadRequest("OID Persona Inválido");
     }
 
     vHermano(req, res, next);
@@ -124,7 +125,7 @@ function tieneDatosBasicosP(datosPadre) {
 }
 
 module.exports = {
-    vAsociarPadre,    
+    vAsociarPadre,
     vPadreNuevo,
     vPadreRol,
     vAsociarHermano,
