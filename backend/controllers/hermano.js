@@ -2,31 +2,26 @@
 
 const Persona = require('../models/persona.model')
 
-const getHermanoById = async (dni) => {
-    const hermanoBD = await Persona.find({ dni: dni }).exec();
-    let hermano = false;
+const getHermanoByID = async (dni) => {
+    let hermano = await Persona.find({ dni: dni, hermano: { $exists: true } }).exec()
 
-    if (hermanoBD.length === 1){
-        hermano = hermanoBD[0];
-    }else if (hermanoBD.length>0){
-        throw "Existe mas de un hermano con el mismo DNI";
+    if (hermano.length < 1) {
+        return false;
+    } else if (hermano.length > 1) {
+        throw "Hay mas de un hermano con el mismo DNI."
     }
 
-    return hermano;
+    return hermano[0];
 }
 
-const getHermanoByOID = async (oid) => {
-    let hermano;
+const getHermanoByOID = async (oid) => {    
+    let hermano = await Persona.find({ _id: oid, hermano: { $exists: true } }).exec()    
 
-    hermano = await Persona.findById(oid).exec();
-
-    if (hermano === null) {
+    if (hermano.length < 1) {
         hermano = false;
     }
 
-    return hermano;
+    return hermano[0];
 }
 
-
-
-module.exports = { getHermanoById, getHermanoByOID }
+module.exports = { getHermanoByID, getHermanoByOID }

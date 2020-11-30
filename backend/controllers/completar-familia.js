@@ -3,7 +3,7 @@
 const { getPadreByID, getPadreByOID } = require("./padre");
 const { updateAlumnoOID, getAlumnoByOID, setPadre, setHermano } = require("./alumno");
 const { createPersona, deletePersonaOID, asociarRolOID, getPersonaByOID } = require("./persona");
-const { getHermanoById } = require("./hermano");
+const { getHermanoByOID } = require("./hermano");
 const { NotFound } = require("../middlewares/errores");
 
 const asociarPadre = async (oidPadre, oidAlumno) => {
@@ -13,9 +13,9 @@ const asociarPadre = async (oidPadre, oidAlumno) => {
         throw new NotFound("El OID recibido no corresponde a un alumno, envíelo nuevamente.")
     }
 
-    const padre = await getPadreByOID(oidPadre);    
+    const padre = await getPadreByOID(oidPadre);
     if (padre !== false) {
-        let res = await setPadre(padre._id, oidAlumno);        
+        let res = await setPadre(padre._id, oidAlumno);
         if (res.exito) { // si pudo actualizar solo devuelve ok
             response = {
                 valido: true,
@@ -54,17 +54,12 @@ const createPadreNuevo = async (datosPadre, oidAlumno) => {
     }
 
     if (!await getAlumnoByOID(oidAlumno)) {
-        return {
-            exito: false,
-            message: "El OID recibido no corresponde a un alumno, envíelo nuevamente."
-        }
+        throw new NotFound("El OID recibido no corresponde a un alumno, envíelo nuevamente.")
     }
 
-    const personaDB = await createPersona(persona, 'padre', padre);
-    //TODO: controlar cuando no puede crear la persona
+    const personaDB = await createPersona(persona, 'padre', padre);    
 
-    let response = await setPadre(personaDB._id, oidAlumno);
-    //TODO: testear
+    let response = await setPadre(personaDB._id, oidAlumno);    
     if (response.exito) {
         response = {
             valido: true,
@@ -87,18 +82,17 @@ const createPadreRol = async (datosPadre, oidPersona, oidAlumno) => {
 
     const personaDB = await getPersonaByOID(oidPersona);
     if (!personaDB) {
-        throw "El OID recibido no corresponde a una persona, envíelo nuevamente."
+        throw new NotFound("El OID recibido no corresponde a una persona, envíelo nuevamente.")
     }
 
     const alumnoDB = await getAlumnoByOID(oidAlumno);
     if (!alumnoDB) {
-        throw "El OID recibido no corresponde a un alumno, envíelo nuevamente."
+        throw new NotFound("El OID recibido no corresponde a un alumno, envíelo nuevamente.")
     }
 
     const padre = await asociarRolOID('padre', datosPadre, oidPersona);
     if (padre !== false) {
         const res = await setPadre(padre._id, oidAlumno);
-        //TODO: testear
         if (res.exito) {
             response = {
                 valido: true,
@@ -117,30 +111,20 @@ const createPadreRol = async (datosPadre, oidPersona, oidAlumno) => {
 }
 
 
-const asociarHermano = async (dniHermano, oidAlumno) => {
-    let actualizoAlumno = false;
-    let response = {
-        valido: false,
-        message: "No existe el hermano, no se pudo asociar con el alumno"
-    }
+const asociarHermano = async (oidHermano, oidAlumno) => {
+    let response;
 
     if (!await getAlumnoByOID(oidAlumno)) {
-        return {
-            exito: false,
-            message: "El OID recibido no corresponde a un alumno, envíelo nuevamente."
-        }
+        throw new NotFound("El OID recibido no corresponde a un alumno, envíelo nuevamente.")
     }
 
-    const hermano = await getHermanoById(dniHermano);
+    const hermano = await getHermanoByOID(oidHermano);
     if (hermano !== false) {
-        //TODO: testear
-        const res = await setHermano(hermano._id, oidAlumno);
-        //TODO: Ver con ifaz si devuelve el hermano o no (que solo devuelva el ok)
-        if (res.exito) { //si se pudo actualizar el alumno, devuelvo el hermano
+        let res = await setHermano(hermano._id, oidAlumno);
+        if (res.exito) { //si se pudo actualizar el alumno, devuelvo ok
             response = {
                 valido: true,
-                hermano
-                //message: "El hermano fue asociado con exito"
+                message: "El hermano fue asociado con exito"
             };
         } else {
             response = {
@@ -148,7 +132,10 @@ const asociarHermano = async (dniHermano, oidAlumno) => {
                 message: "No se pudo actualizar el alumno, verifique si existe"
             };
         }
+    } else {
+        throw new NotFound("El OID recibido no corresponde a un hermano, envíelo nuevamente.")
     }
+
     return response;
 }
 
@@ -167,11 +154,9 @@ const createHermanoNuevo = async (datosHermano, oidAlumno) => {
     }
 
     const personaDB = await createPersona(persona, 'hermano', hermano);
-    //TODO: controlar cuando no puede crear la persona
 
-    //TODO: testear
-    const res = await setHermano(personaDB._id, oidAlumno);
-    if (res.exito) {
+    let response = await setHermano(personaDB._id, oidAlumno);
+    if (response.exito) {
         response = {
             valido: true,
             message: "Se pudo crear el nuevo hermano y se asoció con su alumno.",
@@ -189,28 +174,20 @@ const createHermanoNuevo = async (datosHermano, oidAlumno) => {
 }
 
 const createHermanoRol = async (datosHermano, oidPersona, oidAlumno) => {
-    let response = false;
-    //TODO: refactor respuestas con throw  
+    let response = false;    
 
     const personaDB = await getPersonaByOID(oidPersona);
     if (!personaDB) {
-        return {
-            exito: false,
-            message: "El OID recibido no corresponde a una persona, envíelo nuevamente."
-        }
+        throw new NotFound("El OID recibido no corresponde a una persona, envíelo nuevamente.")
     }
 
     const alumnoDB = await getAlumnoByOID(oidAlumno);
     if (!alumnoDB) {
-        return {
-            exito: false,
-            message: "El OID recibido no corresponde a un alumno, envíelo nuevamente."
-        }
+        throw new NotFound("El OID recibido no corresponde a un alumno, envíelo nuevamente.")
     }
 
     const hermano = await asociarRolOID('hermano', datosHermano, oidPersona);
-    if (hermano !== false) {
-        //TODO: testear
+    if (hermano !== false) {        
         const res = await setHermano(hermano._id, oidAlumno);
         if (res.exito) {
             response = {

@@ -16,7 +16,7 @@ const vAsociarPadre = (req, res, next) => {
     vOID(req,res,next);
 }
 
-const vPadreNuevo = (req, res, next) => {
+const vPadreNuevo = (req, res, next) => {    
     const datosPadre = req.body.padre;
     const oidAlumno = req.body.oidAlumno;
 
@@ -61,7 +61,7 @@ const vAsociarHermano = (req, res, next) => {
         throw new BadRequest("OID Alumno inválido");
     }
 
-    vDni(req, res, next)
+    vOID(req, res, next);
 }
 
 const vHermano = (req, res, next) => {

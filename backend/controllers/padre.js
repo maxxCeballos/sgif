@@ -26,5 +26,5 @@ const getPadreByOID = async (oid) => {
 
 module.exports = {
     getPadreByID,
-    getPadreByOID
+    getPadreByOID,    
 }

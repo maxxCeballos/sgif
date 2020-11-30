@@ -14,6 +14,7 @@ const { getAlumnoById, getAlumnoByOID } = require('../controllers/alumno');
 const { getPersonaById } = require('../controllers/persona');
 const { NotFound } = require('../middlewares/errores');
 const { getPadreByID } = require('../controllers/padre');
+const { getHermanoByID } = require('../controllers/hermano');
 
 router.get('/completar-familia/alumno/oid/:oidAlumno', vOID, asyncHandler(async (req, res) => {
     const oidAlumno = req.params.oid;
@@ -94,22 +95,35 @@ router.post('/completar-familia/padre', vPadreNuevo, asyncHandler(async (req, re
 /** * 
  * ruta que asocia el rol del padre si la persona ya existe en el sistema
  */
-router.put('/completar-familia/padre/persona/:oidPersona', vPadreRol, asyncHandler(async (req, res) => {    
+router.put('/completar-familia/padre/persona/:oidPersona', vPadreRol, asyncHandler(async (req, res) => {
     const oidPersona = req.params.oidPersona;
     const datosPadre = req.body.padre;
     const oidAlumno = req.body.oidAlumno;
 
-    const response = await createPadreRol(datosPadre, oidPersona, oidAlumno);    
+    const response = await createPadreRol(datosPadre, oidPersona, oidAlumno);
 
     res.send({ ok: true, response });
 
 }))
 
-router.put('/completar-familia/asociar-hermano/:dni', vAsociarHermano, asyncHandler(async (req, res) => {
-    const dniHermano = req.params.dniHermano;
+router.get('/completar-familia/hermano/:dni', vDni, asyncHandler(async (req, res) => {
+    const dniHermano = req.params.dni;
+
+    const hermano = await getHermanoByID(dniHermano);
+
+    if (hermano === false) {
+        throw new NotFound("No existe un Hermano con el DNI recibido.");
+    }
+
+    res.send({ ok: true, hermano })
+
+}))
+
+router.put('/completar-familia/asociar-hermano/:oid', vAsociarHermano, asyncHandler(async (req, res) => {
+    const oidHermano = req.params.oid;
     const oidAlumno = req.query.oidAlumno;
 
-    const response = await asociarHermano(dniHermano, oidAlumno);
+    const response = await asociarHermano(oidHermano, oidAlumno);
 
     res.send({ ok: true, response });
 }))
