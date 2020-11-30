@@ -41,7 +41,6 @@ const deleteMesaExamen = () => {
 
 }
 
-
 const getMesaExamenByOid = async (oidMesa) => {
     const mesaDB = await MesaExamen.findById(oidMesa).exec();
 

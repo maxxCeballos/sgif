@@ -5,56 +5,34 @@ const asyncHandler = require('../middlewares/asynchandler');
 
 const router = express.Router();
 
-const obtenerMesasCompletadas = require('../transacciones/cerrar-mesa/obtenerMesasCompletadas');
-const obtenerAlumnosMesas = require('../transacciones/cerrar-mesa/obtenerAlumnosMesa');
 const cargarNotasMesas = require('../transacciones/cerrar-mesa/cargarNotasMesa');
-
-//TODO: ver si muestro mesas o solo pido acta
+const obtenerMesa = require('../transacciones/cerrar-mesa/obtenerMesa');
 
 /**
- * Obtiene las mesas completadas para ser seleccionadas y cerrarlas.
+ * Obtiene la mesa y sus alumnos solo si esta completada y previa a la fecha de hoy.
  */
-router.get('/cerrar-mesa/obtener-mesas-completadas/', asyncHandler(async (req, res) => {
-    const response = await obtenerMesasCompletadas();
+router.get('/cerrar-mesa/obtener-mesa/:acta', asyncHandler(async (req, res) => {
+    const acta = req.params.acta;
+
+    const response = await obtenerMesa(acta);
 
     res.send({ ok: true, response });
 }));
 
 /**
- * Devuelve la mesa (con sus asociadas), junto con los datos de cada alumno anotado a ellas
+ * Para controlar si no se envia acta
  */
-
-//FIXME: ver si va acta u oidMesa
-
-router.get('/cerrar-mesa/obtener-alumnos-mesa/:acta', asyncHandler(async (req, res) => {
-    const acta = req.params.acta;
-
-    const response = await obtenerAlumnosMesas(acta);
-
-    res.send({ ok: true, response });
+router.get('/cerrar-mesa/obtener-mesa', asyncHandler(async (req, res) => {
+    throw "Por Favor, Ingrese un Acta";
 }));
 
 /**
  * Carga los resultados de los alumnos que rindieron en la mesa o mesas (asociadas) con las notas y la asistencia.
  */
-
-//FIXME: ver si va acta u oidMesa
-
 router.put('/cerrar-mesa/cargar-notas-mesa/', asyncHandler(async (req, res) => {
     const notas = req.body;
 
-    const response = await cargarNotasMesas(mesasConNotas);
-
-    res.send({ ok: true, response });
-}));
-
-//TODO: DELETE
-router.put('/test-guido-array', asyncHandler(async (req, res) => {
-    const notas = req.body;
-
-    console.log(notas)
-
-    const response = "Hola";
+    const response = await cargarNotasMesas(notas);
 
     res.send({ ok: true, response });
 }));

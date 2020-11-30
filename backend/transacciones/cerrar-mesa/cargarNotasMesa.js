@@ -7,16 +7,16 @@ const { updateResultadoMesa } = require("../../controllers/resultadoMesa");
 /**
  * Carga las notas de una o varias mesas (si incluye asociadas)
  * 
- * Para cada mesa
+ * [Para cada mesa
  * {
  *  oidMesa,
- *  resultados: para cada result = {
+ *  resultados: [para cada result = {
  *      oidResult,
  *      oidAlumno,
  *      nota,
  *      condicion
- *  }
- * }
+ *  }]
+ * }]
  * 
  * @param {*} mesasConNotas Arreglo donde cada instancia incluye una mesa y otro arreglo interno con resultados(id, nota y condicion) de cada alumno
  */
@@ -24,7 +24,7 @@ const cargarNotasMesa = async (mesasConNotas) => {
 
     for (const datosMesa of mesasConNotas) {
         //TODO: obtener mesa con oid para ver si existe
-        const mesa = (await getMesaExamenByOid(datosMesa.oidMesa))[0];
+        const mesa = await getMesaExamenByOid(datosMesa.oidMesa);
 
         if (!mesa) {
             throw "No existe la Mesa";
@@ -54,7 +54,7 @@ const cargarNotasMesa = async (mesasConNotas) => {
                         datosResultado.nota);
 
                     let alumno = await getAlumnoByOid(datosResultado.oidAlumno);
-                    
+
                     //FIXME: test
                     let calificacion = alumno.calificaciones.find(calificacion =>
                         calificacion.resultadoMesaExamen.find(resultado =>

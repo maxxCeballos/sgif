@@ -1,0 +1,303 @@
+const alumnoDB = require('./controllers/alumno');
+const resultadoMesaDB = require('./controllers/resultadoMesa');
+const mesaExamenDB = require('./controllers/mesaExamen');
+const dictadoDB = require('./controllers/dictado');
+
+const axios = require('axios');
+const assert = require("chai").assert;
+const urlBackend = "http://localhost:5000";
+const databaseHandler = require('./databaseHandler');
+const { expect } = require('chai');
+
+const serverOn = false;
+
+before(async function () {
+    this.timeout(0);
+    await databaseHandler.conectar(serverOn);
+});
+
+after(function () {
+    databaseHandler.desconectar();
+});
+
+describe('Mesa Incorrecta', () => {
+    it('Debería solicitar acta', async function () {
+        this.timeout(0);
+
+        let consulta = await obtenerMesa("");
+
+        assert.equal(consulta.expanded, "Por Favor, Ingrese un Acta")
+    })
+
+    it('Debería informar que no existe la mesa', async function () {
+        this.timeout(0);
+
+        let consulta = await obtenerMesa(5020);
+
+        assert.equal(consulta.expanded, "No existe Mesa")
+    })
+
+    it('Debería informar la mesa esta en estado Solicitada', async function () {
+        this.timeout(0);
+
+        // Datos a precargar
+        let mesaExamen = {
+            acta: 5021,
+            estado: "Solicitada",
+        }
+
+        await mesaExamenDB.createMesaExamen(mesaExamen);
+
+        // Consulta a Testear
+        let consulta = await obtenerMesa(mesaExamen.acta);
+
+        // Limpieza
+        let responseMesa = (await mesaExamenDB.deleteMesaExamen(mesaExamen.acta))
+        assert.equal(responseMesa.deletedCount, 1)
+
+        // Test de Transaccion
+        assert.equal(consulta.expanded, `La mesa no se puede cerrar, esta en estado ${mesaExamen.estado}`)
+    })
+
+    it('Debería informar la mesa esta en estado Cerrada', async function () {
+        this.timeout(0);
+
+        // Datos a precargar
+        let mesaExamen = {
+            acta: 5022,
+            estado: "Cerrada",
+        }
+
+        await mesaExamenDB.createMesaExamen(mesaExamen);
+
+        // Consulta a Testear
+        let consulta = await obtenerMesa(mesaExamen.acta);
+
+        // Limpieza
+        let responseMesa = (await mesaExamenDB.deleteMesaExamen(mesaExamen.acta))
+        assert.equal(responseMesa.deletedCount, 1)
+
+        // Test de Transaccion
+        assert.equal(consulta.expanded, `La mesa no se puede cerrar, esta en estado ${mesaExamen.estado}`)
+    })
+
+    it('Debería informar la mesa no sucedio todavia', async function () {
+        this.timeout(0);
+
+        // Datos a precargar
+        let fechaHora = crearFecha(1);
+        let mesaExamen = {
+            acta: 5023,
+            estado: "Completada",
+            fechaHora,
+        }
+
+        await mesaExamenDB.createMesaExamen(mesaExamen);
+
+        // Consulta a Testear
+        let consulta = await obtenerMesa(mesaExamen.acta);
+
+        // Limpieza
+        let responseMesa = (await mesaExamenDB.deleteMesaExamen(mesaExamen.acta))
+        assert.equal(responseMesa.deletedCount, 1)
+
+        // Test de Transaccion
+        assert.equal(consulta.expanded, "La mesa no se puede cerrar, aún no fue evaluada")
+    })
+})
+
+describe('Mesa Cerrada Correctamente', () => {
+    it('Deberia cargar un alumno aprobado, otro desaprobado, y otro ausente', async function () {
+        this.timeout(0);
+
+        // Datos a precargar
+        let dictado = {
+            cicloLectivo: 2009,
+            materia: {
+                nombre: "Matematicas",
+                anio: 3
+            }
+        }
+        let dictadoObj = await dictadoDB.createDictado(dictado);
+
+        let resultadoMesa1Obj = await resultadoMesaDB.createResultadoMesa({});
+        let resultadoMesa2Obj = await resultadoMesaDB.createResultadoMesa({});
+        let resultadoMesa3Obj = await resultadoMesaDB.createResultadoMesa({});
+
+        let alumno1 = {
+            dni: 50123020,
+            tipoDni: "dni",
+            nombre: "Guido0",
+            apellido: "Canevello0",
+            legajo: 1520,
+            calificaciones: [{
+                nota1T: 4,
+                nota2T: 4,
+                nota3T: 4,
+                cicloLectivo: 2009,
+                promedio: 4,
+                condicion: "Desaprobado",
+                resultadoMesaExamen: [resultadoMesa1Obj._id],
+                dictado: dictadoObj._id
+            }]
+        }
+        let alumno1Obj = await alumnoDB.createAlumno(alumno1);
+
+        let alumno2 = {
+            dni: 50123021,
+            tipoDni: "dni",
+            nombre: "Guido1",
+            apellido: "Canevello1",
+            legajo: 1521,
+            calificaciones: [{
+                nota1T: 4,
+                nota2T: 4,
+                nota3T: 4,
+                cicloLectivo: 2009,
+                promedio: 4,
+                condicion: "Desaprobado",
+                resultadoMesaExamen: [resultadoMesa2Obj._id],
+                dictado: dictadoObj._id
+            }]
+        }
+        let alumno2Obj = await alumnoDB.createAlumno(alumno2);
+
+        let alumno3 = {
+            dni: 50123022,
+            tipoDni: "dni",
+            nombre: "Guido2",
+            apellido: "Canevello2",
+            legajo: 1522,
+            calificaciones: [{
+                nota1T: 4,
+                nota2T: 4,
+                nota3T: 4,
+                cicloLectivo: 2009,
+                promedio: 4,
+                condicion: "Desaprobado",
+                resultadoMesaExamen: [resultadoMesa3Obj._id],
+                dictado: dictadoObj._id
+            }]
+        }
+        let alumno3Obj = await alumnoDB.createAlumno(alumno3);
+
+        let fechaHora = crearFecha(-1);
+        let mesaExamen = {
+            acta: 5023,
+            estado: "Completada",
+            aula: 3,
+            fechaHora,
+            resultados: [
+                resultadoMesa1Obj._id,
+                resultadoMesa2Obj._id,
+                resultadoMesa3Obj._id,
+            ],
+            dictado: dictadoObj._id
+        }
+
+        let mesaExamenObj = await mesaExamenDB.createMesaExamen(mesaExamen);
+        await resultadoMesaDB.updateResultadoMesa(resultadoMesa1Obj._id, {
+            alumno: alumno1Obj._id,
+            mesaDeExamen: mesaExamenObj._id
+        });
+        await resultadoMesaDB.updateResultadoMesa(resultadoMesa2Obj._id, {
+            alumno: alumno2Obj._id,
+            mesaDeExamen: mesaExamenObj._id
+        });
+        await resultadoMesaDB.updateResultadoMesa(resultadoMesa3Obj._id, {
+            alumno: alumno3Obj._id,
+            mesaDeExamen: mesaExamenObj._id
+        });
+
+        // Consulta a Testear
+        let consultaObtenerMesa = await obtenerMesa(mesaExamen.acta);
+
+        // Limpieza
+        let responseDictado = (await dictadoDB.deleteDictado(dictadoObj._id));
+        let responseResultado1 = (await resultadoMesaDB.deleteResultadoMesa(resultadoMesa1Obj._id))
+        let responseResultado2 = (await resultadoMesaDB.deleteResultadoMesa(resultadoMesa2Obj._id))
+        let responseResultado3 = (await resultadoMesaDB.deleteResultadoMesa(resultadoMesa3Obj._id))
+        let responseAlumno1 = (await alumnoDB.deleteAlumno(alumno1.dni));
+        let responseAlumno2 = (await alumnoDB.deleteAlumno(alumno2.dni));
+        let responseAlumno3 = (await alumnoDB.deleteAlumno(alumno3.dni));
+        let responseMesa = (await mesaExamenDB.deleteMesaExamen(mesaExamen.acta))
+
+        assert.equal(responseDictado.deletedCount, 1)
+        assert.equal(responseResultado1.deletedCount, 1)
+        assert.equal(responseResultado2.deletedCount, 1)
+        assert.equal(responseResultado3.deletedCount, 1)
+        assert.equal(responseAlumno1.deletedCount, 1)
+        assert.equal(responseAlumno2.deletedCount, 1)
+        assert.equal(responseAlumno3.deletedCount, 1)
+        assert.equal(responseMesa.deletedCount, 1)
+
+        // Test de Transaccion
+        let esperadoObtenerMesa = {
+            oidMesa: String(mesaExamenObj._id),
+            acta: mesaExamen.acta,
+            fechaHora: String(mesaExamen.fechaHora),
+            aula: mesaExamen.aula,
+            cicloLectivoMateria: dictado.cicloLectivo,
+            nombreMateria: dictado.materia.nombre,
+            anioMateria: dictado.materia.anio,
+            alumnos: [
+                {
+                    oidResultado: String(resultadoMesa1Obj._id),
+                    oidAlumno: String(alumno1Obj._id),
+                    nombre: alumno1.nombre,
+                    apellido: alumno1.apellido,
+                    legajo: String(alumno1.legajo),
+                }, {
+                    oidResultado: String(resultadoMesa2Obj._id),
+                    oidAlumno: String(alumno2Obj._id),
+                    nombre: alumno2.nombre,
+                    apellido: alumno2.apellido,
+                    legajo: String(alumno2.legajo),
+                }, {
+                    oidResultado: String(resultadoMesa3Obj._id),
+                    oidAlumno: String(alumno3Obj._id),
+                    nombre: alumno3.nombre,
+                    apellido: alumno3.apellido,
+                    legajo: String(alumno3.legajo),
+                },
+            ]
+        }
+        expect(consultaObtenerMesa.response).to.deep.include(esperadoObtenerMesa);
+    })
+})
+
+/**
+ * Crea una fecha de hoy modificada
+ * 
+ * @param {*} cantidadMeses la cantidad de meses que se agregan o quitan de la fecha (no debe ser mayor a 12)
+ */
+function crearFecha(cantidadMeses) {
+    if (cantidadMeses > 12 || cantidadMeses < -12) {
+        throw "Error en cantidadMeses"
+    }
+
+    let fechaHora = new Date();
+    let mes = fechaHora.getMonth() + cantidadMeses;
+
+    if (mes >= 12) {
+        fechaHora.setYear(fechaHora.getYear() + 1);
+        fechaHora.setMonth(mes - 12);
+    } else if (mes < 0) {
+        fechaHora.setYear(fechaHora.getYear() - 1);
+        fechaHora.setMonth(12 + mes);
+    } else {
+        fechaHora.setMonth(mes);
+    }
+    return fechaHora;
+}
+
+async function obtenerMesa(acta) {
+    return await axios
+        .get(`${urlBackend}/cerrar-mesa/obtener-mesa/${acta}`)
+        .then((res) => {
+            return res.data;
+        })
+        .catch((res) => {
+            return res.response.data;
+        });
+}
