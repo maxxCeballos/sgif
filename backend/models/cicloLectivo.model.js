@@ -9,7 +9,8 @@ const cicloLectivoEsquema = new Schema({
     fechaCiere1T: Date,
     fechaCiere2T: Date,
     fechaCiere3T: Date,
-    fechaFinInscripcion: Date
+    fechaFinInscripcion: Date,
+    materiasAnio: Array
 }, { timestamps: true });
 
 const CicloLectivo = mongoose.model('CicloLectivo', cicloLectivoEsquema);

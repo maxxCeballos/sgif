@@ -10,6 +10,7 @@ const dictadoEsquema = new Schema({
         nombre: String,
         anio: { type: Number, min: 1, max: 5 }
     },
+    bloquesDictados: Number,
     horarios: Array
 }, { timestamps: true });
 
