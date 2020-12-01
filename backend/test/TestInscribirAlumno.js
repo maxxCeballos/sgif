@@ -218,7 +218,6 @@ describe('Inscribir Alumno', function () {
         });
     }).timeout(0);
 
-
     //TODO: Camino 6 llamada correcta a completar familia, asocio hermano y padre
     //AUTOCONTENIDO EN EL OTRO TEST
 
