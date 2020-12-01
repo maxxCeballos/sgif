@@ -45,7 +45,7 @@ const getCursos = async (trimestre) => {
 const getDetalleCurso = async (idCurso) => {
 
     const curso = await Curso.findById(idCurso).populate({ path : 'dictados' }).populate({ path : 'materia'});
-    if ( curso.length === 0 ) throw new NotFound("No se encontró el curso solicitado");
+    if ( !curso ) throw new NotFound("No se encontró el curso solicitado");
 
     return curso;
 
@@ -56,10 +56,10 @@ const calcularPresentismo = async (idDictado, idAlumno) => {
     let response = true;
 
     let alumno = await Alumno.findById( idAlumno, 'presentismos');
-    if ( alumno.length === 0 ) throw new NotFound("No se encontró el alumno solicitado");
+    if ( !alumno ) throw new NotFound("No se encontró el alumno solicitado");
     
     let cant = await Dictado.findById( idDictado, 'bloquesDictados');
-    if ( cant.length === 0 ) throw new NotFound("No se encontró el dictado solicitado");
+    if ( !cant ) throw new NotFound("No se encontró el dictado solicitado");
 
     let bloquesDictados = cant.bloquesDictados;
     let cantInasistencias = 0.0;
@@ -91,12 +91,15 @@ const registrarNotasTrimestrales = async (idAlumno, trimestre, notaTrimestre, id
     switch (trimestre) {
         case '1':
             alumnoDB = await Alumno.update({ "_id" : idAlumno, "calificaciones.dictado": idDictado }, { $set : {"calificaciones.$.nota1T": notaTrimestre} });
+            if (alumnoDB.n === 0 ) throw new BadRequest('Error al Registrar nota de 1º trimestre');
             break;
         case '2':
             alumnoDB = await Alumno.update({ "_id" : idAlumno, "calificaciones.dictado": idDictado }, { $set : {"calificaciones.$.nota2T": notaTrimestre} });
+            if (alumnoDB.n === 0 ) throw new BadRequest('Error al Registrar nota de 2º trimestre');
             break;
         case '3':
             alumnoDB = await Alumno.update({ "_id" : idAlumno, "calificaciones.dictado": idDictado }, { $set : {"calificaciones.$.nota3T": notaTrimestre} });
+            if (alumnoDB.n === 0 ) throw new BadRequest('Error al Registrar nota de 3º trimestre');
             break;
         default:
             throw new BadRequest(`El trimestre ${trimestre} es incorrecto`);
