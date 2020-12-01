@@ -51,7 +51,6 @@ describe("ALTA CURSO", function() {
                 });
         }).timeout(0);
 
-        //agregar el caso exitoso
     });
 
 
