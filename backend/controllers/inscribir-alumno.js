@@ -140,7 +140,6 @@ const registrarAlumnoNuevo = async (datosAlumno, oidResponsable) => {
     return response;
 }
 
-//busca la persona con oid, crea el alumno (con los datos de la persona), asocia
 const registrarAlumnoRol = async (datosAlumno, oidPersona, oidResponsable) => {
     let datosPersona;
 

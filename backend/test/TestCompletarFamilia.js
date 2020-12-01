@@ -23,7 +23,7 @@ before(async function () {
 describe('Completar Familia', function () {
 
     //Camino 1
-    it('Debería fallar Alumno Lista Vacía', (done) => {
+    it('Debería Fallar Alumno Lista Vacía', (done) => {
         requester
             .get('/completar-familia/alumno/' + alumno.dni)
             .end(function (err, res) {
@@ -33,7 +33,7 @@ describe('Completar Familia', function () {
     }).timeout(0);
 
     //Camino 2
-    it('Debería fallar al Asociar Padre con Alumno', (done) => {
+    it('Debería Fallar al Asociar Padre con Alumno', (done) => {
 
         //Busco un alumno que existe, para eso lo creo
         alumno.legajo = '7';
@@ -151,7 +151,7 @@ describe('Completar Familia', function () {
         });
     }).timeout(0);
 
-    //TODO: Camino 4
+    //TODO: Camino 4 Debería Asociar Padre y Fallar al Asociar Hermano
 
     //Camino 5
     it('Debería Asociar Padre y Agregar Hermano Completo', (done) => {
@@ -236,7 +236,7 @@ describe('Completar Familia', function () {
         });
     }).timeout(0);
 
-    //TODO: Camino 6
+    //TODO: Camino 6 Debería Asociar Padre y Registrar Hermano Completo
 
     //Camino 7
     it('Debería Asociar Padre y Agregar rol Hermano', (done) => {
@@ -325,10 +325,10 @@ describe('Completar Familia', function () {
         });
     }).timeout(0);
 
-    //TODO: Camino 8
+    //TODO: Camino 8 Debería Asociar Padre y Fallar al Agregar rol Hermano
 
     //Camino 9
-    it('Debería Fallar al agregar rol Padre', (done) => {
+    it('Debería Fallar al Agregar rol Padre', (done) => {
 
         //Busco un alumno que existe, para eso lo creo
         alumno.legajo = '7';
@@ -512,11 +512,11 @@ describe('Completar Familia', function () {
     }).timeout(0);
 
     //Agregar rol padre con variantes positivas y negativas de agregar el hermano
-    //TODO: Camino 12
-    //TODO: Camino 13
-    //TODO: Camino 14
-    //TODO: Camino 15
-    //TODO: Camino 16
+    //TODO: Camino 12 Fallar Asociar Hermano
+    //TODO: Camino 13 Agregar Hermano Completo
+    //TODO: Camino 14 Falla Agregar Hermano Completo
+    //TODO: Camino 15 Agregar rol Hermano
+    //TODO: Camino 16 Falla al Agregar rol Hermano
 
     //Camino 17 //TODO: completar asociando hermano
     it('Debería Agregar un Padre Completo y Asociar Hermano con Alumno', (done) => {
@@ -603,10 +603,10 @@ describe('Completar Familia', function () {
 
 
     //Agregar padre completo con variantes positivas y negativas de agregar el hermano
-    //TODO: Camino 18
-    //TODO: Camino 19
-    //TODO: Camino 20
-    //TODO: Camino 21
-    //TODO: Camino 22
+    //TODO: Camino 18 Fallar Asociar Hermano
+    //TODO: Camino 19 Agregar Hermano Completo
+    //TODO: Camino 20 Falla Agregar Hermano Completo
+    //TODO: Camino 21 Agregar rol Hermano
+    //TODO: Camino 22 Falla al Agregar rol Hermano
 
 })

@@ -111,7 +111,7 @@ describe('Inscribir Alumno', function () {
     }).timeout(0);
 
     //Camino 4
-    it('Debería Reinscribir Alumno', (done) => {
+    it('Debería Reinscribir Alumno sin elegir Completar Familia', (done) => {
 
         crearCicloLectivo(cicloValido).then(cicloLectivo => {
             requester
@@ -161,7 +161,7 @@ describe('Inscribir Alumno', function () {
     }).timeout(0);
 
     //Camino 5
-    it('Debería Reinscribir Alumno y Fallar al completar Familia', (done) => {
+    it('Debería Reinscribir Alumno y Fallar al Completar Familia', (done) => {
 
         crearCicloLectivo(cicloValido).then(cicloLectivo => {
             requester
@@ -218,7 +218,7 @@ describe('Inscribir Alumno', function () {
         });
     }).timeout(0);
 
-    //TODO: Camino 6 llamada correcta a completar familia, asocio hermano y padre
+    //TODO: Camino 6 Llamada Correcta a completar familia
     //AUTOCONTENIDO EN EL OTRO TEST
 
     //Camino 7
@@ -279,7 +279,7 @@ describe('Inscribir Alumno', function () {
     }).timeout(0);
 
     //Camino 8
-    it('Debería Fallar al Crear una Persona Responsable', (done) => {
+    it('Debería Fallar al Crear Responsable Completo', (done) => {
 
         crearCicloLectivo(cicloValido).then(cicloLectivo => {
             requester
@@ -331,8 +331,9 @@ describe('Inscribir Alumno', function () {
         });
     }).timeout(0);
 
+    //Obtienen responsable primero
     //Camino 9    
-    it('Debería Fallar al agregar rol Alumno', (done) => {
+    it('Debería Fallar al Agregar rol Alumno', (done) => {
 
         crearCicloLectivo(cicloValido).then(cicloLectivo => {
             requester
@@ -461,7 +462,7 @@ describe('Inscribir Alumno', function () {
     }).timeout(0);
 
     //Camino 11
-    it('Debería Fallar al Crear una Persona Alumno', (done) => {
+    it('Debería Fallar al Crear un Alumno Completo', (done) => {
 
         crearCicloLectivo(cicloValido).then(cicloLectivo => {
             requester
@@ -583,8 +584,8 @@ describe('Inscribir Alumno', function () {
         });
     }).timeout(0);
 
-    //Agregar rol responsable con variantes positivas y negativas de crear alumno
-    //Camino 13 //TODO: completar creando alumno completo
+    //Agregan rol responsable con variantes positivas y negativas de crear alumno
+    //Camino 13
     it('Debería Agregar rol Responsable y un Alumno Completo', (done) => {
 
         crearCicloLectivo(cicloValido).then(cicloLectivo => {
@@ -664,12 +665,12 @@ describe('Inscribir Alumno', function () {
         });
     }).timeout(0);
 
-    //TODO: Camino 14
-    //TODO: Camino 15
-    //TODO: Camino 16    
+    //TODO: Camino 14 Falla creación Alumno Completo
+    //TODO: Camino 15 Agregar rol Alumno
+    //TODO: Camino 16 Falla Agregar rol Alumno
 
-    //Agregar responsable completo con variantes positivas y negativas de crear alumno
-    //Camino 17 //TODO: completar creando alumno completo
+    //Agregar Responsable Completo con variantes positivas y negativas de crear alumno
+    //Camino 17
     it('Debería Agregar Responsable y Alumno Completos', (done) => {
 
         crearCicloLectivo(cicloValido).then(cicloLectivo => {
@@ -745,8 +746,8 @@ describe('Inscribir Alumno', function () {
         });
     }).timeout(0);
 
-    //TODO: Camino 18
-    //TODO: Camino 19
-    //TODO: Camino 20    
+    //TODO: Camino 18 Falla creación Alumno Completo
+    //TODO: Camino 19 Agregar rol Alumno
+    //TODO: Camino 20 Falla Agregar rol Alumno
 
 });
