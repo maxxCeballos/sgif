@@ -54,7 +54,7 @@ const createPadreNuevo = async (datosPadre, oidAlumno) => {
     }
 
     if (!await getAlumnoByOID(oidAlumno)) {
-        throw new NotFound("El OID recibido no corresponde a un alumno, envíelo nuevamente.")
+        throw new NotFound("No existe un Alumno con el OID recibido.");                
     }
 
     const personaDB = await createPersona(persona, 'padre', padre);    
@@ -110,7 +110,6 @@ const createPadreRol = async (datosPadre, oidPersona, oidAlumno) => {
     return response;
 }
 
-
 const asociarHermano = async (oidHermano, oidAlumno) => {
     let response;
 
@@ -147,10 +146,7 @@ const createHermanoNuevo = async (datosHermano, oidAlumno) => {
 
     const hermano = { fechaNacimiento, escuelaActual, grado }
     if (!await getAlumnoByOID(oidAlumno)) {
-        return {
-            exito: false,
-            message: "El OID recibido no corresponde a un alumno, envíelo nuevamente."
-        }
+        throw new NotFound("No existe un Alumno con el OID recibido.");
     }
 
     const personaDB = await createPersona(persona, 'hermano', hermano);
