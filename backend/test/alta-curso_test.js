@@ -41,6 +41,16 @@ describe("ALTA CURSO", function() {
                 });
         }).timeout(0);
 
+        it('Alta curso exitoso', (done) => {
+            requester
+                .post('/alta-curso?anio=5')
+                .end(function (err, res) {
+                    expect(res).to.have.status(200);
+                    expect(res.body.ok).to.be.true;
+                    done();
+                });
+        }).timeout(0);
+
         //agregar el caso exitoso
     });
 

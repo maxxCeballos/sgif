@@ -79,6 +79,9 @@ const buscarProfesor = async (materia) => {
 
 // la combinacion de horario, materia y profesor es un dictado.
 const createDictado = async (cicloLectivo, programa, horarios, nombreMateria, anioMateria, idProfesor, idCurso) => {
+
+    let response = {}
+    response.cursoCompleto = false;
     
     const profesor = await Persona.findById( idProfesor );
     if ( !profesor ) throw new NotFound(`No existe profesor`);
@@ -109,6 +112,8 @@ const createDictado = async (cicloLectivo, programa, horarios, nombreMateria, an
 
     const dictadoDB = await dictado.save();
     if  ( !dictadoDB ) throw new Error("Internal Server Error. Ocurrió un error al guardar dictado");
+
+    response.dictadoDB = dictadoDB;
     
     let cursoDB = await Curso.findById(idCurso);
     if ( !cursoDB ) throw new NotFound("No se encontró el curso solicitado");
@@ -118,7 +123,14 @@ const createDictado = async (cicloLectivo, programa, horarios, nombreMateria, an
     cursoDB = await cursoDB.save();
     if ( !cursoDB ) throw new Error("Internal Server Error. Ocurrió un error al guardar curso");
 
-    return dictadoDB;
+
+    const materiasAnioCiclo = await getCicloLectivo();
+
+    if ( cursoDB.dictados.length === materiasAnioCiclo.materiasAnio[cursoDB.anio] ) {
+        response.cursoCompleto = true
+    }
+
+    return response;
 }
 
 
