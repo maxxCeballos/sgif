@@ -12,7 +12,7 @@ router.post('/alta-curso', asyncHandler(async (req, res) => {
 
     const response = await createCurso(anio);
 
-    res.send(response);
+    res.send({ ok: true, response });
 }));
 
 router.get('/alta-curso/profesor', asyncHandler(async (req, res) => {
@@ -21,7 +21,7 @@ router.get('/alta-curso/profesor', asyncHandler(async (req, res) => {
 
     const response = await buscarProfesor(materia);
 
-    res.send(response);
+    res.send({ ok: true, response });
 }));
 
 router.post('/alta-curso/dictado', asyncHandler( async (req, res) => {
@@ -30,7 +30,7 @@ router.post('/alta-curso/dictado', asyncHandler( async (req, res) => {
 
     const response = await createDictado(cicloLectivo, programa, horarios, nombreMateria, anioMateria, idProfesor, idCurso);
 
-    res.send(response);
+    res.send({ ok: true, response });
 
 }))
 

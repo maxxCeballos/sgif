@@ -4,6 +4,8 @@ const Curso = require('../models/curso.model');
 const Dictado = require('../models/dictado.model');
 const Alumno = require('../models/alumno.model');
 
+const { BadRequest, NotFound } = require('../middlewares/errores');
+
 const { getCicloLectivo } = require('./ciclo-lectivo');
 
 
@@ -29,14 +31,13 @@ const getCursos = async (trimestre) => {
             enFecha = hoy <= fechaCierre;
             break;
         default:
-            return { message: "trimestre incorrecto" };
+            throw new BadRequest(`El trimestre ${trimestre} es incorrecto`);
     }
 
-    if ( !enFecha ) {
-        return { message: "Cierre de trimestre en fuera de termino" };
-    }
+    if ( !enFecha ) throw new BadRequest("Cierre de trimestre en fuera de termino");
     
     const cursosCicloLectivo = await getCursosCicloLectivo(cicloLectivo.cicloLectivo);
+    if ( cursosCicloLectivo.length === 0 ) throw new NotFound("No se encontraron cursos para el ciclo lectivo");
 
     return cursosCicloLectivo;
 }
@@ -44,8 +45,7 @@ const getCursos = async (trimestre) => {
 const getDetalleCurso = async (idCurso) => {
 
     const curso = await Curso.findById(idCurso).populate({ path : 'dictados' }).populate({ path : 'materia'});
-
-    // si no existe curso entonces error
+    if ( curso.length === 0 ) throw new NotFound("No se encontró el curso solicitado");
 
     return curso;
 
@@ -53,10 +53,13 @@ const getDetalleCurso = async (idCurso) => {
 
 const calcularPresentismo = async (idDictado, idAlumno) => {
 
-    let response;
+    let response = true;
 
     let alumno = await Alumno.findById( idAlumno, 'presentismos');
+    if ( alumno.length === 0 ) throw new NotFound("No se encontró el alumno solicitado");
+    
     let cant = await Dictado.findById( idDictado, 'bloquesDictados');
+    if ( cant.length === 0 ) throw new NotFound("No se encontró el dictado solicitado");
 
     let bloquesDictados = cant.bloquesDictados;
     let cantInasistencias = 0.0;
@@ -73,10 +76,11 @@ const calcularPresentismo = async (idDictado, idAlumno) => {
     const porcentaje =  cantInasistencias / bloquesDictados;
 
     if ( porcentaje > 0.25 ) {
-        return response = "debe rendir examen complementario";
+        response = false;
+        return response;
     }
 
-    return response = "ingrese nota";
+    return response;
 
 }
 
@@ -95,7 +99,7 @@ const registrarNotasTrimestrales = async (idAlumno, trimestre, notaTrimestre, id
             alumnoDB = await Alumno.update({ "_id" : idAlumno, "calificaciones.dictado": idDictado }, { $set : {"calificaciones.$.nota3T": notaTrimestre} });
             break;
         default:
-            return { message: "trimestre incorrecto" };
+            throw new BadRequest(`El trimestre ${trimestre} es incorrecto`);
     }
 
     return true;
