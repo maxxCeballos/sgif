@@ -2,9 +2,9 @@
 
 const { getPadreByID, getPadreByOID } = require("./padre");
 const { updateAlumnoOID, getAlumnoByOID, setPadre, setHermano } = require("./alumno");
-const { createPersona, deletePersonaOID, asociarRolOID, getPersonaByOID } = require("./persona");
+const { createPersona, deletePersonaOID, asociarRolOID, getPersonaByOID, deleteRolOID } = require("./persona");
 const { getHermanoByOID } = require("./hermano");
-const { NotFound } = require("../middlewares/errores");
+const { NotFound, BadRequest } = require("../middlewares/errores");
 
 const asociarPadre = async (oidPadre, oidAlumno) => {
     let response;
@@ -54,12 +54,12 @@ const createPadreNuevo = async (datosPadre, oidAlumno) => {
     }
 
     if (!await getAlumnoByOID(oidAlumno)) {
-        throw new NotFound("El OID recibido no corresponde a un alumno, envíelo nuevamente.")
+        throw new NotFound("No existe un Alumno con el OID recibido.");
     }
 
-    const personaDB = await createPersona(persona, 'padre', padre);    
+    const personaDB = await createPersona(persona, 'padre', padre);
 
-    let response = await setPadre(personaDB._id, oidAlumno);    
+    let response = await setPadre(personaDB._id, oidAlumno);
     if (response.exito) {
         response = {
             valido: true,
@@ -69,7 +69,7 @@ const createPadreNuevo = async (datosPadre, oidAlumno) => {
     } else {
         const resDelete = await deletePersonaOID(personaDB._id);
         if (resDelete) {
-            throw "No se pudo asociar al padre con el Alumno, inténtelo nuevamente"
+            throw new BadRequest("No se pudo asociar al padre con el Alumno. " + response.message);
         } else {
             throw "No se pudo deshacer la creación del padre. ¡Inconsistencia!"
         }
@@ -100,8 +100,12 @@ const createPadreRol = async (datosPadre, oidPersona, oidAlumno) => {
                 padre: padre
             }
         } else {
-            throw "No se pudo asociar el padre con el alumno.";
-            //TODO: eliminar el rol de padre de la persona
+            const resDel = await deleteRolOID(oidPersona, 'padre');
+            if (resDel) {
+                throw new BadRequest("No se pudo asociar el padre con el alumno. " + res.message);
+            } else {
+                throw "Error al borrar rol padre de la persona. ¡Inconsistencia!"
+            }
         }
     } else {
         throw "No se pudo asociar el rol de padre a la persona";
@@ -109,7 +113,6 @@ const createPadreRol = async (datosPadre, oidPersona, oidAlumno) => {
 
     return response;
 }
-
 
 const asociarHermano = async (oidHermano, oidAlumno) => {
     let response;
@@ -147,10 +150,7 @@ const createHermanoNuevo = async (datosHermano, oidAlumno) => {
 
     const hermano = { fechaNacimiento, escuelaActual, grado }
     if (!await getAlumnoByOID(oidAlumno)) {
-        return {
-            exito: false,
-            message: "El OID recibido no corresponde a un alumno, envíelo nuevamente."
-        }
+        throw new NotFound("No existe un Alumno con el OID recibido.");
     }
 
     const personaDB = await createPersona(persona, 'hermano', hermano);
@@ -165,7 +165,7 @@ const createHermanoNuevo = async (datosHermano, oidAlumno) => {
     } else {
         const resDelete = await deletePersonaOID(personaDB._id);
         if (resDelete) {
-            throw "No se pudo asociar al hermano con el Alumno, inténtelo nuevamente"
+            throw new BadRequest("No se pudo asociar al hermano con el Alumno. " + response.message);
         } else {
             throw "No se pudo deshacer la creación del hermano. ¡Inconsistencia!"
         }
@@ -174,7 +174,7 @@ const createHermanoNuevo = async (datosHermano, oidAlumno) => {
 }
 
 const createHermanoRol = async (datosHermano, oidPersona, oidAlumno) => {
-    let response = false;    
+    let response = false;
 
     const personaDB = await getPersonaByOID(oidPersona);
     if (!personaDB) {
@@ -187,7 +187,7 @@ const createHermanoRol = async (datosHermano, oidPersona, oidAlumno) => {
     }
 
     const hermano = await asociarRolOID('hermano', datosHermano, oidPersona);
-    if (hermano !== false) {        
+    if (hermano !== false) {
         const res = await setHermano(hermano._id, oidAlumno);
         if (res.exito) {
             response = {
@@ -196,8 +196,12 @@ const createHermanoRol = async (datosHermano, oidPersona, oidAlumno) => {
                 hermano: hermano
             }
         } else {
-            throw "No se pudo asociar el hermano con el alumno.";
-            //TODO: eliminar el rol de hermano de la persona
+            const resDel = await deleteRolOID(oidPersona, 'hermano');
+            if (resDel) {
+                throw new BadRequest("No se pudo asociar al hermano con el Alumno. " + res.message);
+            } else {
+                throw "Error al borrar rol padre de la persona. ¡Inconsistencia!"
+            }
         }
     } else {
         throw "No se pudo asociar el rol de hermano a la persona";

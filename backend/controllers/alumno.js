@@ -1,5 +1,6 @@
 'use strict'
 
+const { BadRequest } = require('../middlewares/errores');
 let Alumno = require('../models/alumno.model');
 const Persona = require('../models/persona.model');
 const { getHermanoByOID } = require('./hermano');
@@ -36,7 +37,9 @@ const createAlumno = async (alumno, oidResponsable) => {
         responsable: oidResponsable
     });
 
-    response.alumno = await newAlumno.save()
+    response.alumno = await newAlumno.save().catch(err => {        
+        throw new BadRequest(err);
+    });
     response.exito = true;
 
     return response;
@@ -103,10 +106,11 @@ const updateAlumnoOID = async (atributo, valor, oid) => {
     return alumno;
 }
 
-const deleteAlumno = async (dni) => {
-    //TODO: tiene que borrarlo de la persona tambien
+//TODO: tiene que borrarlo de la persona tambien, hacer otro metodo
+//borra parcialmente
+const deleteAlumnoOID = async (oid) => {    
 
-    await Alumno.deleteOne({ dni: dni }).exec();
+    await Alumno.deleteOne({ _id: oid }).exec();
 
     return true;
 }
@@ -200,7 +204,7 @@ const setHermano = async (oidHermano, oidAlumno) => {
 
 module.exports = {
     createAlumno,
-    deleteAlumno,
+    deleteAlumnoOID,
     getAllAlumnos,
     getAlumnoById,
     generarLegajoAl,

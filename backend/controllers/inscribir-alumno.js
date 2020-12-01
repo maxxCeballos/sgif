@@ -1,8 +1,8 @@
 'use strict'
 
-const { createAlumno, getAlumnoById, getAlumnoByOID, generarLegajoAl, updateAlumnoOID } = require('./alumno');
+const { createAlumno, getAlumnoById, getAlumnoByOID, generarLegajoAl, updateAlumnoOID, deleteAlumnoOID } = require('./alumno');
 const { getCicloLectivo } = require('./ciclo-lectivo');
-const { createPersona, getPersonaByOID, asociarRolOID } = require('./persona');
+const { createPersona, getPersonaByOID, asociarRolOID, deleteRolOID } = require('./persona');
 const { getResponsableByOID, generarLegajoResp } = require('./responsable');
 const { NotFound, BadRequest } = require('../middlewares/errores');
 
@@ -12,7 +12,7 @@ const { NotFound, BadRequest } = require('../middlewares/errores');
  */
 const validarFechaInscripcion = async () => {
 
-    const cicloLectivoDB = await getCicloLectivo();    
+    const cicloLectivoDB = await getCicloLectivo();
 
     let response;
 
@@ -87,7 +87,6 @@ const createResponsableNuevo = async (datosResponsable) => {
     }
 
     const responsableDB = await createPersona(persona, 'responsable', responsable);
-    //TODO: controlar cuando no puede crear la persona
 
     return responsableDB;
 }
@@ -97,7 +96,7 @@ const createResponsableRol = async (datosResponsable, oidPersona) => {
 
     let personaDB = await getPersonaByOID(oidPersona);
     if (!personaDB) {
-        throw "El OID recibido no corresponde a una persona, envíelo nuevamente."
+        throw new NotFound("No existe una Persona con el OID recibido.");
     }
 
     datosResponsable.legajo = await generarLegajoResp();
@@ -121,7 +120,7 @@ const registrarAlumnoNuevo = async (datosAlumno, oidResponsable) => {
     const datosPersona = { nombre, apellido, dni, genero }
 
     if (!await getResponsableByOID(oidResponsable)) {
-        throw "OID responsable inválido"
+        throw new NotFound("No existe un Responsable con el OID recibido.");
     }
 
     datosAlumno.legajo = await generarLegajoAl();
@@ -130,12 +129,10 @@ const registrarAlumnoNuevo = async (datosAlumno, oidResponsable) => {
     let response = { exito: false, alumno: false };
     if (alumnoNuevo.exito) {
         const alumnoPersona = await createPersona(datosPersona, 'alumno', alumnoNuevo.alumno._id)
-        //TODO: controlar cuando no puede crear la persona
 
         response.exito = true;
         response.alumno = await updateAlumnoOID("estadoInscripcion", "Inscripto", alumnoNuevo.alumno._id);
     } else {
-        //TODO: refactor, para cuando se ponga throw en createAlumno
         //TODO: eliminar responsable si lo creo
         response.exito = false;
         response.alumno = alumnoDB;
@@ -149,7 +146,7 @@ const registrarAlumnoRol = async (datosAlumno, oidPersona, oidResponsable) => {
 
     const persona = await getPersonaByOID(oidPersona);
     if (!persona) {
-        throw "OID persona inválido"
+        throw new NotFound("No existe una Persona con el OID recibido.");
     } else {
         datosPersona = {
             dni: persona.dni,
@@ -160,7 +157,7 @@ const registrarAlumnoRol = async (datosAlumno, oidPersona, oidResponsable) => {
     }
 
     if (!await getResponsableByOID(oidResponsable)) {
-        throw "OID responsable inválido"
+        throw new NotFound("No existe un Responsable con el OID recibido.");
     }
 
     datosAlumno.legajo = await generarLegajoAl();
@@ -170,14 +167,19 @@ const registrarAlumnoRol = async (datosAlumno, oidPersona, oidResponsable) => {
     let response = { exito: false, alumno: false };
     if (alumnoNuevo.exito) {
         const alumnoPersona = await asociarRolOID('alumno', alumnoNuevo.alumno._id, oidPersona)
+            .catch(async (err) => {
+                const resDel = await deleteAlumnoOID(alumnoNuevo.alumno._id);
+                if (resDel) {
+                    throw new BadRequest("No se pudo crear el Alumno. " + err.message);
+                } else {
+                    throw "Error al borrar el Alumno nuevo. ¡Inconsistencia!"
+                }
+            })
         if (alumnoPersona !== false) {
             response.exito = true;
             response.alumno = await updateAlumnoOID("estadoInscripcion", "Inscripto", alumnoNuevo.alumno._id);
-        } else {
-            //TODO: eliminar alumno creado            
         }
     } else {
-        //TODO: refactor, para cuando se ponga throw en createAlumno
         //TODO: eliminar responsable si lo creo
         response = alumnoDB;
     }

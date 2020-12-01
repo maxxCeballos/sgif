@@ -1,5 +1,6 @@
 'use strict'
 
+const { BadRequest } = require('../middlewares/errores');
 let Persona = require('../models/persona.model');
 
 const createPersona = async (datosPersona, nombreRol, datosRol) => {
@@ -20,7 +21,9 @@ const createPersona = async (datosPersona, nombreRol, datosRol) => {
         [nombreRol]: datosRol,
     });
 
-    const personaDB = await newPersona.save();
+    const personaDB = await newPersona.save().catch(err => {
+        throw new BadRequest(err);
+    });
 
     return personaDB;
 }
@@ -77,11 +80,15 @@ const asociarRolOID = async (nombreRol, datosRol, oidPersona) => {
     let response = false;
 
     let personaRol = await Persona.find({ _id: oidPersona, [nombreRol]: { $exists: true } })
-    
+
     if (personaRol.length != 0) {
-        //Solo pasa con hermano porque el esquema tiene un arreglo
-        if (personaRol[0].hermano.fechaNacimiento !== undefined) {
-            throw "La persona ya posee el rol " + nombreRol + "."
+        //Solo pasa con hermano porque el esquema tiene un arreglo nulo, y siempre 'crea' el rol
+        if (nombreRol === 'hermano') {
+            if (personaRol[0].hermano.fechaNacimiento !== undefined) {
+                throw new BadRequest("La persona ya posee el rol " + nombreRol + ".")
+            }
+        } else {
+            throw new BadRequest("La persona ya posee el rol " + nombreRol + ".")
         }
     }
 
@@ -99,6 +106,19 @@ const deletePersonaOID = async (oid) => {
     await Persona.deleteOne({ _id: oid }).exec();
 
     return true;
+}
+
+const deleteRolOID = async (oid, nombreRol) => {
+    let response = false;
+
+    const $unset = { $unset: { [nombreRol]: "" } };
+    const resDelRol = await Persona.updateOne({ _id: oid }, $unset);
+
+    if (resDelRol.n === 1) {
+        response = true;
+    }
+
+    return response;
 }
 
 function datosBasicos(persona) {
@@ -122,5 +142,6 @@ module.exports = {
     getAllPersonas,
     updatePersona,
     deletePersonaOID,
+    deleteRolOID,
     asociarRolOID
 }
