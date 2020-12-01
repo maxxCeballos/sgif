@@ -6,49 +6,99 @@ const Alumno = require('../models/alumno.model');
 
 const { getCicloLectivo } = require('./ciclo-lectivo');
 
-const registrarNotasTrimestrales = async (curso) => {    
 
-    // obtener calificaciones del alumno del dictado seleccionado
-
-    // obtener horarios del dictado
-
-    // obtener inasistencias trimestrales al dictado
-
-    // calcular porcentajes de inasistencias
-
-    // actualizar notas trimestrales
-
-    // save nota trimestral
-}
-
-const getCursos = async () => {
+const getCursos = async (trimestre) => {
     
     const cicloLectivo = await getCicloLectivo();
 
-    // validar fecha de cierre. ? obtener fecha del sistema y comparar que este entre las fechas definidas en ciclo lectivo.
+    const hoy = new Date();
+    let enFecha = true;
+    let fechaCierre
+
+    switch (trimestre) {
+        case '1':
+            fechaCierre = cicloLectivo.fechaCiere1T;
+            enFecha = hoy <= fechaCierre;
+            break;
+        case '2':
+            fechaCierre = cicloLectivo.fechaCiere2T;
+            enFecha = hoy <= fechaCierre;
+            break;
+        case '3':
+            fechaCierre = cicloLectivo.fechaCiere3T;
+            enFecha = hoy <= fechaCierre;
+            break;
+        default:
+            return { message: "trimestre incorrecto" };
+    }
+
+    if ( !enFecha ) {
+        return { message: "Cierre de trimestre en fuera de termino" };
+    }
     
-    const cursosCicloLectivo = await getCursosCicloLectivo(cicloLectivo.cicloLectivo)
+    const cursosCicloLectivo = await getCursosCicloLectivo(cicloLectivo.cicloLectivo);
 
     return cursosCicloLectivo;
 }
 
 const getDetalleCurso = async (idCurso) => {
 
-    const detalle = await Curso.findById(idCurso, 'dictados');
+    const curso = await Curso.findById(idCurso).populate({ path : 'dictados' }).populate({ path : 'materia'});
 
-    const dictados = detalle.dictados
+    // si no existe curso entonces error
 
-    const dictadosDB = [];
+    return curso;
 
-    for ( let i = 0 ; i < dictados.length ; i++ ) {
+}
 
-        let dictado = await Dictado.findById(dictados[i]).populate({ path : 'materia'});
+const calcularPresentismo = async (idDictado, idAlumno) => {
 
-        dictadosDB.push(dictado);
+    let response;
 
+    let alumno = await Alumno.findById( idAlumno, 'presentismos');
+    let cant = await Dictado.findById( idDictado, 'bloquesDictados');
+
+    let bloquesDictados = cant.bloquesDictados;
+    let cantInasistencias = 0.0;
+
+    alumno.presentismos = alumno.presentismos.filter( presentismo => presentismo.inasistencia.dictado == idDictado);
+
+    for ( let i = 0 ; i < alumno.presentismos.length ; i++ ) {
+
+        if ( alumno.presentismos[i].inasistencia.estado == 'injustificada' ) {
+            cantInasistencias +=  alumno.presentismos[i].inasistencia.valor;
+        }
     }
 
-    return dictadosDB;
+    const porcentaje =  cantInasistencias / bloquesDictados;
+
+    if ( porcentaje > 0.25 ) {
+        return response = "debe rendir examen complementario";
+    }
+
+    return response = "ingrese nota";
+
+}
+
+const registrarNotasTrimestrales = async (idAlumno, trimestre, notaTrimestre, idDictado) => {
+
+    let alumnoDB;
+
+    switch (trimestre) {
+        case '1':
+            alumnoDB = await Alumno.update({ "_id" : idAlumno, "calificaciones.dictado": idDictado }, { $set : {"calificaciones.$.nota1T": notaTrimestre} });
+            break;
+        case '2':
+            alumnoDB = await Alumno.update({ "_id" : idAlumno, "calificaciones.dictado": idDictado }, { $set : {"calificaciones.$.nota2T": notaTrimestre} });
+            break;
+        case '3':
+            alumnoDB = await Alumno.update({ "_id" : idAlumno, "calificaciones.dictado": idDictado }, { $set : {"calificaciones.$.nota3T": notaTrimestre} });
+            break;
+        default:
+            return { message: "trimestre incorrecto" };
+    }
+
+    return true;
 
 }
 
@@ -62,28 +112,11 @@ const getCursosCicloLectivo = async (anioCiclo) => {
 }
 
 
-const getNotasHorariosDictado = async (idDictado) => {
-
-    const notas = await Alumno.find({ 'calificaciones' : {$elemMatch: {dictado: idDictado}}})
-
-    const horarios = await Dictado.findById(idDictado, 'horarios');
-
-    const response = {
-        notas,
-        horarios: horarios.horarios
-    }
-
-    return response;
-}
-
-
-
-
-
 
 module.exports = {
     registrarNotasTrimestrales,
     getCursos,
     getDetalleCurso,
-    getNotasHorariosDictado,
+    calcularPresentismo,
+    registrarNotasTrimestrales
 }
