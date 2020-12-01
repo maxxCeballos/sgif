@@ -132,6 +132,24 @@ describe("ALTA CURSO", function() {
             });
         }).timeout(0);
 
-        // agregar caso exitoso
+        //Camino exitoso
+        it('Dictado registrado en curso', (done) => {
+            requester
+            .post('/alta-curso/dictado')
+            .send({ dictado: {
+                "cicloLectivo": 2020,
+                "programa": "programaBiologia2020.pdf",
+                "idProfesor": "5fad67b5e46bd85ae46d0999",
+                "nombreMateria": "Biologia",
+                "anioMateria": 1,
+                "horarios": "5fbbdb087d60576e3f2e2aab,5fbbdbbe7d60576e3f2e2aac",
+                "idCurso": "5fc5076a4c816f138a4a712d"
+            }})
+            .end(function (err, res) {
+                expect(res).to.have.status(200);
+                expect(res.body.ok).to.be.true;
+                done();
+            });
+        }).timeout(0);
     });
 });

@@ -22,13 +22,13 @@ const crearCicloLectivo = async (datosCicloLectivo) => {
 
     const cicloLCreado = await cicloNuevo.save();
     oidCiclo = cicloLCreado._id;
-    console.log("Ciclo Lectivo Testing Creado")
+    //console.log("Ciclo Lectivo Testing Creado")
     return cicloLectivo;
 }
 
 const eliminarCicloLectivo = async () => {
     const response = await CicloLectivo.deleteOne({ _id: oidCiclo }).exec();
-    console.log("Ciclo Lectivo Testing Eliminado")
+    //console.log("Ciclo Lectivo Testing Eliminado")
     return response;
 }
 
@@ -53,7 +53,7 @@ const crearAlumno = async (datosAlumno, oidResponsable) => {
     });
 
     const alumno = await newAlumno.save();
-    console.log("Alumno Testing Creado")
+    //console.log("Alumno Testing Creado")
     oidAlumno = alumno._id;
 
     return alumno;
@@ -61,7 +61,7 @@ const crearAlumno = async (datosAlumno, oidResponsable) => {
 
 const eliminarAlumnoOID = async (oid) => {
     const response = await Alumno.deleteOne({ _id: oid }).exec();
-    console.log("Alumno Eliminado");
+    //console.log("Alumno Eliminado");
     return response;
 }
 
@@ -71,7 +71,7 @@ const crearPersona = async (datosPersona) => {
         dni, nombre, apellido, genero
     })
     const personaDB = await personaNueva.save();
-    console.log("Persona Testing Creada");    
+    //console.log("Persona Testing Creada");    
     return personaDB;
 }
 
@@ -81,19 +81,19 @@ const crearPersonaRol = async (datosPersona, nombreRol, datosRol) => {
         dni, nombre, apellido, genero, [nombreRol]: datosRol
     })
     const personaDB = await personaNueva.save();
-    console.log("Persona Rol Testing Creada");
+    //console.log("Persona Rol Testing Creada");
     return personaDB;
 }
 
 const eliminarPersonaOID = async (oid) => {
     const response = await Persona.deleteOne({ _id: oid }).exec();
-    console.log("Persona Eliminada");
+    //console.log("Persona Eliminada");
     return response
 }
 
 const eliminarPersonaDNI = async(dni) => {
     const response = await Persona.deleteOne({dni:dni}).exec();
-    console.log("Persona Eliminada por DNI");
+    //console.log("Persona Eliminada por DNI");
     return response;
 }
 
