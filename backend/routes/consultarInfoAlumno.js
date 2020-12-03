@@ -12,7 +12,7 @@ const { getCicloLectivoActual } = require('../controllers/cicloLectivo');
 const { getResponsableAlumno } = require('../controllers/responsable');
 const { getPreceptorSancion, getPersona } = require('../controllers/persona');
 
-router.get('/consultarInfoCicloActual/:dni', asyncHandler(async (req, res) => {
+router.get('/consultarCalificacionesCicloActual/:dni', asyncHandler(async (req, res) => {
   //Esta ruta corresponde  a la transacción consultar Información Alumno del ciclo lectivo actual
   let dictados, cursoActual, calificacionesActuales, dniAlumno, response = {}, cicloActual, inasistencias;
   var alumno, responsable;

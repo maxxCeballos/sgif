@@ -1,5 +1,5 @@
-'use strict';
 
+const app =require('../server.js');
 const assert = require('chai').assert;
 const chai = require('chai');
 const chaiHttp = require('chai-http');
@@ -18,7 +18,7 @@ describe('Consultar Información Básica', function () {
     //####################
 
     it('deberia devolver una lista vacia porque el alumno no existe', (done) => {
-        chai.request(server).get('/consultarInfoCicloActual/' + "00000009").end((err, res) => {
+        chai.request(server).get('/consultarCalificacionesCicloActual/' + "00000009").end((err, res) => {
 
 
             expect(res).to.have.status(204);
@@ -78,7 +78,7 @@ describe('Consultar Información Básica', function () {
 
 
     it('deberia ser exitoso consultar las calificacion del ciclo actual del alumno', (done) => {
-        chai.request(server).get('/consultarInfoCicloActual/' + "47776955").end((err, res) => {
+        chai.request(server).get('/consultarCalificacionesCicloActual/' + "47776955").end((err, res) => {
 
             expect(res).to.have.status(200);
             expect(res.body.response).to.have.own.property('ciclo');

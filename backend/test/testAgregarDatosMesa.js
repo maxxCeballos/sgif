@@ -1,5 +1,5 @@
-'use strict';
 
+const app =require('../server.js');
 const assert = require('chai').assert;
 const chai = require('chai');
 const chaiHttp = require('chai-http');
@@ -19,7 +19,7 @@ describe('Agregar Datos Mesa de Examen', function () {
   it('deberia devolver una lista de mesas vacia', (done) => {
     chai.request(server).get('/agregarDatosMesaExamen/mesasSolicitadas').end((err, res) => {
       //Busco las mesas en estado solicitada
-      //expect(res.body).to.have.a('object');
+  
       expect(res).to.have.status(204);
       done();
     });
@@ -38,7 +38,7 @@ describe('Agregar Datos Mesa de Examen', function () {
       chai.request(server).get('/agregarDatosMesaExamen/mesasParaCompartir').end((err, res) => {
         //Busco las mesas que se pueden compartir
         //Simboliza los datos de la mesa seleccionada
-        const materia = "Biologia", anio = 4;
+        const materia = "Civica", anio = 4;
         chai.request(server).get('/agregarDatosMesaExamen/obtenerProfesoresMateria/mesa?materia=' + materia + '&anio=' + anio).end((err, res) => {
           //Busco profesores que puedan dar la materia de la mesa elegida
           //expect(res.body).to.have.a('object');
@@ -76,7 +76,6 @@ describe('Agregar Datos Mesa de Examen', function () {
   //####################
 
   it('deberia fallar porque no encuentra preceptores en la base de datos', (done) => {
-
     chai.request(server).get('/agregarDatosMesaExamen/mesasSolicitadas').end((err, res) => {
       //Busco las mesas en estado solicitada
       chai.request(server).get('/agregarDatosMesaExamen/mesasParaCompartir').end((err, res) => {
@@ -84,7 +83,6 @@ describe('Agregar Datos Mesa de Examen', function () {
 
         chai.request(server).get('/agregarDatosMesaExamen/obtenerPreceptores').end((err, res) => {
           //Busco preceptores
-
           expect(res).to.have.status(204);
           done();
         });
@@ -100,9 +98,9 @@ describe('Agregar Datos Mesa de Examen', function () {
 
     chai.request(server).get('/agregarDatosMesaExamen/mesasSolicitadas').end((err, mesasSolicitadas) => {
       //Busco las mesas en estado solicitada
-      const materia = mesasSolicitadas.body.mesasConDictados[0].dictado.materia.nombre;
-      const anio = mesasSolicitadas.body.mesasConDictados[0].dictado.materia.anio;
-      const idMesa = mesasSolicitadas.body.mesasConDictados[0]._id;
+      const materia = mesasSolicitadas.body.mesasConDictados[1].dictado.materia.nombre;
+      const anio = mesasSolicitadas.body.mesasConDictados[1].dictado.materia.anio;
+      const idMesa = mesasSolicitadas.body.mesasConDictados[1]._id;
 
       chai.request(server).get('//agregarDatosMesaExamen/mesasParaCompartir').end((err, res) => {
         //Busco las mesas que se pueden compartir
@@ -129,7 +127,6 @@ describe('Agregar Datos Mesa de Examen', function () {
                 "aula": 1
               }
               ).end((err, mesaActualizada) => {
-
                 expect(mesaActualizada).to.have.status(200);
                 expect(mesaActualizada.body).to.have.own.property('message');
                 expect(mesaActualizada.body.message).to.equal("No es posible completar la Mesa porque un profesor o preceptor se encuentran asignados a otra en la misma fecha y hora");
@@ -152,9 +149,9 @@ describe('Agregar Datos Mesa de Examen', function () {
 
     chai.request(server).get('/agregarDatosMesaExamen/mesasSolicitadas').end((err, mesasSolicitadas) => {
       //Busco las mesas en estado solicitada
-      const materia = mesasSolicitadas.body.mesasConDictados[1].dictado.materia.nombre;
-      const anio = mesasSolicitadas.body.mesasConDictados[1].dictado.materia.anio;
-      const idMesa = mesasSolicitadas.body.mesasConDictados[1].mesa._id;
+      const materia = mesasSolicitadas.body.mesasConDictados[0].dictado.materia.nombre;
+      const anio = mesasSolicitadas.body.mesasConDictados[0].dictado.materia.anio;
+      const idMesa = mesasSolicitadas.body.mesasConDictados[0].mesa._id;
       chai.request(server).get('/agregarDatosMesaExamen/mesasParaCompartir').end((err, mesas) => {
         //Busco las mesas que se pueden compartir
         //Simbolizo la eleccion de una mesa compartida
@@ -192,16 +189,16 @@ describe('Agregar Datos Mesa de Examen', function () {
   //####################
   //###### TEST 7 ######
   //####################
-it.skip('deberia ser exitoso crear una mesa como individual', (done) => {
+it('deberia ser exitoso crear una mesa como individual', (done) => {
 
     chai.request(server).get('/agregarDatosMesaExamen/mesasSolicitadas').end((err, mesasSolicitadas) => {
       //Busco las mesas en estado solicitada
       
-      const materia = mesasSolicitadas.body.mesasConDictados[0].dictado.materia.nombre;
-      const anio = mesasSolicitadas.body.mesasConDictados[0].dictado.materia.anio;
-      const idMesa = mesasSolicitadas.body.mesasConDictados[0].mesa._id;
+      const materia = mesasSolicitadas.body.mesasConDictados[1].dictado.materia.nombre;
+      const anio = mesasSolicitadas.body.mesasConDictados[1].dictado.materia.anio;
+      const idMesa = mesasSolicitadas.body.mesasConDictados[1].mesa._id;
 
-      chai.request(server).get('//agregarDatosMesaExamen/mesasParaCompartir').end((err, res) => {
+      chai.request(server).get('/agregarDatosMesaExamen/mesasParaCompartir').end((err, res) => {
         //Busco las mesas que se pueden compartir
         //Simboliza los datos de la mesa seleccionada
 
@@ -220,13 +217,12 @@ it.skip('deberia ser exitoso crear una mesa como individual', (done) => {
               chai.request(server).put('/agregarDatosMesaExamen/mesaIndividual/agregarDatos').send({
 
                 "mesa": idMesa,
-                "fechaHora": "9/12/2020",
+                "fechaHora": "6/12/2020",
                 "profesores": [profeTitular, profe2, profe3],
                 "preceptores": [preceptor1, preceptor2],
                 "aula": 1
               }
               ).end((err, mesaActualizada) => {
-                console.log(mesaActualizada);
                 expect(mesaActualizada).to.have.status(200);
                 expect(mesaActualizada.body.respClient).to.have.own.property('message');
                 expect(mesaActualizada.body.respClient).to.have.own.property('mesa');
@@ -280,7 +276,7 @@ it.skip('deberia ser exitoso crear una mesa como individual', (done) => {
         ).end((err, mesaActualizada) => {
           const mesaIndividualUpdate=mesaActualizada.body.respClient.mesaIndividualUpdate; //mesa que se convirtio en compartida
           const mesaPadre=mesaActualizada.body.respClient.mesaCompartidaUpdate; //mesa padre
-          console.log(mesaActualizada.body);
+          
           expect(mesaActualizada).to.have.status(200);
           expect(mesaActualizada.body.respClient).to.have.own.property('message');
           expect(mesaActualizada.body.respClient).to.have.own.property('mesaIndividualUpdate');
@@ -298,7 +294,6 @@ it.skip('deberia ser exitoso crear una mesa como individual', (done) => {
           expect(mesaPadre.esCompartida).to.equal(true);
           const ultima=mesaPadre.asociadas.length-1;
           expect(mesaPadre.asociadas[ultima]).to.equal(mesaIndividualUpdate._id);
-          
           done()
         });
       });

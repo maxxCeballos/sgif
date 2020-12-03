@@ -7,14 +7,17 @@ const routesHandler = require('./routes/index');
 const errorHandler = require('./middlewares/error');
 
 var bodyParser = require('body-parser');
+
 require('dotenv').config();
 
 //Init Server
 const app = express();
+app.use(bodyParser.json());
 const port = process.env.PORT || 5000;
 
 
 app.use(cors());
+
 app.use(express.json());
 
 //Init DB

@@ -112,6 +112,12 @@ const getPreceptorSancion= async (oid) => {
     return preceptor
 }
 
+const updatePersona = async (oid, update) => {
+
+    let personaU = Persona.findOneAndUpdate({ '_id': oid }, update, { new: true });
+
+    return personaU;
+}
 module.exports = {
     createPersona,
     getPersona,
@@ -119,5 +125,6 @@ module.exports = {
     getProfesorMateria,
     getPreceptores,
     getPreceptorSancion,
-    getResponsableAlumno
+    getResponsableAlumno,
+    updatePersona
 }
