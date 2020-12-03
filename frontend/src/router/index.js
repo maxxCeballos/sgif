@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Home from '../views/Home.vue';
+import rutas from '../config/routes.config';
+import { component } from 'vue/types/umd';
 
 Vue.use(VueRouter)
 
@@ -26,6 +28,11 @@ const routes = [
         name: 'transaccionADMEI',
         props: true,
         component:()=> import('../components/transacciones/agregarDatosMesa/MesaIndividual.vue' )
+      },
+      {
+        path: rutas.INSCRIBIR_MESA.ruta,
+        name: rutas.INSCRIBIR_MESA.nombre,
+        component: rutas.INSCRIBIR_MESA.component(),
       }
 
     ]
