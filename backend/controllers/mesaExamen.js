@@ -24,17 +24,27 @@ const createMesaExamen = async (mesaExamen) => {
     return mesaExamenDB;
 }
 
-const updateMesaExamen = async (oidMesa, atributo, valor) => {
-    var $set = { $set: {} };
-    $set.$set[atributo] = valor;
 
-    const response = await MesaExamen.updateOne({ _id: oidMesa }, $set);
 
-    if (response.n === 1) return true
+// const updateMesaExamen = async (oidMesa, atributo, valor) => {
+//     var $set = { $set: {} };
+//     $set.$set[atributo] = valor;
 
-    return false
+//     const response = await MesaExamen.updateOne({ _id: oidMesa }, $set);
+
+//     if (response.n === 1) return true
+
+//     return false
+// }
+
+const updateMesaExamen = async (oidMesa, newMesa) => {
+    let response = await MesaExamen.updateOne(
+        { _id: oidMesa },
+        newMesa
+    ).exec();
+
+    return response.n === 1;
 }
-
 
 const deleteMesaExamen = () => {
 

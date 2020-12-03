@@ -9,11 +9,14 @@ const urlBackend = "http://localhost:5000";
 const databaseHandler = require('./databaseHandler');
 const { expect } = require('chai');
 
-const serverOn = false;
+const serverOn = true;
 
 before(async function () {
     this.timeout(0);
     await databaseHandler.conectar(serverOn);
+    if (!serverOn) {
+        throw "Error Servidor Apagado"
+    }
 });
 
 after(function () {
@@ -86,6 +89,7 @@ describe('Mesa Incorrecta', () => {
 
         // Datos a precargar
         let fechaHora = crearFecha(1);
+
         let mesaExamen = {
             acta: 5023,
             estado: "Completada",
@@ -140,7 +144,7 @@ describe('Mesa Cerrada Correctamente', () => {
                 resultadoMesaExamen: [resultadoMesa1Obj._id],
                 dictado: dictadoObj._id
             }]
-        }
+        }// Aprueba
         let alumno1Obj = await alumnoDB.createAlumno(alumno1);
 
         let alumno2 = {
@@ -159,7 +163,7 @@ describe('Mesa Cerrada Correctamente', () => {
                 resultadoMesaExamen: [resultadoMesa2Obj._id],
                 dictado: dictadoObj._id
             }]
-        }
+        }// Desaprueba
         let alumno2Obj = await alumnoDB.createAlumno(alumno2);
 
         let alumno3 = {
@@ -178,7 +182,7 @@ describe('Mesa Cerrada Correctamente', () => {
                 resultadoMesaExamen: [resultadoMesa3Obj._id],
                 dictado: dictadoObj._id
             }]
-        }
+        }// Ausente
         let alumno3Obj = await alumnoDB.createAlumno(alumno3);
 
         let fechaHora = crearFecha(-1);
@@ -206,11 +210,37 @@ describe('Mesa Cerrada Correctamente', () => {
         });
         await resultadoMesaDB.updateResultadoMesa(resultadoMesa3Obj._id, {
             alumno: alumno3Obj._id,
-            mesaDeExamen: mesaExamenObj._id
+            mesaDeExamen: mesaExamenObj._id,
         });
 
         // Consulta a Testear
         let consultaObtenerMesa = await obtenerMesa(mesaExamen.acta);
+        let notas = [
+            {
+                oidResultado: consultaObtenerMesa.response.alumnos[0].oidResultado,
+                oidAlumno: consultaObtenerMesa.response.alumnos[0].oidAlumno,
+                nota: 6
+            },
+            {
+                oidResultado: consultaObtenerMesa.response.alumnos[1].oidResultado,
+                oidAlumno: consultaObtenerMesa.response.alumnos[1].oidAlumno,
+                nota: 2
+            },
+            {
+                oidResultado: consultaObtenerMesa.response.alumnos[2].oidResultado,
+                oidAlumno: consultaObtenerMesa.response.alumnos[2].oidAlumno,
+                condicion: "Ausente"
+            }
+        ];
+        let consultaCargarNotasMesa = await cargarNotasMesa(
+            consultaObtenerMesa.response.oidMesa, notas);
+
+
+        resultadoMesa1Obj = await resultadoMesaDB.getResultadoMesa(resultadoMesa1Obj);
+        resultadoMesa2Obj = await resultadoMesaDB.getResultadoMesa(resultadoMesa2Obj);
+        resultadoMesa3Obj = await resultadoMesaDB.getResultadoMesa(resultadoMesa3Obj);
+        alumno1Obj = await alumnoDB.getAlumno(alumno1.dni);
+        mesaExamenObj = await mesaExamenDB.getMesaExamen(mesaExamen.acta);
 
         // Limpieza
         let responseDictado = (await dictadoDB.deleteDictado(dictadoObj._id));
@@ -263,6 +293,24 @@ describe('Mesa Cerrada Correctamente', () => {
             ]
         }
         expect(consultaObtenerMesa.response).to.deep.include(esperadoObtenerMesa);
+
+        assert.equal(consultaCargarNotasMesa.response.mensaje, "Mesa Cerrada con Éxito")
+        assert.equal(mesaExamenObj.estado, "Cerrada")
+        expect(alumno1Obj.calificaciones[0]).to.deep.include({
+            condicion: "Aprobado",
+            notaFinal: notas[0].nota
+        })
+        expect(resultadoMesa1Obj).to.deep.include({
+            condicion: "Aprobado",
+            nota: notas[0].nota
+        })
+        expect(resultadoMesa2Obj).to.deep.include({
+            condicion: "Desaprobado",
+            nota: notas[1].nota
+        })
+        expect(resultadoMesa3Obj).to.deep.include({
+            condicion: "Ausente",
+        })
     })
 })
 
@@ -277,23 +325,36 @@ function crearFecha(cantidadMeses) {
     }
 
     let fechaHora = new Date();
+
     let mes = fechaHora.getMonth() + cantidadMeses;
 
     if (mes >= 12) {
-        fechaHora.setYear(fechaHora.getYear() + 1);
+        fechaHora.setYear(fechaHora.getFullYear() + 1);
         fechaHora.setMonth(mes - 12);
     } else if (mes < 0) {
-        fechaHora.setYear(fechaHora.getYear() - 1);
+        fechaHora.setYear(fechaHora.getFullYear() - 1);
         fechaHora.setMonth(12 + mes);
     } else {
         fechaHora.setMonth(mes);
     }
+
     return fechaHora;
 }
 
 async function obtenerMesa(acta) {
     return await axios
         .get(`${urlBackend}/cerrar-mesa/obtener-mesa/${acta}`)
+        .then((res) => {
+            return res.data;
+        })
+        .catch((res) => {
+            return res.response.data;
+        });
+}
+
+async function cargarNotasMesa(oidMesa, notas) {
+    return await axios
+        .put(`${urlBackend}/cerrar-mesa/cargar-notas-mesa/${oidMesa}`, notas)
         .then((res) => {
             return res.data;
         })

@@ -182,18 +182,19 @@ const updateAlumnoByOid = async (oidAlumno, atributo, valor) => {
     return false
 }
 
-const updateCalificacionAlumnoByOid = async (oidAlumno, calificacionNueva) => {
+const updateCalificacionConResultado = async (oidAlumno, nota, condicion, oidResultado) => {
     const alumnoDB = await getAlumnoByOid(oidAlumno);
 
-    let numeroCalificacion = alumnoDB.calificaciones.findIndex(calificacion =>
-        calificacion.dictado === calificacionNueva.dictado
-        && calificacion.cicloLectivo === calificacionNueva.cicloLectivo)
+    let calificacion = alumnoDB.calificaciones.find(calif =>
+        calif.resultadoMesaExamen.find(result =>
+            String(result) === String(oidResultado)));
 
-    alumnoDB.calificaciones[numeroCalificacion] = calificacionNueva;
+    calificacion.notaFinal = nota;
+    calificacion.condicion = condicion;
 
     const response = await Alumno.updateOne(
         { _id: oidAlumno },
-        { calificaciones: alumnoDB.calificaciones });
+        alumnoDB);
 
     if (response.n === 1) return true
 
@@ -235,10 +236,9 @@ const addCalificacion = async (calificacion, dni) => {
 
 module.exports = {
     createAlumno,
-    // resetAlumno,
     updateAlumno,
     updateAlumnoByOid,
-    updateCalificacionAlumnoByOid,
+    updateCalificacionConResultado,
     deleteAlumno,
     getAllAlumnos,
     getAlumnoById,

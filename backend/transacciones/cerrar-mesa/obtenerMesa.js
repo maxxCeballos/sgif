@@ -51,7 +51,7 @@ async function getDatosResponse(mesaExamen) {
     }
 
     let mesaResponse = {
-        oidMesa: (mesaExamen._id),
+        oidMesa: mesaExamen._id,
         acta: mesaExamen.acta,
         fechaHora: String(mesaExamen.fechaHora),
         aula: mesaExamen.aula,

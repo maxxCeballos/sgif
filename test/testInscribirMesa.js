@@ -9,11 +9,14 @@ const urlBackend = "http://localhost:5000";
 const databaseHandler = require('./databaseHandler');
 const { expect } = require('chai');
 
-const serverOn = false;
+const serverOn = true;
 
 before(async function () {
     this.timeout(0);
     await databaseHandler.conectar(serverOn);
+    if(!serverOn){
+        throw "Error Servidor Apagado"
+    }
 });
 
 after(function () {
@@ -107,7 +110,6 @@ describe('Sin Materias para rendir', () => {
     })
 })
 
-// FIXME: ver si conviene agrupar y crear mesas para q usen varios
 describe('Mesa de Castigo', () => {
     it('Deberia informar que esta en Mesa de Castigo', async function () {
         this.timeout(0);

@@ -27,14 +27,24 @@ router.get('/cerrar-mesa/obtener-mesa', asyncHandler(async (req, res) => {
 }));
 
 /**
- * Carga los resultados de los alumnos que rindieron en la mesa o mesas (asociadas) con las notas y la asistencia.
+ * Carga los resultados de los alumnos que rindieron en la mesa con las notas y la asistencia.
  */
-router.put('/cerrar-mesa/cargar-notas-mesa/', asyncHandler(async (req, res) => {
+router.put('/cerrar-mesa/cargar-notas-mesa/:oidMesa', asyncHandler(async (req, res) => {
+    const oidMesa = req.params.oidMesa;
     const notas = req.body;
 
-    const response = await cargarNotasMesas(notas);
+    // TODO: veriicar notas
+
+    const response = await cargarNotasMesas(oidMesa, notas);
 
     res.send({ ok: true, response });
+}));
+
+/**
+ * Carga los resultados de los alumnos que rindieron en la mesa con las notas y la asistencia.
+ */
+router.put('/cerrar-mesa/cargar-notas-mesa', asyncHandler(async (req, res) => {
+    throw "Por Favor, Ingrese un Identificador de Mesa";
 }));
 
 module.exports = router;
