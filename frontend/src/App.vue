@@ -1,19 +1,44 @@
 <template>
   <div id="app">
+    <v-app>
+      <v-toolbar app>
+        <v-toolbar-title class="headline text-uppercase">
+          <span>Vuetify</span>
+          <span class="font-weight-light">MATERIAL DESIGN</span>
+        </v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-toolbar-items class="hidden-sm-and-down">
+          <v-btn text>
+            <router-link to="/">Home</router-link>
+          </v-btn>
+          <v-btn text>
+            <router-link to="/about">About</router-link>
+          </v-btn>
+          <v-btn text>
+            <router-link to="/inscribir-mesa">
+              Inscribir en Mesa de Examen
+            </router-link>
+          </v-btn>
+        </v-toolbar-items>
+      </v-toolbar>
 
-    <div>Hola jajajaj</div>
-
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link> | 
-      <router-link to="/inscribir-mesa">Inscribir en Mesa de Examen</router-link>
-    </div>
-    <router-view/>
+      <v-content>
+        <router-view />
+      </v-content>
+    </v-app>
   </div>
 </template>
 
+<script>
+export default {
+  name: "App",
+  data: () => ({
+    //
+  }),
+};
+</script>
 <style>
-#app {
+/* #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -32,5 +57,5 @@
 
 #nav a.router-link-exact-active {
   color: #42b983;
-}
+} */
 </style>

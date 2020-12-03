@@ -1,51 +1,73 @@
 <template>
   <div class="inscribir-mesa">
     <!-- Buscador de Legajos -->
-    <form @submit="buscarLegajo">
-      <input
-        type="text"
-        v-model="legajo"
-        name="legajo"
-        placeholder="Ingrese el Legajo"
-      />
-
-      <button>Buscar Materias</button>
-    </form>
+    <v-container>
+      <v-card elevation="2" outlined>
+        <v-card-title>Ingrese un Legajo</v-card-title>
+        <v-card-text>
+          <v-form @submit="buscarLegajo">
+            <v-row>
+              <v-col>
+                <v-text-field v-model="legajo" label="Ingrese un Legajo" />
+              </v-col>
+              <v-col>
+                <v-btn @click="buscarLegajo" elevation="1" large
+                  >Buscar Materias
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-card-text>
+      </v-card>
+    </v-container>
 
     <TablaInscripcion
       v-bind:show="mostrarTabla"
       v-bind:materias="materias"
-      v-bind:apagar="apagarT"
       v-on:select-materia="selectMateria"
-      v-on:select-apagar="apagarTabla"
     />
 
-    <ComponenteTest
-      v-bind:apagar="apagarT"
-      v-bind:show="mostrarTabla"
-      v-on:select-apagar="apagarTabla"
-    />
+    <v-dialog v-model="confirmacion" width="500">
+      <!-- <template v-slot:activator="{ on, attrs }"> -->
+      <!-- </template> -->
+      <v-card>
+        <v-card-title class="headline grey lighten-2">
+          SALIO TODO GENIAL
+        </v-card-title>
+
+        <v-card-text>
+          Te inscribiste a la mesa de la materia {{materiaSeleccionada.nombre}}
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="confirmacion = false"> Joya Bro </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
 // import axios from "axios";
 import TablaInscripcion from "@/components/inscribir-mesa/TablaInscripcion";
-import ComponenteTest from "@/components/inscribir-mesa/ComponenteTest";
 
 export default {
   name: "InscribirMesa",
   data() {
     return {
+      confirmacion: false,
       legajo: "",
       mostrarTabla: false,
       apagarT: false,
       materias: [],
+      materiaSeleccionada: {},
     };
   },
   components: {
     TablaInscripcion,
-    ComponenteTest,
   },
 
   methods: {
@@ -82,10 +104,10 @@ export default {
     },
 
     selectMateria(idMateria) {
-      let materiaSeleccionada = this.materias.find(
+      this.materiaSeleccionada = this.materias.find(
         (materia) => materia.id === idMateria
       );
-      console.log(materiaSeleccionada.nombre);
+      this.confirmacion = true;
     },
 
     apagarTabla() {
