@@ -2,7 +2,6 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue';
 import rutas from '../config/routes.config';
-import { component } from 'vue/types/umd';
 
 Vue.use(VueRouter)
 
@@ -11,39 +10,26 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home,
-    children:[
-      {
-        path: 'agregarDatosMesaExamen',
-        name: 'transaccionADME',
-        component:()=> import('../components/transacciones/agregarDatosMesa/MesasSolicitadas2.vue' )
-      },
-      {
-        path: 'mesasCompartidas',
-        name: 'transaccionADMEC',
-        props: true,
-        component:()=> import('../components/transacciones/agregarDatosMesa/MesasCompartidas2.vue' )
-      },
-      {
-        path: 'crearIndividual',
-        name: 'transaccionADMEI',
-        props: true,
-        component:()=> import('../components/transacciones/agregarDatosMesa/MesaIndividual.vue' )
-      },
-      {
-        path: rutas.INSCRIBIR_MESA.ruta,
-        name: rutas.INSCRIBIR_MESA.nombre,
-        component: rutas.INSCRIBIR_MESA.component(),
-      }
-
-    ]
-  },
-  {
+  }, {
     path: '/about',
     name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+  }, {
+    path: rutas.INSCRIBIR_MESA.ruta,
+    name: rutas.INSCRIBIR_MESA.nombre,
+    component: rutas.INSCRIBIR_MESA.component
+  }, {
+    path: rutas.AGREGAR_DATOS_MESA.ruta,
+    name: rutas.AGREGAR_DATOS_MESA.nombre,
+    component: rutas.AGREGAR_DATOS_MESA.component
+  }, {
+    path: rutas.CERRAR_MESA.ruta,
+    name: rutas.CERRAR_MESA.nombre,
+    component: rutas.CERRAR_MESA.component
+  }, {
+    path: rutas.CONSULTAR_ALUMNO.ruta,
+    name: rutas.CONSULTAR_ALUMNO.nombre,
+    component: rutas.CONSULTAR_ALUMNO.component
   }
 ]
 

@@ -17,7 +17,7 @@
 <script>
 // @ is an alias to /src
 //import HelloWorld from '@/components/HelloWorld.vue'
-import SideNavBar from "@/components/SideNavBarV2.vue";
+import SideNavBar from "@/components/SideNavBar.vue";
 
 //import TagregarDM from "@/components/transacciones/agregarDatosMesa/MesasSolicitadas.vue";
 

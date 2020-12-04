@@ -1,46 +1,99 @@
 <template>
-  <div class="sidebar">
-    <h2>Menu</h2>
-    <ul>
-      <h3>
-        Alumnos</h3>
-        <ul>
-          <li v-for="item in alumnos" :key="item.id">
-            <a href="#">{{ item }}</a>
-          </li>
-        </ul>
-      
-      <h3>
-        Curso</h3>
-        <ul>
-          <li v-for="item in curso" :key="item.id">
-            <a href="#">{{ item }}</a>
-          </li>
-        </ul>
-      
-      <h3>
-        Mesas de Examen</h3>
-        <ul>
-            <li><a href="#">Inscribir Alumno en Mesa de Examen</a></li>
-           <router-link :to="{name: 'transaccionADME' }"><li>Agregar Datos Mesa de Examen</li></router-link>
-            <li><a href="#">Cerrar Mesa de Examen</a></li>
+  <v-card height="1045" max-width="344">
+    <v-navigation-drawer
+      class="deep-purple accent-4"
+      dark
+      permanent
+      absolute
+      left
+      width="344"
+    >
+      <template v-slot:prepend>
+        <h1 class="mt-8 yellow--text lighten-5" color="white">SGIF</h1>
+        <h4 class="mb-8 yellow--text lighten-5">
+          Sisttema Gestor Instituto Fatima
+        </h4>
+        <v-list-item two-line>
+          <v-list-item-avatar>
+            <img src="../assets/avatar.png.jpg" />
+          </v-list-item-avatar>
 
-          </ul>
-     
-    </ul>
+          <v-list-item-content>
+            <v-list-item-title>Michael Jhonson</v-list-item-title>
+            <v-list-item-subtitle>Secretario</v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+      </template>
+      <v-divider></v-divider>
 
-  </div>
+      <v-list shaped>
+        <v-list-group
+          v-for="item in secciones"
+          :key="item.nombre"
+          v-model="item.active"
+          :prepend-icon="item.icon"
+          no-action
+          active-class="white"
+          color="deep-purple accent-4"
+        >
+          <template v-slot:activator>
+            <v-list-item-content>
+              <v-list-item-title v-text="item.nombre"></v-list-item-title>
+            </v-list-item-content>
+          </template>
 
+          <v-list-item
+            v-for="child in item.transacciones"
+            :key="child.nombre"
+            link
+          >
+            <v-list-item-content>
+              <v-list-item-title>{{ child.nombre }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-group>
+      </v-list>
+
+      <template v-slot:append>
+        <div class="pa-2">
+          <v-btn block> Cerrar Sesión </v-btn>
+        </div>
+      </template>
+    </v-navigation-drawer>
+  </v-card>
 </template>
 
-
 <script>
-//<router-link :to="{name:transaccionADME}" }> <li>Agregar Datos Mesa de Examen</li></router-link>
+import rutas from '../config/routes.config';
 
 export default {
   name: "Sidebar",
   data: function () {
     return {
+      secciones: [
+        {
+          nombre: "Alumnos",
+          icon: "mdi-school-outline",
+          active: true,
+          transacciones: [rutas.INSCRIBIR_MESA],
+        },
+        {
+          nombre: "Curso",
+          icon: "mdi-google-classroom",
+          active: true,
+          transacciones: [
+            { nombre: "Inscribir Alumno Mesa de Examen" },
+            { nombre: "Agregar Datos Mesa de Examen" },
+            { nombre: "Cerrar Mesa de Examen" },
+          ],
+        },
+        {
+          nombre: "Mesa de Examen",
+          icon: "mdi-newspaper-variant-outline",
+          active: true,
+          transacciones: [{ nombre: "Consultar Curso" }],
+        },
+      ],
       alumnos: [
         "Consultar Informacion",
         "Inscribir Alumno",
@@ -58,49 +111,9 @@ export default {
 };
 </script>
 
-<style>
-.wrapper .sidebar {
-  width: auto;
-  height: auto;
-  background: #32f4dc;
-  padding: 30px 0px;
-  float: left;
-}
-
-.wrapper .sidebar h2 {
-  color: #0e332f;
-  text-transform: uppercase;
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-
-
-.wrapper .sidebar ul li {
-  color: #0e332f;
-  padding: 15px;
-  text-align:left
-}
-/*La lista cuando se pone el cursor sobre ella*/
-.wrapper .sidebar ul li:hover {
-  background-color: #594f8d;
-  color: #32f4dc;
-  display: block;
-}
-
-/*Los enlaces de los item lista*/
-.wrapper .sidebar ul li a {
-  color: #0e332f;
-  display: block;
-  width: 100%;
-}
-/*Los enlaces de los item lista cuando se pone el cursor sobre ellos*/
-.wrapper .sidebar ul li a:hover {
-  color: #32f4dc;
-  display: block;
-}
-
-.wrapper .sidebar ul li a .fas {
-  width: 25px;
+<style scoped>
+.border {
+  color: white;
+  text: deep-purple--text text--accent-4;
 }
 </style>

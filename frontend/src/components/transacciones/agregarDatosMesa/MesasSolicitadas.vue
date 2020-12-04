@@ -1,79 +1,42 @@
+
+
 <template>
-  <div>
+  <v-data-table
+    caption="Mesas Solicitadas"
+    :headers="headers"
+    :items="mesas"
+    :items-per-page="10"
+    item-key="mesaId"
+    class="elevation-1"
+    :loading="isLoading"
+    loading-text="Cargando.. porfavor espere"
+  >
+    <template v-slot:item="{ item }">
+      <tr>
+        <td>{{ item.materia }}</td>
+        <td>{{ item.anio }}</td>
+        <td>{{ item.cicloLectivo }}</td>
+        <td>
+          <router-link
+            :to="{
+              name: 'transaccionADMEC',
+              params: {
+                oidMesaElegida: item.mesaId,
+                materiaMesaElegida: item.materia,
+                anioMateriaMesaElegida: item.anio,
+              },
+            }"
+          >
+            <v-icon medium class="mr-2">
+              mdi-arrow-right-circle-outline
+            </v-icon>
+          </router-link>
+        </td>
+      </tr>
+    </template>
 
-
-    <div class="mdc-data-table" style="border: 1px solid black">
-      <div class="mdc-data-table__table-container">
-        <table
-          class="mdc-data-table__table"
-          aria-label="Dessert calories"
-          style="border-collapse: collapse"
-        >
-          <caption>
-            Seleccione una mesa solicitada
-          </caption>
-          <thead>
-            <tr class="mdc-data-table__header-row">
-              <th
-                class="mdc-data-table__header-cell"
-                role="columnheader"
-                scope="col"
-                style="padding: 25px"
-              >
-                Materia
-              </th>
-              <th
-                class="mdc-data-table__header-cell mdc-data-table__header-cell--numeric"
-                role="columnheader"
-                scope="col"
-                style="padding: 25px"
-              >
-                Año
-              </th>
-              <th
-                class="mdc-data-table__header-cell"
-                role="columnheader"
-                scope="col"
-                style="padding: 25px"
-              >
-                CicloLectivo
-              </th>
-            </tr>
-          </thead>
-          <tbody class="mdc-data-table__content">
-            <tr
-              data-row-id="u0"
-              class="mdc-data-table__row"
-              v-for="mesa in mesas"
-              :key="mesa._id"
-            >
-              <td class="mdc-data-table__cell">
-                {{ mesa.dictado.materia.nombre }}
-              </td>
-              <td class="mdc-data-table__cell">
-                {{ mesa.dictado.materia.anio }}
-              </td>
-              <td class="mdc-data-table__cell">
-                {{ mesa.dictado.cicloLectivo }}
-              </td>
-              <router-link
-                :to="{
-                  name: 'transaccionADMEC',
-                  params: {
-                    oidMesaElegida: mesa._id,
-                    materiaMesaElegida: mesa.dictado.materia.nombre,
-                    anioMateriaMesaElegida: mesa.dictado.materia.anio,
-                  },
-                }"
-              >
-                <v-icon>mdi-arrow-right-circle-outline </v-icon>
-              </router-link>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+    ></v-data-table
+  >
 </template>
 
 
@@ -87,7 +50,14 @@ export default {
   name: "TagregarDM",
   data: function () {
     return {
+      headers: [
+        { text: "Materia", value: "materia" },
+        { text: "Año", value: "anio" },
+        { text: "CicloLectivo", value: "cicloLectivo" },
+        { text: "Seleccionar Mesa", value: "accion", sortable: false },
+      ],
       mesas: [],
+      isLoading: true,
     };
   },
   methods: {
@@ -95,10 +65,15 @@ export default {
       alert(mensaje);
     },
   },
+
   mounted() {
     axios
       .get("http://localhost:3000/agregarDatosMesaExamen/mesasSolicitadas")
-      .then((res) => (this.mesas = res.data.mesasConDictados))
+      .then((res) => {
+        console.log(res.data);
+        this.mesas = res.data.mesasConDictados;
+        this.isLoading=false;
+      })
       .catch((error) => {
         if (!error.response) {
           // network error
@@ -112,10 +87,4 @@ export default {
 </script>
 
 <style >
-tr {
-  border-top: 1px thin solid;
-}
-tbody :hover {
-  background-color: beige;
-}
 </style>
