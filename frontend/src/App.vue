@@ -1,13 +1,24 @@
 <template>
-<v-app>
-  <div id="app">
-    
-      
+  <v-app>
+    <div id="app">
+      <SideNavBar />
+      <v-container>         
+        <router-view />
+      </v-container>
     </div>
-    <router-view/>
-  
   </v-app>
 </template>
+
+<script>
+import SideNavBar from "@/components/SideNavBar.vue";
+
+export default {
+  name: "App",
+  components: {
+    SideNavBar,
+  },
+};
+</script>
 
 <style>
 #app {
@@ -17,6 +28,4 @@
   text-align: center;
   color: #2c3e50;
 }
-
-
 </style>

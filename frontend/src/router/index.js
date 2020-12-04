@@ -17,20 +17,20 @@ const routes = [
   }, {
     path: rutas.INSCRIBIR_MESA.ruta,
     name: rutas.INSCRIBIR_MESA.nombre,
-    component: rutas.INSCRIBIR_MESA.component
+    component: () => import('../views/InscribirMesa.vue')
   }, {
     path: rutas.AGREGAR_DATOS_MESA.ruta,
     name: rutas.AGREGAR_DATOS_MESA.nombre,
-    component: rutas.AGREGAR_DATOS_MESA.component
+    component: () => import('../views/AgregarDatosMesa.vue')
   }, {
     path: rutas.CERRAR_MESA.ruta,
     name: rutas.CERRAR_MESA.nombre,
-    component: rutas.CERRAR_MESA.component
+    component: () => import('../views/CerrarMesa.vue')
   }, {
     path: rutas.CONSULTAR_ALUMNO.ruta,
     name: rutas.CONSULTAR_ALUMNO.nombre,
-    component: rutas.CONSULTAR_ALUMNO.component
-  }
+    component: () => import('../views/ConsultarAlumno.vue')
+  },
 ]
 
 const router = new VueRouter({

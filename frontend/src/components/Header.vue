@@ -1,25 +1,21 @@
 <template>
   <div class="header">
     <div class="header_logo">
-      <img src="../assets/fatima.png" alt="logo">
+      <img src="../assets/fatima.png" alt="logo" />
       <h1>Instituto Nuestra Señora de Fátima</h1>
     </div>
 
     <div class="perfil_container">
-       <div class="company-header-avatar"></div>
-      </div>
+      <div class="company-header-avatar"></div>
+    </div>
   </div>
 </template>
-
-
 
 <script>
 export default {
   name: "Header",
 };
 </script>
-
-
 
 <style >
 .header {
@@ -45,7 +41,6 @@ export default {
   display: inline;
 }
 .header h1 {
-  
   top: 18px;
   left: 10px;
 }
@@ -67,6 +62,6 @@ export default {
   float: left;
   background-size: cover;
   background-position: center center;
-  background-image:url("../assets/usuario.png");
+  background-image: url("../assets/usuario.png");
 }
 </style>

@@ -34,9 +34,7 @@
         </td>
       </tr>
     </template>
-
-    ></v-data-table
-  >
+  </v-data-table>
 </template>
 
 
@@ -72,7 +70,7 @@ export default {
       .then((res) => {
         console.log(res.data);
         this.mesas = res.data.mesasConDictados;
-        this.isLoading=false;
+        this.isLoading = false;
       })
       .catch((error) => {
         if (!error.response) {
