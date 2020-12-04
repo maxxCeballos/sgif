@@ -43,6 +43,7 @@
 //const dataTable = new MDCDataTable(document.querySelector('.mdc-data-table'));
 
 import axios from "axios";
+import { ipBackend } from "../../../config/backend.config";
 
 export default {
   name: "TagregarDM",
@@ -66,7 +67,7 @@ export default {
 
   mounted() {
     axios
-      .get("http://localhost:3000/agregarDatosMesaExamen/mesasSolicitadas")
+      .get(`${ipBackend}/agregarDatosMesaExamen/mesasSolicitadas`)
       .then((res) => {
         console.log(res.data);
         this.mesas = res.data.mesasConDictados;

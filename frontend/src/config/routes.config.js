@@ -1,19 +1,19 @@
-let INSCRIBIR_MESA = {
+const INSCRIBIR_MESA = {
     ruta: "/inscribir-mesa",
     nombre: "Inscribir Alumno en Mesa de Examen",
 }
 
-let AGREGAR_DATOS_MESA = {
+const AGREGAR_DATOS_MESA = {
     ruta: "/agregar-datos-mesa",
     nombre: "Agregar Datos a Mesa de Examen",
 }
 
-let CERRAR_MESA = {
+const CERRAR_MESA = {
     ruta: "/cerrar-mesa",
     nombre: "Cerrar Mesa de Examen",
 }
 
-let CONSULTAR_ALUMNO = {
+const CONSULTAR_ALUMNO = {
     ruta: "/consultar-alumno",
     nombre: "Consultar Información de Alumno",
 }
