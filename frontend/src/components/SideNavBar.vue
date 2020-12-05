@@ -6,6 +6,7 @@
       permanent
       absolute
       heigh="100%"
+      app
     >
       <template v-slot:prepend>
         <!-- TITULO -->

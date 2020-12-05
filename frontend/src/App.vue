@@ -1,14 +1,13 @@
 <template>
   <v-app>
-    <v-navigation-drawer app>
+  
       <SideNavBar />
-    </v-navigation-drawer>
-
+    
     <!-- Sizes your content based upon application components -->
     <v-main pd-5 class="cyan lighten-3">
       <!-- Provides the application the proper gutter -->
-     <v-container>
-       <router-view></router-view>
+      <v-container>
+        <router-view></router-view>
       </v-container>
     </v-main>
   </v-app>

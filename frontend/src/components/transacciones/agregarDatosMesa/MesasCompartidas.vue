@@ -51,11 +51,12 @@ import axios from "axios";
 
 export default {
   name: "TagregarDMC",
-  props: {
-    oidMesaElegida: { type: String, required: true },
-    materiaMesaElegida: { type: String, required: true },
-    anioMateriaMesaElegida: { type: Number, required: true },
-  },
+  props: [
+    "oidMesaElegida",
+    "materiaMesaElegida",
+    "anioMateriaMesaElegida",
+    "estaPrendido"
+  ],
   data: function () {
     return {
       headers: [
@@ -68,7 +69,7 @@ export default {
       ],
       mesas: [],
       loading: true,
-      estaPrendido: false,
+      
     };
   },
 

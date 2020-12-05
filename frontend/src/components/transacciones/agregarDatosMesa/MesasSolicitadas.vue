@@ -18,24 +18,15 @@
         <td>{{ item.anio }}</td>
         <td>{{ item.cicloLectivo }}</td>
         <td>
-          <router-link
-            :to="{
-              name: 'transaccionADMEC',
-              params: {
-                oidMesaElegida: item.mesaId,
-                materiaMesaElegida: item.materia,
-                anioMateriaMesaElegida: item.anio,
-              },
-            }"
-          >
+         
             <v-btn
-              @click="mesaSeleccionada(item.mesaId, item, materia, item.anio)"
+              @click="mesaSeleccionada(item.mesaId, item.materia, item.anio)"
             >
               <v-icon medium class="mr-2">
                 mdi-arrow-right-circle-outline
               </v-icon>
             </v-btn>
-          </router-link>
+         
         </td>
       </tr>
     </template>
@@ -71,6 +62,7 @@ export default {
       alert(mensaje);
     },
     mesaSeleccionada(idMesa, materia, anio) {
+      
       this.$emit('updateMesaElegida',{
         idMesa:idMesa,
         materia:materia,

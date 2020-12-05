@@ -1,11 +1,16 @@
 <template>
   <div>
-    <MesasSolicitadas v-bind:estaPrendido="mostrandoSolicitadas" />
+    <MesasSolicitadas v-bind:estaPrendido="mostrandoSolicitadas"
+      v-on:updateMesaElegida="updateMesa"
+     />
+
+
     <MesasCompartidas
       v-bind:estaPrendido="mostrandoCompartidas"
       :oidMesaElegida="oidMesaElegida"
       :materiaMesaElegida="materiaMesaElegida"
       :anioMateriaMesaElegida="anioMateriaMesaElegida"
+  
     />
   </div>
 </template>
@@ -32,7 +37,7 @@ export default {
     MesasCompartidas,
   },
   methods: {
-    updateMesaElegida(mesaSeleccionada) {
+    updateMesa(mesaSeleccionada) {
       this.oidMesaElegida = mesaSeleccionada.idMesa;
       this.materiaMesaElegida = mesaSeleccionada.materia;
       this.anioMateriaMesaElegida = mesaSeleccionada.anio;
