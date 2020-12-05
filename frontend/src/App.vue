@@ -14,12 +14,12 @@
 </template>
 
 <script>
-// import SideNavBar from "@/components/SideNavBar.vue";
+import SideNavBar from "@/components/SideNavBar.vue";
 
 export default {
   name: "App",
   components: {
-    // SideNavBar,
+    SideNavBar,
   },
 };
 </script>
