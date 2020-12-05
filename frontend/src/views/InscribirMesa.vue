@@ -35,9 +35,8 @@
     />
 
     <cartel-error
-      :titulo="'SALIO TODO MAL'"
-      :mensaje="`error`"
-      :estaActivado="error"
+      :mensaje="`Legajo Incorrecto`"
+      v-bind:estaActivado="error"
       v-on:cerrar-cartel="errorOperacion"
     />
   </div>
@@ -114,12 +113,10 @@ export default {
     },
 
     confirmarOperacion() {
-      console.log("Confirma2");
       this.confirmacion = false;
     },
 
     errorOperacion() {
-      console.log("Error");
       this.error = false;
     },
   },
