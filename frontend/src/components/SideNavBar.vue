@@ -1,12 +1,11 @@
 <template>
-  <v-card height="1045" max-width="344">
-    <v-navigation-drawer
-      class="deep-purple accent-4"
+  
+    <v-navigation-drawer 
+      class="blue-grey lighten-2"
       dark
       permanent
       absolute
-      left
-      width="344"
+      heigh="100%"
     >
       <template v-slot:prepend>
         <!-- TITULO -->
@@ -27,7 +26,7 @@
       </template>
       <v-divider />
       <!-- SECCIONES -->
-      <v-list shaped>
+      <v-list shaped >
         <v-list-group
           v-for="item in secciones"
           :key="item.nombre"
@@ -63,7 +62,7 @@
         </div>
       </template>
     </v-navigation-drawer>
-  </v-card>
+  
 </template>
 
 <script>
@@ -77,7 +76,7 @@ export default {
         {
           nombre: "Alumnos",
           icon: "mdi-school-outline",
-          active: true,
+          active: false,
           transacciones: [
             {
               nombre: rutas.CONSULTAR_ALUMNO.nombre,
@@ -88,13 +87,13 @@ export default {
         {
           nombre: "Curso",
           icon: "mdi-newspaper-variant-outline",
-          active: true,
+          active: false,
           transacciones: [{ nombre: "Consultar Curso" }],
         },
         {
           nombre: "Mesa de Examen",
           icon: "mdi-google-classroom",
-          active: true,
+          active:false,
           transacciones: [
             {
               nombre: rutas.INSCRIBIR_MESA.nombre,

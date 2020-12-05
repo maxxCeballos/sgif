@@ -1,11 +1,16 @@
 <template>
   <v-app>
-    <div id="app">
+    <v-navigation-drawer app>
       <SideNavBar />
-      <v-container>         
-        <router-view />
+    </v-navigation-drawer>
+
+    <!-- Sizes your content based upon application components -->
+    <v-main pd-5 class="cyan lighten-3">
+      <!-- Provides the application the proper gutter -->
+     <v-container>
+       <router-view></router-view>
       </v-container>
-    </div>
+    </v-main>
   </v-app>
 </template>
 
@@ -21,11 +26,4 @@ export default {
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
 </style>
