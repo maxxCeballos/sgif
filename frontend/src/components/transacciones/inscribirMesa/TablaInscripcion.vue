@@ -1,7 +1,7 @@
 <template>
   <div v-if="show">
     <v-container>
-      <v-card elevation="2" outlined>
+      <v-card v-if="isEmpty" elevation="2" outlined>
         <v-card-title>Materias Para Rendir</v-card-title>
         <v-card-subtitle>Seleccione Una</v-card-subtitle>
         <v-card-text>
@@ -13,6 +13,10 @@
             @click:row="handleClickRow"
           />
         </v-card-text>
+      </v-card>
+
+      <v-card v-else elevation="2" outlined>
+        <v-card-title>Usted no posee Materias para rendir</v-card-title>
       </v-card>
     </v-container>
   </div>
@@ -28,18 +32,21 @@ export default {
         {
           text: "Nombre",
           align: "start",
-          sortable: false,
           value: "nombre",
         },
         { text: "Año", value: "anio" },
         { text: "Ciclo Lectivo", value: "cicloLectivo" },
       ],
+      isEmpty: false,
     };
   },
   methods: {
     handleClickRow(item) {
       this.$emit("select-materia", item.id);
     },
+  },
+  beforeUpdate: function () {
+    this.isEmpty = this.materias.length > 0;
   },
 };
 </script>

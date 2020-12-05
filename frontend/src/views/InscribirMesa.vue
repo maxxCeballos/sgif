@@ -33,6 +33,13 @@
       :estaActivado="confirmacion"
       v-on:cerrar-cartel="confirmarOperacion"
     />
+
+    <cartel-error
+      :titulo="'SALIO TODO MAL'"
+      :mensaje="`error`"
+      :estaActivado="error"
+      v-on:cerrar-cartel="errorOperacion"
+    />
   </div>
 </template>
 
@@ -40,12 +47,14 @@
 // import axios from "axios";
 import TablaInscripcion from "@/components/transacciones/inscribirMesa/TablaInscripcion";
 import CartelExito from "../components/CartelExito.vue";
+import CartelError from "../components/CartelError.vue";
 
 export default {
   name: "InscribirMesa",
   data() {
     return {
       confirmacion: false,
+      error: false,
       legajo: "",
       mostrarTabla: false,
       apagarT: false,
@@ -56,6 +65,7 @@ export default {
   components: {
     TablaInscripcion,
     CartelExito,
+    CartelError,
   },
 
   methods: {
@@ -88,7 +98,12 @@ export default {
       //   .then((res) => (this.todos = res.data))
       //   .catch((err) => console.log(err));
 
-      this.mostrarTabla = true;
+      if (this.legajo === "error") {
+        this.error = true;
+        this.mostrarTabla = false;
+      } else {
+        this.mostrarTabla = true;
+      }
     },
 
     selectMateria(idMateria) {
@@ -100,6 +115,12 @@ export default {
 
     confirmarOperacion() {
       console.log("Confirma2");
+      this.confirmacion = false;
+    },
+
+    errorOperacion() {
+      console.log("Error");
+      this.error = false;
     },
   },
 };

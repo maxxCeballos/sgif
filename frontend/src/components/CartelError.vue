@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="estaActivado" width="500">
     <v-card>
-      <v-card-title class="headline grey lighten-2">
+      <v-card-title class="headline red lighten-2">
         {{ titulo }}
       </v-card-title>
 
@@ -22,15 +22,13 @@
 </template>
 
 <script>
-// TODO: Cambiar por alerta
-
 export default {
-  name: "CartelExito",
+  name: "CartelError",
   props: ["titulo", "mensaje", "estaActivado"],
   methods: {
     confirmarOperacion() {
-        this.estaActivado = false;
-        this.$emit("cerrar-cartel")
+      this.estaActivado = false;
+      this.$emit("cerrar-cartel");
     },
   },
 };
