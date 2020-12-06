@@ -1,25 +1,23 @@
 <template>
-  <div v-if="show">
-    <v-container>
-      <v-card v-if="isEmpty" elevation="2" outlined>
-        <v-card-title>Materias Para Rendir</v-card-title>
-        <v-card-subtitle>Seleccione Una</v-card-subtitle>
-        <v-card-text>
-          <v-data-table
-            :headers="headers"
-            :items="materias"
-            :items-per-page="5"
-            class="elevation-1"
-            @click:row="handleClickRow"
-          />
-        </v-card-text>
-      </v-card>
+  <v-container v-if="show">
+    <v-card v-if="isEmpty" elevation="2" outlined>
+      <v-card-title>Materias Para Rendir</v-card-title>
+      <v-card-subtitle>Seleccione Una</v-card-subtitle>
+      <v-card-text>
+        <v-data-table
+          :headers="headers"
+          :items="materias"
+          :items-per-page="5"
+          class="elevation-1"
+          @click:row="handleClickRow"
+        />
+      </v-card-text>
+    </v-card>
 
-      <v-card v-else elevation="2" outlined>
-        <v-card-title>Usted no posee Materias para rendir</v-card-title>
-      </v-card>
-    </v-container>
-  </div>
+    <v-card v-else elevation="2" outlined>
+      <v-card-title>Usted no posee Materias para rendir</v-card-title>
+    </v-card>
+  </v-container>
 </template>
 
 <script>

@@ -1,0 +1,32 @@
+<template>
+  <v-container>
+    <v-card elevation="2" outlined>
+      <v-card-title>Ingrese un Legajo</v-card-title>
+      <v-card-text>
+        <v-form @submit="$emit('set-legajo', legajo)">
+          <v-row>
+            <v-col>
+              <v-text-field v-model="legajo" label="Ingrese un Legajo" />
+            </v-col>
+            <v-col>
+              <v-btn @click="$emit('set-legajo', legajo)" elevation="1" large
+                >Buscar Materias
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-form>
+      </v-card-text>
+    </v-card>
+  </v-container>
+</template>
+
+<script>
+export default {
+  name: "BuscadorLegajos",
+  data() {
+    return {
+      legajo: "",
+    };
+  },
+};
+</script>

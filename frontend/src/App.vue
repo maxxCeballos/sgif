@@ -12,6 +12,11 @@
             Inscribir en Mesa de Examen
           </router-link>
         </v-btn>
+        <v-btn text>
+          <router-link to="/consultar-alumno">
+            Consultar Alumno
+          </router-link>
+        </v-btn>
       </v-toolbar-items>
 
       <v-container>

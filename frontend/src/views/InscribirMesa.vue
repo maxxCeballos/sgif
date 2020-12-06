@@ -1,25 +1,7 @@
 <template>
   <div>
     <!-- Buscador de Legajos -->
-    <v-container>
-      <v-card elevation="2" outlined>
-        <v-card-title>Ingrese un Legajo</v-card-title>
-        <v-card-text>
-          <v-form @submit="buscarLegajo">
-            <v-row>
-              <v-col>
-                <v-text-field v-model="legajo" label="Ingrese un Legajo" />
-              </v-col>
-              <v-col>
-                <v-btn @click="buscarLegajo" elevation="1" large
-                  >Buscar Materias
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-form>
-        </v-card-text>
-      </v-card>
-    </v-container>
+    <buscador-legajos v-on:set-legajo="obtenerDictados" />
 
     <TablaInscripcion
       v-bind:show="mostrarTabla"
@@ -47,6 +29,7 @@
 import TablaInscripcion from "@/components/transacciones/inscribirMesa/TablaInscripcion";
 import CartelExito from "../components/CartelExito.vue";
 import CartelError from "../components/CartelError.vue";
+import BuscadorLegajos from "../components/BuscadorLegajos.vue";
 
 export default {
   name: "InscribirMesa",
@@ -65,11 +48,12 @@ export default {
     TablaInscripcion,
     CartelExito,
     CartelError,
+    BuscadorLegajos,
   },
 
   methods: {
-    buscarLegajo(e) {
-      e.preventDefault();
+    obtenerDictados(legajoParam) {
+      this.legajo = legajoParam;
 
       this.materias = [
         {
@@ -97,12 +81,8 @@ export default {
       //   .then((res) => (this.todos = res.data))
       //   .catch((err) => console.log(err));
 
-      if (this.legajo === "error") {
-        this.error = true;
-        this.mostrarTabla = false;
-      } else {
-        this.mostrarTabla = true;
-      }
+      this.error = this.legajo === "error";
+      this.mostrarTabla = this.legajo !== "error";
     },
 
     selectMateria(idMateria) {

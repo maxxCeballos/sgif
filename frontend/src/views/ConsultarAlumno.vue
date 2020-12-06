@@ -1,16 +1,46 @@
 <template>
-    <div>
-        HOLA MUNDO
-    </div>
+  <div>
+    <buscador-legajos v-on:set-legajo="buscarAlumno" />
+    <tabla-info :show="mostrarInfo" :alumno="alumno" />
+  </div>
 </template>
 
 <script>
-// import holaMundo from '@/components/transacciones/inscribirMesa/*componentePrincipal';
+import BuscadorLegajos from "../components/BuscadorLegajos.vue";
+import TablaInfo from "../components/transacciones/consultarAlumno/TablaInfo.vue";
 
 export default {
-    name: "ConsultarAlumno",
-    components: {
-        // holaMundo
-    }
-}
+  name: "ConsultarAlumno",
+  data() {
+    return {
+      legajo: "",
+      alumno: {},
+      mostrarInfo: false,
+    };
+  },
+  components: {
+    BuscadorLegajos,
+    TablaInfo,
+  },
+  methods: {
+    buscarAlumno(legajoParam) {
+      this.legajo = legajoParam;
+
+      // TODO: consulta de axios
+
+      if (this.legajo === "nadie") {
+        this.alumno = {};
+      } else {
+        this.alumno = {
+          nombre: "Guido",
+          apellido: "Canevello",
+          legajo: this.legajo,
+          dni: 39682936,
+        };
+      }
+
+      this.mostrarInfo = true;
+    },
+  },
+};
 </script>
