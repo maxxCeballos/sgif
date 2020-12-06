@@ -1,48 +1,28 @@
 <template>
   <v-app>
-    <div id="app">
-      <!-- <SideNavBar /> -->
-
-      <v-toolbar-items class="hidden-sm-and-down">
-        <v-btn text>
-          <router-link to="/">Home</router-link>
-        </v-btn>
-        <v-btn text>
-          <router-link to="/inscribir-mesa">
-            Inscribir en Mesa de Examen
-          </router-link>
-        </v-btn>
-        <v-btn text>
-          <router-link to="/consultar-alumno">
-            Consultar Alumno
-          </router-link>
-        </v-btn>
-      </v-toolbar-items>
-
+  
+      <SideNavBar />
+    
+    <!-- Sizes your content based upon application components -->
+    <v-main pd-5 class="cyan lighten-3">
+      <!-- Provides the application the proper gutter -->
       <v-container>
-        <router-view />
+        <router-view></router-view>
       </v-container>
-    </div>
+    </v-main>
   </v-app>
 </template>
 
 <script>
-// import SideNavBar from "@/components/SideNavBar.vue";
+import SideNavBar from "@/components/SideNavBar.vue";
 
 export default {
   name: "App",
   components: {
-    // SideNavBar,
+    SideNavBar,
   },
 };
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
 </style>

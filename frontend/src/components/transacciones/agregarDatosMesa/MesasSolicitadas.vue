@@ -1,6 +1,7 @@
 
 
 <template>
+<div v-if="estaPrendido">
   <v-data-table
     caption="Mesas Solicitadas"
     :headers="headers"
@@ -17,24 +18,20 @@
         <td>{{ item.anio }}</td>
         <td>{{ item.cicloLectivo }}</td>
         <td>
-          <router-link
-            :to="{
-              name: 'transaccionADMEC',
-              params: {
-                oidMesaElegida: item.mesaId,
-                materiaMesaElegida: item.materia,
-                anioMateriaMesaElegida: item.anio,
-              },
-            }"
-          >
-            <v-icon medium class="mr-2">
-              mdi-arrow-right-circle-outline
-            </v-icon>
-          </router-link>
+         
+            <v-btn
+              @click="mesaSeleccionada(item.mesaId, item.materia, item.anio)"
+            >
+              <v-icon medium class="mr-2">
+                mdi-arrow-right-circle-outline
+              </v-icon>
+            </v-btn>
+         
         </td>
       </tr>
     </template>
   </v-data-table>
+  </div>
 </template>
 
 
@@ -57,11 +54,20 @@ export default {
       ],
       mesas: [],
       isLoading: true,
+      estaPrendido: true,
     };
   },
   methods: {
     gg: function (mensaje) {
       alert(mensaje);
+    },
+    mesaSeleccionada(idMesa, materia, anio) {
+      
+      this.$emit('updateMesaElegida',{
+        idMesa:idMesa,
+        materia:materia,
+        anio:anio
+      })
     },
   },
 
