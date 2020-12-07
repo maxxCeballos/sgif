@@ -29,17 +29,11 @@ const getAllPersonas = async () => {
     return personasDB;
 }
 
-const updatePersona = async (persona) => {
-    const { dni, nombre, apellido, } = persona;
+const updatePersona = async (oid, update) => {
 
-    const response = await Persona.updateOne({ dni: dni }, {
-        nombre: nombre,
-        apellido: apellido,
-    })
+    let personaU = Persona.findOneAndUpdate({ '_id': oid }, update, { new: true });
 
-    if (response.n === 1) return true
-
-    return false
+    return personaU;
 }
 
 const asociarRol = async (nombreRol, datosRol, dniPersona) => {
@@ -59,14 +53,11 @@ const asociarRol = async (nombreRol, datosRol, dniPersona) => {
 const getProfesorMateria = async (materia, anio) => {
     //Obtengo los profesores que puedan impartir la materia que llego como parametro
     let i, mat, materias,personaActual,profesores = [];
-    const personas = await Persona.find();
-
+    const personas=  await Persona.find({ "profesor.cuil": { $exists: true }}).exec()
+    
     for (i in personas) {
         //Para cada persona encontrada en la base de datos
         personaActual = personas[i];
-        if (JSON.parse(JSON.stringify(personaActual)).hasOwnProperty('profesor')) {
-            //Verifico si tiene la propiedad profesor
-            
             materias = personaActual.profesor.materias;
             for (mat in materias) {
                 console.log(materias[mat]);
@@ -76,28 +67,33 @@ const getProfesorMateria = async (materia, anio) => {
                 }
 
             }
-        }
+        
 
 
     }
+    if(profesores.length==0){
+        throw {
+            status:204,
+            message:"No se encontraron profesores que puedan dar esa materia"
+        }
 
+    }
 
     return profesores;
 
 }
 const getProfesores = async () => {
     //Obtengo los profesores
-    let i,personaActual,profesores = [];
-    const personas = await Persona.find();
-    for (i in personas) {
-        //Para cada persona encontrada en la base de datos
-        personaActual = personas[i];
-        if (JSON.parse(JSON.stringify(personaActual)).hasOwnProperty('profesor')) {
-            //Verifico si tiene la propiedad profesor
-            profesores.push(personaActual); 
+  
+    const profesores=  await Persona.find({ "profesor.cuil": { $exists: true }}).exec();
+    
+    if(profesores.length==0){
+        throw {
+            status:204,
+            message:"No se encontraron profesores"
         }
-    }
 
+    }
 
     return profesores;
 
@@ -105,23 +101,24 @@ const getProfesores = async () => {
 
 const getPreceptores = async () => {
     //Obtengo los profesores
-    let i,personaActual,preceptores = [];
-    const personas = await Persona.find();
-    for (i in personas) {
-        //Para cada persona encontrada en la base de datos
-        personaActual = personas[i];
-        if (JSON.parse(JSON.stringify(personaActual)).hasOwnProperty('preceptor')) {
-            //Verifico si tiene la propiedad profesor
-            preceptores.push(personaActual); 
-        }
-    }
 
+    const preceptores =  await Persona.find({ "preceptor.legajo": { $exists: true }}).exec();
+    
+    if(preceptores.length==0){
+        throw {
+            status:204,
+            message:"No se encontraron preceptores"
+        }
+
+    }
 
     return preceptores;
 
 }
+
 module.exports = {
     createPersona,
+    updatePersona,
     getPersonaById,
     getAllPersonas,
     updatePersona,
