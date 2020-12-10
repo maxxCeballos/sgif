@@ -44,6 +44,7 @@ import { ipBackend } from "../../../config/backend.config";
 
 export default {
   name: "TagregarDM",
+  props:["estaPrendido"],
   data: function () {
     return {
       headers: [
@@ -54,7 +55,7 @@ export default {
       ],
       mesas: [],
       isLoading: true,
-      estaPrendido: true,
+     
     };
   },
   methods: {
@@ -69,9 +70,11 @@ export default {
         anio:anio
       })
     },
+    
   },
 
   mounted() {
+    
     axios
       .get(`${ipBackend}/agregarDatosMesaExamen/mesasSolicitadas`)
       .then((res) => {

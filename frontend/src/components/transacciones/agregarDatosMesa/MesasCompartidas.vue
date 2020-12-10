@@ -16,10 +16,9 @@
           <v-toolbar-title>Mesas para Compartir</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" class="mb-2">
-              Crear Mesa Individual
-            </v-btn>
-         
+          <v-btn color="blue darken-1" @click="crearIndividual()" class="mb-2">
+            Crear Mesa Individual
+          </v-btn>
         </v-toolbar>
       </template>
       <template v-slot:item="{ item }">
@@ -55,7 +54,7 @@ export default {
     "oidMesaElegida",
     "materiaMesaElegida",
     "anioMateriaMesaElegida",
-    "estaPrendido"
+    "estaPrendido",
   ],
   data: function () {
     return {
@@ -69,7 +68,6 @@ export default {
       ],
       mesas: [],
       loading: true,
-      
     };
   },
 
@@ -77,6 +75,16 @@ export default {
     gg: function (mensaje) {
       alert(mensaje);
     },
+
+    crearIndividual: function () {
+      this.$emit("crearMesaI", {
+        idMesa: this.oidMesaElegida,
+        materia: this.materiaMesaElegida,
+        anio: this.anioMateriaMesaElegida,
+      });
+    },
+
+
   },
   mounted() {
     axios

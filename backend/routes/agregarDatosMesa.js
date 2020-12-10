@@ -57,15 +57,15 @@ router.get('/agregarDatosMesaExamen/mesasParaCompartir', asyncHandler(async (req
             "materia": dictadoActual.materia.nombre,
             "anio": dictadoActual.materia.anio,
             "cicloLectivo": dictadoActual.cicloLectivo,
-            "acta":mesaActual.acta,
-            "fecha":mesaActual.fechaHora,
-            "hora":mesaActual.fechaHora,
-            "aula":mesaActual.aula,
-            "esCompartida":mesaActual.esCompartida,
-            "esPadre":mesaActual.esPadre,
-            "profesores":mesaActual.profesores,
-            "preceptores":mesaActual.preceptores
-            
+            "acta": mesaActual.acta,
+            "fecha": mesaActual.fechaHora,
+            "hora": mesaActual.fechaHora,
+            "aula": mesaActual.aula,
+            "esCompartida": mesaActual.esCompartida,
+            "esPadre": mesaActual.esPadre,
+            "profesores": mesaActual.profesores,
+            "preceptores": mesaActual.preceptores
+
         });
     }
     console.log(mesasConDictados);
@@ -118,36 +118,42 @@ router.put('/agregarDatosMesaExamen/mesaIndividual/agregarDatos', asyncHandler(a
 }));
 
 router.get('/agregarDatosMesaExamen/obtenerProfesoresMateria/mesa', asyncHandler(async (req, res) => {
-    let response=[], materia, anio,profesores,profe,profesFormat=[],profeActual;
+    let response = [], materia, anio, profesores, profe, profesFormat = [], profeActual;
     console.log(req.params.materia);
     materia = req.query.materia;
     anio = req.query.anio;
     profesores = await getProfesorMateria(materia, anio);
     console.log(profesores);
-    for(profe in profesores){
-        profeActual=profesores[profe];
-        
-        profesFormat.push({"nombre":profeActual.nombre+" "+profeActual.apellido,"idProfe":profeActual._id});
+    for (profe in profesores) {
+        profeActual = profesores[profe];
+
+        profesFormat.push({ "nombre": profeActual.nombre + " " + profeActual.apellido, "idProfe": profeActual._id });
     };
-    response=profesFormat;
+    response = profesFormat;
     res.send({ ok: true, response });
 }));
 
 router.get('/agregarDatosMesaExamen/obtenerProfesores', asyncHandler(async (req, res) => {
-    let response=[],profesores,profe,profesFormat=[],profeActual;
+    let response = [], profesores, profe, profesFormat = [], profeActual;
     profesores = await getProfesores();
-    for(profe in profesores){
-        profeActual=profesores[profe];
-        
-        profesFormat.push({"nombre":profeActual.nombre+" "+profeActual.apellido,"idProfe":profeActual._id});
+    for (profe in profesores) {
+        profeActual = profesores[profe];
+
+        profesFormat.push({ "nombre": profeActual.nombre + " " + profeActual.apellido, "idProfe": profeActual._id });
     };
-    response=profesFormat;
+    response = profesFormat;
     res.send({ ok: true, response });
 }));
 
 router.get('/agregarDatosMesaExamen/obtenerPreceptores', asyncHandler(async (req, res) => {
-    let response;
-    response = await getPreceptores();
+    let response = [], preceptores, precepFormat = [], precep, precepActual;
+    preceptores = await getPreceptores();
+    for (precep in preceptores) {
+        precepActual = preceptores[precep];
+
+        precepFormat.push({ "nombre": precepActual.nombre + " " + precepActual.apellido, "idPrecep": precepActual._id });
+    };
+    response = precepFormat;
     res.send({ ok: true, response });
 }));
 
