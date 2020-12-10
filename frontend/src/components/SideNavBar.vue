@@ -1,69 +1,69 @@
 <template>
-  
-    <v-navigation-drawer 
-      class="blue-grey lighten-2"
-      dark
-      permanent
-      absolute
-      heigh="100%"
-      app
-    >
-      <template v-slot:prepend>
-        <!-- TITULO -->
-        <h1 class="mt-8 yellow--text lighten-5" color="white">SGIF</h1>
-        <h4 class="mb-8 yellow--text lighten-5">
-          Sistema Gestor Instituto Fatima
-        </h4>
-        <!-- USUARIO -->
+  <v-navigation-drawer permanent absolute>
+    <template v-slot:prepend>
+      <!-- TITULO -->
+      <v-list>
+        <v-list-item :to="'/'" active-class="transparent">
+          <v-container>
+            <h1 class="text-center">SGIF</h1>
+            <h4 class="text-center">Sistema Gestor Instituto Fatima</h4>
+          </v-container>
+        </v-list-item>
+      </v-list>
+      <!-- USUARIO -->
+      <!-- <v-container class="fondoClaro"> -->
+      <v-divider />
+      <v-container>
         <v-list-item two-line>
           <v-list-item-avatar>
-            <img src="../assets/avatar.png.jpg" />
+            <img alt="avatar" src="../assets/avatar.png.jpg" />
           </v-list-item-avatar>
           <v-list-item-content>
-            <v-list-item-title>Michael Jhonson</v-list-item-title>
+            <v-list-item-title>Michael Johnson</v-list-item-title>
             <v-list-item-subtitle>Secretario</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
-      </template>
-      <v-divider />
-      <!-- SECCIONES -->
-      <v-list shaped >
-        <v-list-group
-          v-for="item in secciones"
-          :key="item.nombre"
-          v-model="item.active"
-          :prepend-icon="item.icon"
-          no-action
-          active-class="white"
-          color="deep-purple accent-4"
+      </v-container>
+    </template>
+    <v-divider />
+    <!-- SECCIONES -->
+    <v-list shaped>
+      <v-list-group
+        v-for="item in secciones"
+        :key="item.nombre"
+        v-model="item.active"
+        :prepend-icon="item.icon"
+        no-action
+        active-class="indigo lighten-5"
+      >
+        <!-- CATEGORIA -->
+        <template v-slot:activator>
+          <v-list-item-content>
+            <v-list-item-title v-text="item.nombre"></v-list-item-title>
+          </v-list-item-content>
+        </template>
+        <!-- TRANSACCIONES -->
+        <v-list-item
+          v-for="child in item.transacciones"
+          :key="child.nombre"
+          :to="child.ruta"
+          active-class="grey darken-4"
+          color="indigo lighten-5"
+          link
         >
-          <!-- CATEGORIA -->
-          <template v-slot:activator>
-            <v-list-item-content>
-              <v-list-item-title v-text="item.nombre"></v-list-item-title>
-            </v-list-item-content>
-          </template>
-          <!-- TRANSACCIONES -->
-          <v-list-item
-            v-for="child in item.transacciones"
-            :key="child.nombre"
-            :to="child.ruta"
-            link
-          >
-            <v-list-item-content>
-              <v-list-item-title>{{ child.nombre }}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-group>
-      </v-list>
-      <!-- BTN CERRAR SESION -->
-      <template v-slot:append>
-        <div class="pa-2">
-          <v-btn block> Cerrar Sesión </v-btn>
-        </div>
-      </template>
-    </v-navigation-drawer>
-  
+          <v-list-item-content>
+            <v-list-item-title>{{ child.nombre }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list-group>
+    </v-list>
+    <!-- BTN CERRAR SESION -->
+    <template v-slot:append>
+      <div class="pa-2">
+        <v-btn block> Cerrar Sesión </v-btn>
+      </div>
+    </template>
+  </v-navigation-drawer>
 </template>
 
 <script>
@@ -94,7 +94,7 @@ export default {
         {
           nombre: "Mesa de Examen",
           icon: "mdi-google-classroom",
-          active:false,
+          active: false,
           transacciones: [
             {
               nombre: rutas.INSCRIBIR_MESA.nombre,
@@ -116,3 +116,13 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.fondoClaro {
+  background: #e2e2e2;
+}
+
+.colorClaro {
+  color: #1c0f13;
+}
+</style>

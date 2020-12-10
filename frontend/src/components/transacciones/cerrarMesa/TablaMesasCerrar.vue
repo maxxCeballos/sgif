@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-card v-if="this.mesas.length !== 0" elevation="2" outlined>
+    <v-card v-if="mesas.length !== 0" elevation="2" outlined>
       <v-card-title>Mesas Evaluadas</v-card-title>
       <v-card-subtitle>Seleccione Una</v-card-subtitle>
       <v-card-text>

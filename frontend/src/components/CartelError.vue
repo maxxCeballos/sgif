@@ -1,13 +1,15 @@
 <template>
-  <v-alert
-    color="red"
-    dismissible
-    type="error"
-    :value="estaActivado"
-    @input="confirmarOperacion"
-  >
-    {{ mensaje }}
-  </v-alert>
+  <v-container>
+    <v-alert
+      color="red"
+      dismissible
+      type="error"
+      :value="estaActivado"
+      @input="confirmarOperacion"
+    >
+      {{ mensaje }}
+    </v-alert>
+  </v-container>
 </template>
 
 <script>

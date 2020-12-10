@@ -1,21 +1,28 @@
 <template>
   <div>
     <tabla-mesas-cerrar v-bind:mesas="mesas" v-on:select-mesa="selectMesa" />
+    <tabla-carga-notas
+      v-bind:mesa="mesaSeleccionada"
+      v-bind:show="mostrarCargaNotas"
+    />
   </div>
 </template>
 
 <script>
+import TablaCargaNotas from "../components/transacciones/cerrarMesa/TablaCargaNotas.vue";
 import TablaMesasCerrar from "../components/transacciones/cerrarMesa/TablaMesasCerrar.vue";
 
 export default {
   name: "CerrarMesa",
   components: {
     TablaMesasCerrar,
+    TablaCargaNotas,
   },
   data() {
     return {
       mesas: [],
       mesaSeleccionada: {},
+      mostrarCargaNotas: false,
     };
   },
   beforeMount: function () {
@@ -67,7 +74,42 @@ export default {
   methods: {
     selectMesa(actaMesa) {
       this.mesaSeleccionada = this.mesas.find((mesa) => mesa.acta === actaMesa);
-      console.log(this.mesaSeleccionada);
+      //TODO: consulta axios por alumnos
+
+      let alumnos = [
+        {
+          legajo: 1234,
+          nombre: "Guido1",
+          apellido: "Canevello1",
+        },
+        {
+          legajo: 1235,
+          nombre: "Guido2",
+          apellido: "Canevello2",
+        },
+        {
+          legajo: 1236,
+          nombre: "Guido3",
+          apellido: "Canevello3",
+        },
+      ];
+      this.mesaSeleccionada = {
+        ...this.mesaSeleccionada,
+        alumnos,
+      };
+
+      //Agregar campo de nota y condicion
+      let nuevosAlumnos = [];
+      this.mesaSeleccionada.alumnos.forEach(alumno => {
+          let nuevoAlumno = {
+              ...alumno,
+              nota: 0,
+              condicion: "",
+          }
+          nuevosAlumnos.push(nuevoAlumno);
+      })
+      this.mesaSeleccionada.alumnos = nuevosAlumnos;
+      this.mostrarCargaNotas = true;
     },
   },
 };

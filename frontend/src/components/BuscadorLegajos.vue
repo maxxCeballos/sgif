@@ -6,7 +6,11 @@
         <v-form @submit="setLegajo">
           <v-row>
             <v-col>
-              <v-text-field v-model="legajo" label="Ingrese un Legajo" />
+              <v-text-field
+                label="Legajo"
+                outlined
+                v-model="legajo"
+              />
             </v-col>
             <v-col>
               <v-btn @click="setLegajo" elevation="1" large

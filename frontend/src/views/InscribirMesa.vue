@@ -6,6 +6,7 @@
     <TablaInscripcion
       v-bind:show="mostrarTabla"
       v-bind:materias="materias"
+      v-bind:isLoading="tablaLoading"
       v-on:select-materia="selectMateria"
     />
 
@@ -42,6 +43,7 @@ export default {
       apagarT: false,
       materias: [],
       materiaSeleccionada: {},
+      tablaLoading: true,
     };
   },
   components: {
@@ -53,36 +55,47 @@ export default {
 
   methods: {
     obtenerDictados(legajoParam) {
+      this.mostrarTabla = true;
+      this.tablaLoading = true;
+      this.error = false;
+      this.materias = [];
       this.legajo = legajoParam;
 
-      this.materias = [
-        {
-          id: 1,
-          nombre: "Matematicas",
-          anio: 1,
-          cicloLectivo: 2018,
-        },
-        {
-          id: 2,
-          nombre: "Lengua",
-          anio: 3,
-          cicloLectivo: 2020,
-        },
-        {
-          id: 3,
-          nombre: "Biologia",
-          anio: 2,
-          cicloLectivo: 2019,
-        },
-      ];
       // TODO: el mostrarTabla tiene q ir en then
       // axios
       //   .get("https://localhost:5000/inscribir-mesa/obtener-dictados/:legajo")
       //   .then((res) => (this.todos = res.data))
       //   .catch((err) => console.log(err));
 
-      this.error = this.legajo === "error";
-      this.mostrarTabla = this.legajo !== "error";
+      setTimeout(() => {
+        this.materias = [
+          {
+            id: 1,
+            nombre: "Matematicas",
+            anio: 1,
+            cicloLectivo: 2018,
+          },
+          {
+            id: 2,
+            nombre: "Lengua",
+            anio: 3,
+            cicloLectivo: 2020,
+          },
+          {
+            id: 3,
+            nombre: "Biologia",
+            anio: 2,
+            cicloLectivo: 2019,
+          },
+        ];
+
+        this.error = this.legajo === "error";
+        this.mostrarTabla = this.legajo !== "error";
+        this.tablaLoading = false;
+        if (this.legajo === "vacio") {
+          this.materias = [];
+        }
+      }, 2000);
     },
 
     selectMateria(idMateria) {
@@ -102,6 +115,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-</style>
