@@ -1,24 +1,37 @@
 <template>
-  <v-alert
-    color="red"
-    dismissible
-    type="error"
-    :value="estaActivado"
-    @input="confirmarOperacion"
-  >
-    {{ mensaje }}
-  </v-alert>
+   <v-alert
+      dismissible
+      v-model="estaActivado"
+      border="left"
+      icon="mdi-alert-circle-outline"
+      colored-border
+      color="red"
+      max-width="500px"
+      transition="scale-transition"
+
+    >
+      {{mensaje}}
+    </v-alert>
 </template>
 
 <script>
+
+
 export default {
-  name: "CartelError",
-  props: ["mensaje", "estaActivado"],
+  name: "CartelErrorr",
+  data:function () {
+    return {
+      estaActivado:false,
+      mensaje:"",
+      
+    };
+  },
   methods: {
-    confirmarOperacion() {
-      this.estaActivado = false;
-      this.$emit("cerrar-cartel");
+    confirmarOp(mensaje) {
+        this.estaActivado = true;
+        this.mensaje=mensaje
     },
   },
+ 
 };
 </script>

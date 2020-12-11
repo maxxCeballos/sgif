@@ -76,7 +76,7 @@ router.get('/agregarDatosMesaExamen/mesasParaCompartir', asyncHandler(async (req
 
 router.put('/agregarDatosMesaExamen/mesaIndividual/agregarDatos', asyncHandler(async (req, res) => {
     //Esta ruta es llamada cuando decide completar una mesa de tipo individual
-    let oidMesa, profesorTitular, profesor2, profesor3, preceptor, preceptor2, fechaHora, aula, update, profesores, preceptores, response, mesas1, mesas2, verifPrecep, verifProfes;
+    let oidMesa, profesorTitular, profesor2, profesor3, preceptor, preceptor2, fechaHora, aula, update, profesores, mesaActualizada, respClient, mesas1, mesas2, verifPrecep, verifProfes;
     update = req.body
     update.fechaHora = new Date(update.fechaHora);
     mesas1 = await getMesasCompletadas();
@@ -99,22 +99,25 @@ router.put('/agregarDatosMesaExamen/mesaIndividual/agregarDatos', asyncHandler(a
     }
 
     if (verifPrecep == true) {
-        response = {
-            message: "Mesa Registrada",
-
-        };
+        
 
         update.acta = await getUltimaActa() + 1; //Aumento en 1  porque es la mesa siguiente
         update.estado = "Completada";
-        console.log(update);
-        response.mesaActualizada = await updateMesa(update.mesa, update);
+        console.log("aca el updateee"+update+"acta el id d ela mesa"+update.mesa);
+        mesaActualizada = await updateMesa(update.mesa, update);
+        respClient = {
+            message: "Se actualizo la mesa con éxito",
+            mesa:mesaActualizada
+        };
     } else {
-        response = {
-            message: "No es posible posible crear la mesa"
+       
+        throw{
+            status:204,
+           
         }
     }
 
-    res.send({ ok: true, response });
+    res.send({ ok: true, respClient });
 }));
 
 router.get('/agregarDatosMesaExamen/obtenerProfesoresMateria/mesa', asyncHandler(async (req, res) => {

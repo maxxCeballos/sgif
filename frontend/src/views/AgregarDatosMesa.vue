@@ -55,10 +55,9 @@ export default {
       this.materiaMesaElegida = mesaSeleccionada.materia;
       this.anioMateriaMesaElegida = mesaSeleccionada.anio;
       this.mostrandoSolicitadas = false;
-      this.mostrandoCompartidas = true;
-    },
+        this.mostrandoCompartidas = true;
+  },
     crearMesaI() {
-      
       this.mostrandoCompartidas = false;
       this.mostrandoIndividual = true;
       this.$refs.miMesaIndividual.obtenerInformacion();
