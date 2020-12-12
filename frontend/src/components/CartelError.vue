@@ -1,10 +1,16 @@
 <template>
-  <v-container>
+  <v-container v-if="estaActivado">
+    <!-- max-width="500px" -->
+    <!-- v-model="estaActivado" -->
     <v-alert
-      color="red"
+      class="mb-0"
       dismissible
+      border="left"
+      colored-border
       type="error"
-      :value="estaActivado"
+      color="red"
+      transition="scale-transition"
+      elevation="2"
       @input="confirmarOperacion"
     >
       {{ mensaje }}
@@ -14,12 +20,24 @@
 
 <script>
 export default {
-  name: "CartelError",
-  props: ["mensaje", "estaActivado"],
+  name: "CartelErrorr",
+  data: function () {
+    return {
+      estaActivado: false,
+      mensaje: "",
+    };
+  },
   methods: {
+    abrirCartel(mensaje) {
+      this.estaActivado = true;
+      this.mensaje = mensaje;
+    },
+    cerrarCartel() {
+      this.estaActivado = false;
+    },
     confirmarOperacion() {
       this.estaActivado = false;
-      this.$emit("cerrar-cartel");
+      this.$emit("confirmar-operacion");
     },
   },
 };

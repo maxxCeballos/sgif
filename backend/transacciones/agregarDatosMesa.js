@@ -56,17 +56,16 @@ function verificarPreceptores(preceptores, fechaHora, mesas) {
 async function verificarMateriaAnio(materia, anio, profesores) {
     //Verifico si algun profesor puede dar la materia de un determinado anio
     let profe = 0, materias, mat = 0, esValido = false, profesorActual;
-
+  
     while (!esValido && profe < profesores.length) {
         profesorActual = await getPersona(profesores[profe]);
         materias = profesorActual.profesor.materias;
-
+        
         while (!esValido && mat < materias.length) {
             //Itero en sus materias para saber si puede dar la materia del año ingresado por parametro
-
+           
             if (materias[mat].nombre == materia && materias[mat].anio == anio) {
                 esValido = true;
-
             }
             mat = mat + 1;
         }

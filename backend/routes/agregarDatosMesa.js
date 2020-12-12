@@ -47,7 +47,7 @@ router.get('/agregarDatosMesaExamen/mesasParaCompartir', asyncHandler(async (req
     var i;
     let mesaActual, dictadoActual, mesasConDictados = [];
     mesasConDictados = [];
-    console.log(mesas);
+    
     for (i in mesas) {
         //Genero una lista con tuplas de mesa y su dictado correspondiente
         mesaActual = mesas[i];
@@ -68,7 +68,7 @@ router.get('/agregarDatosMesaExamen/mesasParaCompartir', asyncHandler(async (req
 
         });
     }
-    console.log(mesasConDictados);
+   
 
     res.send({ ok: true, mesasConDictados });
 
@@ -76,7 +76,7 @@ router.get('/agregarDatosMesaExamen/mesasParaCompartir', asyncHandler(async (req
 
 router.put('/agregarDatosMesaExamen/mesaIndividual/agregarDatos', asyncHandler(async (req, res) => {
     //Esta ruta es llamada cuando decide completar una mesa de tipo individual
-    let oidMesa, profesorTitular, profesor2, profesor3, preceptor, preceptor2, fechaHora, aula, update, profesores, preceptores, response, mesas1, mesas2, verifPrecep, verifProfes;
+    let oidMesa, profesorTitular, profesor2, profesor3, preceptor, preceptor2, fechaHora, aula, update, profesores, mesaActualizada, respClient, mesas1, mesas2, verifPrecep, verifProfes;
     update = req.body
     update.fechaHora = new Date(update.fechaHora);
     mesas1 = await getMesasCompletadas();
@@ -99,22 +99,23 @@ router.put('/agregarDatosMesaExamen/mesaIndividual/agregarDatos', asyncHandler(a
     }
 
     if (verifPrecep == true) {
-        response = {
-            message: "Mesa Registrada",
-
-        };
-
         update.acta = await getUltimaActa() + 1; //Aumento en 1  porque es la mesa siguiente
         update.estado = "Completada";
-        console.log(update);
-        response.mesaActualizada = await updateMesa(update.mesa, update);
+        console.log("aca el updateee"+update+"acta el id de la mesa"+update.mesa);
+        mesaActualizada = await updateMesa(update.mesa, update);
+        respClient = {
+            message: "Se actualizo la mesa con éxito",
+            mesa:mesaActualizada
+        };
     } else {
-        response = {
-            message: "No es posible posible crear la mesa"
+       
+        throw{
+            status:204,
+           
         }
     }
 
-    res.send({ ok: true, response });
+    res.send({ ok: true, respClient });
 }));
 
 router.get('/agregarDatosMesaExamen/obtenerProfesoresMateria/mesa', asyncHandler(async (req, res) => {
@@ -190,6 +191,7 @@ router.put('/agregarDatosMesaExamen/registrarCompartida/', asyncHandler(async (r
     materia = req.body.materia;
     anio = req.body.anio;
     profesoresPadre = Array.from(req.body.profesores);
+    console.log(profesoresPadre);
     preceptoresPadre = req.body.preceptores;
     fechaHoraPadre = req.body.fechaHora;
     aulaPadre = req.body.aula;
@@ -228,15 +230,15 @@ router.put('/agregarDatosMesaExamen/registrarCompartida/', asyncHandler(async (r
         response1 = await updateMesa(oidIndividual, updateMesaIndividual);
         response2 = await updateMesa(oidPadre, updateMesaPadre);
         respClient = {
-            "valida": "Se registro la mesa con exito",
-            "mesaIndividualU": response1,
+            "message": "Se registro la mesa con exito",
+            "mesaIndividualUpdate": response1,
             "mesaCompartidaUpdate": response2
 
         }
     } else {
 
         respClient = {
-            "valida": "No es posible crear la mesa"
+            "message": "Ninguno de los profesores de la mesa compartida pueden dictar la materia de ese año"
         }
 
 
