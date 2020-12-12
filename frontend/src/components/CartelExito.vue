@@ -1,47 +1,45 @@
 <template>
-   <v-alert
+  <v-container v-if="estaActivado">
+    <!-- max-width="700px" -->
+    <!-- min-width="500px" -->
+    <!-- icon="mdi-check-circle-outline" -->
+    <v-alert
+      class="mb-0"
       dismissible
-      v-model="estaActivado"
       border="left"
-      icon="mdi-check-circle-outline"
       colored-border
       color="green"
-      max-width="700px"
-      min-width="500px"
       transition="scale-transition"
-      
-       elevation="2"
-      
+      elevation="2"
+      type="success"
+      @input="confirmarOperacion"
     >
-     <template v-slot:close >
-       <v-btn icon small >
-      <v-icon  >
-        mdi-close-circle-outline
-      </v-icon>
-      </v-btn>
-      </template>
-      {{mensaje}}
+      {{ mensaje }}
     </v-alert>
+  </v-container>
 </template>
 
 <script>
-
-
 export default {
   name: "CartelExito",
-  data:function () {
+  data: function () {
     return {
-      estaActivado:false,
-      mensaje:"",
-      
+      estaActivado: false,
+      mensaje: "",
     };
   },
   methods: {
-    confirmarOp(mensaje) {
-        this.estaActivado = true;
-        this.mensaje=mensaje
+    abrirCartel(mensaje) {
+      this.estaActivado = true;
+      this.mensaje = mensaje;
+    },
+    cerrarCartel() {
+      this.estaActivado = false;
+    },
+    confirmarOperacion() {
+      this.estaActivado = false;
+      this.$emit("confirmar-operacion");
     },
   },
- 
 };
 </script>

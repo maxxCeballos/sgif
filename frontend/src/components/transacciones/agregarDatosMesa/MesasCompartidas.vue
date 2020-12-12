@@ -10,7 +10,6 @@
       class="elevation-1"
       :loading="loading"
       loading-text="Cargando.. porfavor espere"
-      
     >
       <template v-slot:top>
         <v-toolbar flat>
@@ -23,11 +22,7 @@
         </v-toolbar>
       </template>
       <template v-slot:item="{ item }">
-        <tr
-          v-on:click="
-           validar(item)
-          "
-        >
+        <tr v-on:click="validar(item)">
           <td>{{ item.acta }}</td>
           <td>{{ item.fecha }}</td>
           <td>{{ item.hora }}</td>
@@ -38,9 +33,7 @@
       </template>
       ></v-data-table
     >
-    <Confirmacion ref="miConfirmacion"
-    v-on:confirmada="agregarDatosMesa" />
-    
+    <Confirmacion ref="miConfirmacion" v-on:confirmada="agregarDatosMesa" />
   </div>
 </template>
 
@@ -51,7 +44,7 @@
 
 import axios from "axios";
 import { ipBackend } from "../../../config/backend.config";
-import Confirmacion from "@/components/Confirmacion";
+import Confirmacion from "@/components/CartelConfirmacion";
 
 export default {
   name: "TagregarDMC",
@@ -73,24 +66,25 @@ export default {
       ],
       mesas: [],
       loading: true,
-      mesaSelect:"",
-      datosAEnviar:{
-            oidIndividual:"",
-            padre: "",
-            esPadre: "",
-            materia: "",
-            anio: "",
-            profesores: "",
-            preceptores: "",
-            fechaHora: "",
-            aula: "",
-
+      mesaSelect: "",
+      datosAEnviar: {
+        oidIndividual: "",
+        padre: "",
+        esPadre: "",
+        materia: "",
+        anio: "",
+        profesores: "",
+        preceptores: "",
+        fechaHora: "",
+        aula: "",
       },
-    resultadoTransaccion:{
-    message:"",
-    status:false},
-    }},
- components:{Confirmacion},
+      resultadoTransaccion: {
+        message: "",
+        status: false,
+      },
+    };
+  },
+  components: { Confirmacion },
   methods: {
     gg: function (mensaje) {
       alert(mensaje);
@@ -103,37 +97,42 @@ export default {
         anio: this.anioMateriaMesaElegida,
       });
     },
-    validar: function (mesaCompartida){
+    validar: function (mesaCompartida) {
       this.$refs.miConfirmacion.abrirDialogo("Realizar Mesa Compartida");
-      this.mesaSelec=mesaCompartida;
+      this.mesaSelec = mesaCompartida;
     },
     async agregarDatosMesa() {
       this.$emit("prenderCarga");
-       this.datosAEnviar.oidIndividual=this.oidMesaElegida;
-       this.datosAEnviar.padre=this.mesaSelec.idMesa;
-       this.datosAEnviar.esPadre=this.mesaSelec.esPadre;
-       this.datosAEnviar.materia=this.materiaMesaElegida;
-       this.datosAEnviar.anio=this.anioMateriaMesaElegida;
-       this.datosAEnviar.profesores=this.mesaSelec.profesores;
-       this.datosAEnviar.preceptores=this.mesaSelec.preceptores;
-       this.datosAEnviar.fechaHora=this.mesaSelec.fecha;
-       this.datosAEnviar.aula=this.mesaSelec.aula;
-       
-      let resultado= await axios.put(`${ipBackend}/agregarDatosMesaExamen/registrarCompartida/`, this.datosAEnviar);
+      this.datosAEnviar.oidIndividual = this.oidMesaElegida;
+      this.datosAEnviar.padre = this.mesaSelec.idMesa;
+      this.datosAEnviar.esPadre = this.mesaSelec.esPadre;
+      this.datosAEnviar.materia = this.materiaMesaElegida;
+      this.datosAEnviar.anio = this.anioMateriaMesaElegida;
+      this.datosAEnviar.profesores = this.mesaSelec.profesores;
+      this.datosAEnviar.preceptores = this.mesaSelec.preceptores;
+      this.datosAEnviar.fechaHora = this.mesaSelec.fecha;
+      this.datosAEnviar.aula = this.mesaSelec.aula;
 
-      if(resultado.data.respClient==undefined){
+      let resultado = await axios.put(
+        `${ipBackend}/agregarDatosMesaExamen/registrarCompartida/`,
+        this.datosAEnviar
+      );
+
+      if (resultado.data.respClient == undefined) {
         //Indica que no se pudo crear la mesa
-        this.resultadoTransaccion.message="No es posible completar la Mesa porque ningun profe puede de la mesa compartida puede impartir "+this.materiaMesaElegida+" de "+ this.anioMateriaMesaElegida;
-      }else{
+        this.resultadoTransaccion.message =
+          "No es posible completar la Mesa porque ningun profe puede de la mesa compartida puede impartir " +
+          this.materiaMesaElegida +
+          " de " +
+          this.anioMateriaMesaElegida;
+      } else {
         //se pudo crear la mesa
-        this.resultadoTransaccion.message=resultado.data.respClient.message;
-        this.resultadoTransaccion.status=true;
+        this.resultadoTransaccion.message = resultado.data.respClient.message;
+        this.resultadoTransaccion.status = true;
       }
-      this.$emit("terminarTransaccion",this.resultadoTransaccion);
-       
-    }
-    }
-  ,
+      this.$emit("terminarTransaccion", this.resultadoTransaccion);
+    },
+  },
   mounted() {
     axios
       .get(`${ipBackend}/agregarDatosMesaExamen/mesasParaCompartir`)

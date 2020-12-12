@@ -3,6 +3,10 @@
     <!-- Buscador de Legajos -->
     <buscador-legajos v-on:set-legajo="obtenerDictados" />
 
+    <cartel-exito ref="cartelExito" v-on:confirmar-operacion="confirmarExito" />
+
+    <cartel-error ref="cartelError" v-on:confirmar-operacion="errorOperacion" />
+
     <TablaInscripcion
       v-bind:show="mostrarTabla"
       v-bind:materias="materias"
@@ -10,17 +14,9 @@
       v-on:select-materia="selectMateria"
     />
 
-    <CartelExito
-      :titulo="'SALIO TODO GENIAL'"
-      :mensaje="`Te inscribiste a la mesa de la materia ${materiaSeleccionada.nombre}`"
-      :estaActivado="confirmacion"
-      v-on:cerrar-cartel="confirmarOperacion"
-    />
-
-    <cartel-error
-      :mensaje="`Legajo Incorrecto`"
-      v-bind:estaActivado="error"
-      v-on:cerrar-cartel="errorOperacion"
+    <cartel-confirmacion
+      ref="cartelConfirmacion"
+      v-on:confirmar-operacion="confirmarOperacion"
     />
   </div>
 </template>
@@ -31,6 +27,7 @@ import TablaInscripcion from "@/components/transacciones/inscribirMesa/TablaInsc
 import CartelExito from "../components/CartelExito.vue";
 import CartelError from "../components/CartelError.vue";
 import BuscadorLegajos from "../components/BuscadorLegajos.vue";
+import CartelConfirmacion from "../components/CartelConfirmacion.vue";
 
 export default {
   name: "InscribirMesa",
@@ -42,8 +39,8 @@ export default {
       mostrarTabla: false,
       apagarT: false,
       materias: [],
-      materiaSeleccionada: {},
       tablaLoading: true,
+      materiaSeleccionada: {},
     };
   },
   components: {
@@ -51,13 +48,17 @@ export default {
     CartelExito,
     CartelError,
     BuscadorLegajos,
+    CartelConfirmacion,
   },
 
   methods: {
     obtenerDictados(legajoParam) {
+      if (this.error) {
+        this.error = false;
+        this.$refs.cartelError.cerrarCartel();
+      }
       this.mostrarTabla = true;
       this.tablaLoading = true;
-      this.error = false;
       this.materias = [];
       this.legajo = legajoParam;
 
@@ -90,6 +91,9 @@ export default {
         ];
 
         this.error = this.legajo === "error";
+        if (this.error) {
+          this.$refs.cartelError.abrirCartel("Legajo Incorrecto");
+        }
         this.mostrarTabla = this.legajo !== "error";
         this.tablaLoading = false;
         if (this.legajo === "vacio") {
@@ -102,11 +106,21 @@ export default {
       this.materiaSeleccionada = this.materias.find(
         (materia) => materia.id === idMateria
       );
-      this.confirmacion = true;
+      this.$refs.cartelConfirmacion.abrirCartel(
+        `Inscribirse a ${this.materiaSeleccionada.nombre}`
+      );
     },
 
     confirmarOperacion() {
+      this.confirmacion = true;
+      this.$refs.cartelExito.abrirCartel(
+        `Se inscribió a la mesa de la materia: ${this.materiaSeleccionada.nombre}`
+      );
+    },
+
+    confirmarExito() {
       this.confirmacion = false;
+      // this.$router.push({ path: "/" });
     },
 
     errorOperacion() {

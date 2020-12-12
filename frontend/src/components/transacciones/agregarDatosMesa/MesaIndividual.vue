@@ -187,25 +187,18 @@
         </v-row>
       </v-form>
     </v-card>
-    <Confirmacion ref="miConfirmacion"
-    v-on:confirmada="agregarDatosMesa" />
-    <Loading 
-    ref="loadBar"
-    v-on:cargaFinalizada="terminarTransaccion"/>
+    <Confirmacion ref="miConfirmacion" v-on:confirmada="agregarDatosMesa" />
+    <Loading ref="loadBar" v-on:cargaFinalizada="terminarTransaccion" />
 
-    <Exito
-    ref="alertE"
-    />
-    <Error
-    ref="alertEr"
-    />
+    <Exito ref="alertE" />
+    <Error ref="alertEr" />
   </div>
 </template>
 
 
 <script>
 import axios from "axios";
-import Confirmacion from "@/components/Confirmacion";
+import Confirmacion from "@/components/CartelConfirmacion";
 import Exito from "@/components/CartelExito";
 import Error from "@/components/CartelError";
 import Loading from "@/components/Loading";
@@ -277,12 +270,12 @@ export default {
       time: null,
       menu2: false,
       modal2: false,
-      resultadoTransaccion:"",
-      exito:false,
-      noTerminado:true
+      resultadoTransaccion: "",
+      exito: false,
+      noTerminado: true,
     };
   },
-  components: { Confirmacion, Loading,Exito,Error },
+  components: { Confirmacion, Loading, Exito, Error },
   methods: {
     gg: function (mensaje) {
       alert(mensaje);
@@ -344,37 +337,50 @@ export default {
         //alert(this.date);
       }
     },
-   async agregarDatosMesa() {
-      this.noTerminado=false;
+    async agregarDatosMesa() {
+      this.noTerminado = false;
       this.$refs.loadBar.activar();
       //hacer funcion afuera y llamarla #TODO
-      let fechaHora=new Date(this.date);
-      fechaHora.setHours(parseInt(this.time.substring(0,2)),parseInt(this.time.substring(3,5)));
+      let fechaHora = new Date(this.date);
+      fechaHora.setHours(
+        parseInt(this.time.substring(0, 2)),
+        parseInt(this.time.substring(3, 5))
+      );
       let datosMesa = {
         mesa: this.oidMesaElegida,
         fechaHora: fechaHora,
-        profesores: [this.profeTitularSeleccionado.idProfe, this.profeSegundoSeleccionado.idProfe, this.profeTerceroSeleccionado.idProfe],
-        preceptores: [this.preceptorUnoSeleccionado.idPrecep, this.preceptorDosSeleccionado.idPrecep],
+        profesores: [
+          this.profeTitularSeleccionado.idProfe,
+          this.profeSegundoSeleccionado.idProfe,
+          this.profeTerceroSeleccionado.idProfe,
+        ],
+        preceptores: [
+          this.preceptorUnoSeleccionado.idPrecep,
+          this.preceptorDosSeleccionado.idPrecep,
+        ],
         aula: this.aula.numero,
       };
-      let resultado= await axios.put(`${ipBackend}/agregarDatosMesaExamen/mesaIndividual/agregarDatos`, datosMesa);
-      if(resultado.data.respClient==undefined){
-        this.resultadoTransaccion="No es posible completar la Mesa porque un profesor o preceptor se encuentran asignados a otra en la misma fecha y hora";
-      }else{
-this.resultadoTransaccion=resultado.data.respClient.message;
-        this.exito=true;
+      let resultado = await axios.put(
+        `${ipBackend}/agregarDatosMesaExamen/mesaIndividual/agregarDatos`,
+        datosMesa
+      );
+      if (resultado.data.respClient == undefined) {
+        this.resultadoTransaccion =
+          "No es posible completar la Mesa porque un profesor o preceptor se encuentran asignados a otra en la misma fecha y hora";
+      } else {
+        this.resultadoTransaccion = resultado.data.respClient.message;
+        this.exito = true;
       }
-       
     },
-    terminarTransaccion: function(){
-      if(this.exito){
+    terminarTransaccion: function () {
+      if (this.exito) {
         this.$refs.alertE.confirmarOp(this.resultadoTransaccion);
-      }else{
+      } else {
         this.$refs.alertEr.confirmarOp(this.resultadoTransaccion);
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style >
