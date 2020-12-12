@@ -1,5 +1,3 @@
-
-
 <template>
   <div v-if="estaPrendido">
     <v-data-table
@@ -33,7 +31,11 @@
       </template>
       ></v-data-table
     >
-    <Confirmacion ref="miConfirmacion" v-on:confirmada="agregarDatosMesa" />
+
+    <Confirmacion
+      ref="miConfirmacion"
+      v-on:confirmar-operacion="agregarDatosMesa"
+    />
   </div>
 </template>
 
@@ -121,7 +123,7 @@ export default {
       if (resultado.data.respClient == undefined) {
         //Indica que no se pudo crear la mesa
         this.resultadoTransaccion.message =
-          "No es posible completar la Mesa porque ningun profe puede de la mesa compartida puede impartir " +
+          "No es posible completar la Mesa porque ningun profesor puede de la mesa compartida puede impartir " +
           this.materiaMesaElegida +
           " de " +
           this.anioMateriaMesaElegida;

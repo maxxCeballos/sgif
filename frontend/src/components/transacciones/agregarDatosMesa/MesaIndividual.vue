@@ -187,11 +187,15 @@
         </v-row>
       </v-form>
     </v-card>
-    <Confirmacion ref="miConfirmacion" v-on:confirmada="agregarDatosMesa" />
+
+    <Confirmacion
+      ref="miConfirmacion"
+      v-on:confirmar-operacion="agregarDatosMesa"
+    />
     <Loading ref="loadBar" v-on:cargaFinalizada="terminarTransaccion" />
 
-    <Exito ref="alertE" />
-    <Error ref="alertEr" />
+    <!-- <Exito ref="alertE" />
+    <Error ref="alertEr" /> -->
   </div>
 </template>
 

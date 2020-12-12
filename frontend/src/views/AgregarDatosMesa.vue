@@ -16,23 +16,17 @@
     />
 
     <MesaI
-    ref="miMesaIndividual"
+      ref="miMesaIndividual"
       v-bind:estaPrendido="mostrandoIndividual"
       v-bind:oidMesaElegida="oidMesaElegida"
       v-bind:materiaMesaElegida="materiaMesaElegida"
       v-bind:anioMateriaMesaElegida="anioMateriaMesaElegida"
-  
     />
-<Loading 
-    ref="loadBar"
-    />
+    <Loading ref="loadBar" />
 
-    <Exito
-    ref="alertE"
-    />
-    <Error
-    ref="alertEr"
-    />
+    <!-- v-on:confirmar-operacion="confirmarExito" -->
+    <Exito ref="alertE" />
+    <Error ref="alertEr" />
   </div>
 </template>
 
@@ -49,8 +43,6 @@ export default {
   props: [""],
   data() {
     return {
-      picker: new Date().toISOString().substr(0, 10),
-
       mostrandoSolicitadas: true,
       mostrandoCompartidas: false,
       mostrandoIndividual: false,
@@ -62,7 +54,10 @@ export default {
   components: {
     MesasSolicitadas,
     MesasCompartidas,
-    MesaI, Exito,Error,Loading
+    MesaI,
+    Exito,
+    Error,
+    Loading,
   },
   methods: {
     updateMesa(mesaSeleccionada) {
@@ -70,25 +65,28 @@ export default {
       this.materiaMesaElegida = mesaSeleccionada.materia;
       this.anioMateriaMesaElegida = mesaSeleccionada.anio;
       this.mostrandoSolicitadas = false;
-        this.mostrandoCompartidas = true;
-  },
+      this.mostrandoCompartidas = true;
+    },
+
     crearMesaI() {
       this.mostrandoCompartidas = false;
       this.mostrandoIndividual = true;
       this.$refs.miMesaIndividual.obtenerInformacion();
     },
-    procesar(){
-       this.$refs.loadBar.activar();
-       this.mostrandoCompartidas=false;
+
+    procesar() {
+      this.$refs.loadBar.activar();
+      this.mostrandoCompartidas = false;
     },
-    async terminarTransaccion(resultado){
+
+    async terminarTransaccion(resultado) {
       await this.$refs.loadBar.desactivar();
-      if(resultado.status){
-         this.$refs.alertE.confirmarOp(resultado.message);
-      }else{
-        this.$refs.alertEr.confirmarOp(resultado.message);
+      if (resultado.status) {
+        this.$refs.alertE.abrirCartel(resultado.message);
+      } else {
+        this.$refs.alertEr.abrirCartel(resultado.message);
       }
-    }
+    },
   },
 };
 </script>
