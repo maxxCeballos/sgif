@@ -10,7 +10,7 @@
         dark
       >
         <v-card-text>
-          Porfavor
+          Porfavor espere un momento
           <v-progress-linear
             indeterminate
             color="white"
@@ -32,11 +32,11 @@
     methods:{
     activar: function () {
       this.dialog = true;
-      setTimeout(() => (this.fin()), 4000)
+    
     },
-    fin: function () {
+    desactivar: function () {
       this.dialog = false;
-      this.$emit('cargaFinalizada');
+      
     }
     }
   }

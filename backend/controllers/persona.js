@@ -115,10 +115,17 @@ const getPreceptores = async () => {
     return preceptores;
 
 }
+const getPersona = async (oid) => {
+
+    const personaDB = await Persona.findById(oid);
+
+    return personaDB
+}
 
 module.exports = {
     createPersona,
     updatePersona,
+    getPersona,
     getPersonaById,
     getAllPersonas,
     updatePersona,

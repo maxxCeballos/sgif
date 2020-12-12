@@ -11,6 +11,8 @@
       :materiaMesaElegida="materiaMesaElegida"
       :anioMateriaMesaElegida="anioMateriaMesaElegida"
       v-on:crearMesaI="crearMesaI"
+      v-on:prenderCarga="procesar"
+      v-on:terminarTransaccion="terminarTransaccion"
     />
 
     <MesaI
@@ -21,6 +23,16 @@
       v-bind:anioMateriaMesaElegida="anioMateriaMesaElegida"
   
     />
+<Loading 
+    ref="loadBar"
+    />
+
+    <Exito
+    ref="alertE"
+    />
+    <Error
+    ref="alertEr"
+    />
   </div>
 </template>
 
@@ -28,6 +40,9 @@
 import MesasSolicitadas from "../components/transacciones/agregarDatosMesa/MesasSolicitadas";
 import MesasCompartidas from "../components/transacciones/agregarDatosMesa/MesasCompartidas";
 import MesaI from "../components/transacciones/agregarDatosMesa/MesaIndividual";
+import Exito from "@/components/CartelExito";
+import Error from "@/components/CartelError";
+import Loading from "@/components/Loading";
 
 export default {
   name: "AgregarDatosMesa",
@@ -47,7 +62,7 @@ export default {
   components: {
     MesasSolicitadas,
     MesasCompartidas,
-    MesaI
+    MesaI, Exito,Error,Loading
   },
   methods: {
     updateMesa(mesaSeleccionada) {
@@ -62,6 +77,18 @@ export default {
       this.mostrandoIndividual = true;
       this.$refs.miMesaIndividual.obtenerInformacion();
     },
+    procesar(){
+       this.$refs.loadBar.activar();
+       this.mostrandoCompartidas=false;
+    },
+    async terminarTransaccion(resultado){
+      await this.$refs.loadBar.desactivar();
+      if(resultado.status){
+         this.$refs.alertE.confirmarOp(resultado.message);
+      }else{
+        this.$refs.alertEr.confirmarOp(resultado.message);
+      }
+    }
   },
 };
 </script>

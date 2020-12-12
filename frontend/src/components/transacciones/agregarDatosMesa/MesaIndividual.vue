@@ -344,7 +344,7 @@ export default {
         //alert(this.date);
       }
     },
-    agregarDatosMesa:  function () {
+   async agregarDatosMesa() {
       this.noTerminado=false;
       this.$refs.loadBar.activar();
       //hacer funcion afuera y llamarla #TODO
@@ -353,24 +353,18 @@ export default {
       let datosMesa = {
         mesa: this.oidMesaElegida,
         fechaHora: fechaHora,
-        profesores: [this.profeTitularSeleccionado, this.profeSegundoSeleccionado, this.profeTerceroSeleccionado],
-        preceptores: [this.preceptorUnoSeleccionado, this.preceptorDosSeleccionado],
-        aula: this.aula,
+        profesores: [this.profeTitularSeleccionado.idProfe, this.profeSegundoSeleccionado.idProfe, this.profeTerceroSeleccionado.idProfe],
+        preceptores: [this.preceptorUnoSeleccionado.idPrecep, this.preceptorDosSeleccionado.idPrecep],
+        aula: this.aula.numero,
       };
-      axios.put(`${ipBackend}/agregarDatosMesaExamen/mesaIndividual/agregarDatos`, datosMesa).then((res) => {
-          this.resultadoTransaccion= res.data.respClient.message;
-          this.exito=true;
-        })
-        .catch((error) => {
-          if (!error.response) {
-            // network error
-            this.resultadoTransaccion = "Error: Network Error";
-          } else {
-            this.resultadoTransaccion="No es posible completar la Mesa porque un profesor o preceptor se encuentran asignados a otra en la misma fecha y hora"
-          }
-        });
-      //this.$refs.alertE.confirmarOp(fechaHora);
-      //this.$refs.alertEr.confirmarOp("gg");
+      let resultado= await axios.put(`${ipBackend}/agregarDatosMesaExamen/mesaIndividual/agregarDatos`, datosMesa);
+      if(resultado.data.respClient==undefined){
+        this.resultadoTransaccion="No es posible completar la Mesa porque un profesor o preceptor se encuentran asignados a otra en la misma fecha y hora";
+      }else{
+this.resultadoTransaccion=resultado.data.respClient.message;
+        this.exito=true;
+      }
+       
     },
     terminarTransaccion: function(){
       if(this.exito){
