@@ -30,14 +30,14 @@ const updateMesaExamen = async (oidMesa, atributo, valor) => {
     var $set = { $set: {} };
     $set.$set[atributo] = valor;
 
-//     const response = await MesaExamen.updateOne({ _id: oidMesa }, $set);
+    const response = await MesaExamen.updateOne({ _id: oidMesa }, $set);
 
-//     if (response.n === 1) return true
+    if (response.n === 1) return true
 
-//     return false
-// }
+    return false
+}
 
-const updateMesaExamen = async (oidMesa, newMesa) => {
+const updateMesaExamenDatos = async (oidMesa, newMesa) => {
     let response = await MesaExamen.updateOne(
         { _id: oidMesa },
         newMesa
@@ -136,7 +136,7 @@ const getMesasSolicitadas = async () => {
         //const response = { message: "No se encontraron mesas en estado Solicitada" }; //#TODO ver si puede hacer de otra manera
         //return response;
         throw '{ "code":0 , "message": "No se encontraron mesas en estado Solicitada" }'
-       
+
     }
     return mesas
 }
@@ -166,13 +166,13 @@ const getMesasCompletadasCompartidas = async () => {
     let response;
     const mesas = await MesaExamen.find({ "estado": "Completada", "esPadre": true });
     if (mesas.length == 0) {
-         response = {
+        response = {
             message: "No se encontraron mesas en estado Completada",
             mesas: []
         }; //#TODO ver si puede hacer de otra manera
         return response;
     } else {
-         response = {
+        response = {
             message: "Se encontraron mesas completadas compartidas",
             mesas: mesas
         };
@@ -208,6 +208,7 @@ const getUltimaActa = async () => {
 module.exports = {
     createMesaExamen,
     updateMesaExamen,
+    updateMesaExamenDatos,
     deleteMesaExamen,
     getMesaExamenByOid,
     getMesaExamenByActa,

@@ -1,10 +1,9 @@
 'use strict';
 
-const { getAlumnoByLegajo, addResultadoMesa: addResultadoMesaAlumno } = require('../../controllers/alumno');
+const { addResultadoMesa: addResultadoMesaAlumno } = require('../../controllers/alumno');
 const { createResultadoMesa, updateResultadoMesa } = require('../../controllers/resultadoMesa');
 const { createMesaExamen, getMesaExamenByDictado, addResultadoMesa, getMesaExamenByOid } = require('../../controllers/mesaExamen');
-const { getDictadoByParams } = require('../../controllers/dictado');
-const { verificarLegajo, verificarDictado } = require('../../utils/verificaciones');
+const { verificarDictado } = require('../../utils/verificaciones');
 
 //TODO: Pensar implementacion de errores (codigo con global tipo Error.TIPO1, mensaje por defecto y expandido)
 

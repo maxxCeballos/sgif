@@ -1,7 +1,7 @@
 'use strict';
 
-const { updateCalificacionConResultado, getAlumnoByOid } = require("../../controllers/alumno");
-const { getMesaExamenByOid, updateMesaExamen } = require("../../controllers/mesaExamen");
+const { updateCalificacionConResultado } = require("../../controllers/alumno");
+const { getMesaExamenByOid, updateMesaExamenDatos } = require("../../controllers/mesaExamen");
 const { updateResultadoMesa } = require("../../controllers/resultadoMesa");
 
 /**
@@ -68,7 +68,7 @@ const cargarNotasMesa = async (oidMesa, notas) => {
         }
     }
 
-    let responseActualizarResultado = await updateMesaExamen(
+    let responseActualizarResultado = await updateMesaExamenDatos(
         oidMesa, { estado: "Cerrada" });
 
     if (!responseActualizarResultado) {
