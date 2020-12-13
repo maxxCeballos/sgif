@@ -1,15 +1,18 @@
 'use strict';
 
 const express = require('express');
-const asyncHandler = require('../middlewares/asynchandler');
-const { model } = require('../models/alumno.model');
+const asynchandler = require('../middlewares/asynchandler');
 
 const router = express.Router();
 
+const { createDictado } = require('../controllers/dictado');
 
 
-router.post('/dictado', asyncHandler(async (req, res) => {
 
+
+
+router.post('/dictado', asynchandler(async (req, res) => {
+  
     const dictado = req.body;
 
     const response = await createDictado(dictado);
@@ -17,4 +20,4 @@ router.post('/dictado', asyncHandler(async (req, res) => {
     res.send({ ok: true, response });
 }));
 
-model.exports = router;
+module.exports = router;

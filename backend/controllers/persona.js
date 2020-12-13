@@ -29,17 +29,11 @@ const getAllPersonas = async () => {
     return personasDB;
 }
 
-const updatePersona = async (persona) => {
-    const { dni, nombre, apellido, } = persona;
+const updatePersona = async (oid, update) => {
 
-    const response = await Persona.updateOne({ dni: dni }, {
-        nombre: nombre,
-        apellido: apellido,
-    })
+    let personaU = Persona.findOneAndUpdate({ '_id': oid }, update, { new: true });
 
-    if (response.n === 1) return true
-
-    return false
+    return personaU;
 }
 
 const asociarRol = async (nombreRol, datosRol, dniPersona) => {
@@ -54,10 +48,91 @@ const asociarRol = async (nombreRol, datosRol, dniPersona) => {
     return false
 }
 
+
+//Controllers yaupe
+const getProfesorMateria = async (materia, anio) => {
+    //Obtengo los profesores que puedan impartir la materia que llego como parametro
+    let i, mat, materias,personaActual,profesores = [];
+    const personas=  await Persona.find({ "profesor.cuil": { $exists: true }}).exec()
+    
+    for (i in personas) {
+        //Para cada persona encontrada en la base de datos
+        personaActual = personas[i];
+            materias = personaActual.profesor.materias;
+            for (mat in materias) {
+                console.log(materias[mat]);
+                //Itero en sus materias para saber si puede dar la materia del año ingresado por parametro
+                if (materias[mat].nombre == materia && materias[mat].anio == anio) {
+                    profesores.push(personaActual);
+                }
+
+            }
+        
+
+
+    }
+    if(profesores.length==0){
+        throw {
+            status:204,
+            message:"No se encontraron profesores que puedan dar esa materia"
+        }
+
+    }
+
+    return profesores;
+
+}
+const getProfesores = async () => {
+    //Obtengo los profesores
+  
+    const profesores=  await Persona.find({ "profesor.cuil": { $exists: true }}).exec();
+    
+    if(profesores.length==0){
+        throw {
+            status:204,
+            message:"No se encontraron profesores"
+        }
+
+    }
+
+    return profesores;
+
+}
+
+const getPreceptores = async () => {
+    //Obtengo los profesores
+
+    const preceptores =  await Persona.find({ "preceptor.legajo": { $exists: true }}).exec();
+    
+    if(preceptores.length==0){
+        throw {
+            status:204,
+            message:"No se encontraron preceptores"
+        }
+
+    }
+
+    return preceptores;
+
+}
+const getPersona = async (oid) => {
+
+    const personaDB = await Persona.findById(oid);
+
+    return personaDB
+}
+
 module.exports = {
     createPersona,
+    updatePersona,
+    getPersona,
     getPersonaById,
     getAllPersonas,
     updatePersona,
-    asociarRol
+    asociarRol,
+    getProfesores,
+    getProfesorMateria,
+    getPreceptores
+    
+
 }

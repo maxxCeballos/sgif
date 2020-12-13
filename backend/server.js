@@ -4,7 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const routesHandler = require('./routes/index');
-const errorHandler = require('./middlewares/error');
+const errorYaupeHandler = require('./middlewares/errorYaupe');
 
 
 require('dotenv').config();
@@ -29,9 +29,10 @@ connection.once('open', () => {
 
 app.use(routesHandler);
 
-app.use(errorHandler);
+app.use(errorYaupeHandler);
 
 //Start Server
 app.listen(port, () => {
     console.log(`Server running on port: ${port}`);
+    
 })
