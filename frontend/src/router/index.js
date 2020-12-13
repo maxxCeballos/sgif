@@ -11,10 +11,6 @@ const routes = [
     name: 'Home',
     component: Home,
   }, {
-    path: '/about',
-    name: 'About',
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }, {
     path: rutas.INSCRIBIR_MESA.ruta,
     name: rutas.INSCRIBIR_MESA.nombre,
     component: () => import('../views/InscribirMesa.vue')
