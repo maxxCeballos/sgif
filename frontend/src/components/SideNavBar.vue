@@ -4,11 +4,11 @@
       <!-- TITULO -->
       <!-- <v-list>
         <v-list-item :to="'/'" active-class="transparent"> -->
-          <v-container class="contTit" @click="handleTitulo">
-            <h1 class="text-center">SGIF</h1>
-            <h4 class="text-center">Sistema Gestor Instituto Fatima</h4>
-          </v-container>
-        <!-- </v-list-item>
+      <v-container class="contTit" @click="handleTitulo">
+        <h1 class="text-center">SGIF</h1>
+        <h4 class="text-center">Sistema Gestor Instituto Fatima</h4>
+      </v-container>
+      <!-- </v-list-item>
       </v-list> -->
       <!-- USUARIO -->
       <!-- <v-container class="fondoClaro"> -->
@@ -117,7 +117,7 @@ export default {
   methods: {
     handleTitulo() {
       this.$router.push({ path: "/" });
-    }
+    },
   },
 };
 </script>
@@ -127,7 +127,8 @@ export default {
   background: #e2e2e2;
 }
 
-.contTit {  
+.contTit {
+  cursor: pointer;
 }
 
 .colorClaro {
