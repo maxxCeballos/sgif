@@ -106,6 +106,7 @@ async function estuvoAusenteCalificacionIndiv(unaCalificacion) {
     let i = 0;
     let result = false;
     let objetoResultado;
+
     while (i < resultadoMesasExamen.length && !result) {
         objetoResultado = await getResultadoMesaByOid(resultadoMesasExamen[i]);
         result = await estuvoAusenteMesaIndiv(objetoResultado);
@@ -123,7 +124,7 @@ async function estuvoAusenteMesaIndiv(objetoResultado) {
     let objetoMesa = await getMesaExamenByOid(objetoResultado.mesaDeExamen);
 
     return (objetoResultado.condicion === "Ausente"
-        && (esDeMesPasado(objetoMesa.fechaHora)) //FIXME: Verificar si es de mes - 1;
+        && (esDeMesPasado(objetoMesa.fechaHora))
     )
 }
 

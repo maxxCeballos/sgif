@@ -1,4 +1,4 @@
-const inscribirMesa = require('./cargaDatosFront/inscribirMesa');
+const inscribirMesa = require('./inscribirMesa');
 const readline = require('readline');
 const testData = "hola";
 

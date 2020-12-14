@@ -5,7 +5,7 @@
 
     <cartel-exito ref="cartelExito" v-on:confirmar-operacion="confirmarExito" />
 
-    <cartel-error ref="cartelError" v-on:confirmar-operacion="errorOperacion" />
+    <cartel-error ref="cartelError" />
 
     <TablaInscripcion
       v-bind:show="mostrarTabla"
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-// import axios from "axios";
+import axios from "axios";
 import TablaInscripcion from "@/components/transacciones/inscribirMesa/TablaInscripcion";
 import CartelExito from "../components/CartelExito.vue";
 import CartelError from "../components/CartelError.vue";
@@ -52,54 +52,62 @@ export default {
   },
 
   methods: {
-    obtenerDictados(legajoParam) {
-      if (this.error) {
-        this.error = false;
-        this.$refs.cartelError.cerrarCartel();
-      }
+    async obtenerDictados(legajoParam) {
+      this.$refs.cartelError.cerrarCartel();
       this.mostrarTabla = true;
       this.tablaLoading = true;
       this.materias = [];
       this.legajo = legajoParam;
 
       // TODO: el mostrarTabla tiene q ir en then
-      // axios
-      //   .get("https://localhost:5000/inscribir-mesa/obtener-dictados/:legajo")
-      //   .then((res) => (this.todos = res.data))
-      //   .catch((err) => console.log(err));
+      await axios
+        .get(
+          `http://localhost:5000/inscribir-mesa/obtener-dictados/${this.legajo}`
+        )
+        .then((res) => {
+          console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err.response)
+          if (err.response.data.expanded) {
+            this.$refs.cartelError.abrirCartel(err.response.data.expanded);
+            this.mostrarTabla = false;
+          }
+        });
 
-      setTimeout(() => {
-        this.materias = [
-          {
-            id: 1,
-            nombre: "Matematicas",
-            anio: 1,
-            cicloLectivo: 2018,
-          },
-          {
-            id: 2,
-            nombre: "Lengua",
-            anio: 3,
-            cicloLectivo: 2020,
-          },
-          {
-            id: 3,
-            nombre: "Biologia",
-            anio: 2,
-            cicloLectivo: 2019,
-          },
-        ];
+      this.tablaLoading = false;
 
-        this.error = this.legajo === "error";
-        if (this.error) {
-          this.$refs.cartelError.abrirCartel("Legajo Incorrecto");
-        }
-        this.mostrarTabla = this.legajo !== "error";
-        this.tablaLoading = false;
-        if (this.legajo === "vacio") {
-          this.materias = [];
-        }
-      }, 2000);
+      // setTimeout(() => {
+      //   this.materias = [
+      //     {
+      //       id: 1,
+      //       nombre: "Matematicas",
+      //       anio: 1,
+      //       cicloLectivo: 2018,
+      //     },
+      //     {
+      //       id: 2,
+      //       nombre: "Lengua",
+      //       anio: 3,
+      //       cicloLectivo: 2020,
+      //     },
+      //     {
+      //       id: 3,
+      //       nombre: "Biologia",
+      //       anio: 2,
+      //       cicloLectivo: 2019,
+      //     },
+      //   ];
+      //   this.error = this.legajo === "error";
+      //   if (this.error) {
+      //     this.$refs.cartelError.abrirCartel("Legajo Incorrecto");
+      //   }
+      //   this.mostrarTabla = this.legajo !== "error";
+      //   this.tablaLoading = false;
+      //   if (this.legajo === "vacio") {
+      //     this.materias = [];
+      //   }
+      // }, 2000);
     },
 
     selectMateria(idMateria) {
@@ -121,10 +129,6 @@ export default {
     confirmarExito() {
       this.confirmacion = false;
       // this.$router.push({ path: "/" });
-    },
-
-    errorOperacion() {
-      this.error = false;
     },
   },
 };
