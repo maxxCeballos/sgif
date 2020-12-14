@@ -3,6 +3,13 @@
     <!-- Buscador de Legajos -->
     <buscador-legajos v-on:set-legajo="obtenerDictados" />
 
+    <cartel-confirmacion
+      ref="cartelConfirmacion"
+      v-on:confirmar-operacion="confirmarOperacion"
+    />
+
+    <loading>
+
     <cartel-exito ref="cartelExito" v-on:confirmar-operacion="confirmarExito" />
 
     <cartel-error ref="cartelError" />
@@ -12,11 +19,6 @@
       v-bind:materias="materias"
       v-bind:isLoading="tablaLoading"
       v-on:select-materia="selectMateria"
-    />
-
-    <cartel-confirmacion
-      ref="cartelConfirmacion"
-      v-on:confirmar-operacion="confirmarOperacion"
     />
   </div>
 </template>
@@ -28,6 +30,7 @@ import CartelExito from "../components/CartelExito.vue";
 import CartelError from "../components/CartelError.vue";
 import BuscadorLegajos from "../components/BuscadorLegajos.vue";
 import CartelConfirmacion from "../components/CartelConfirmacion.vue";
+import moduleName from '../components/'
 
 export default {
   name: "InscribirMesa",
@@ -66,6 +69,7 @@ export default {
         )
         .then((res) => {
           console.log(res.data);
+          this.materias = res.data.response.dictados;
         })
         .catch((err) => {
           console.log(err.response)
@@ -115,14 +119,17 @@ export default {
         (materia) => materia.id === idMateria
       );
       this.$refs.cartelConfirmacion.abrirCartel(
-        `Inscribirse a ${this.materiaSeleccionada.nombre}`
+        `Inscribirse a ${this.materiaSeleccionada.nombreMateria}`
       );
     },
 
     confirmarOperacion() {
       this.confirmacion = true;
+      setTimeout(() => {
+        
+      }, 2000);
       this.$refs.cartelExito.abrirCartel(
-        `Se inscribió a la mesa de la materia: ${this.materiaSeleccionada.nombre}`
+        `Se inscribió a la mesa de la materia: ${this.materiaSeleccionada.nombreMateria}`
       );
     },
 

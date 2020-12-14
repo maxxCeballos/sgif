@@ -8,21 +8,41 @@ const databaseHandler = require('../databaseHandler');
 async function cargaInscribirMesa() {
     await databaseHandler.conectar(false);
 
+    // Creacion previa de resultados (ya que es necesario el id)
     const resultados = [
         {
+            condicion: "Ausente",
+        }, {
             condicion: "Ausente",
         }
     ]
 
-    // Creacion previa de resultados (ya que es necesario el id)
     for (let i = 0; i < resultados.length; i++) {
         const res = resultados[i];
-
         let responseRes = await resultadoMesaDB.createResultadoMesa(res);
-
         resultados[i] = {
             ...res,
             obj: responseRes,
+        }
+    }
+
+    // Creacion previa de dictados
+    const dictados = [
+        {
+            cicloLectivo: 2008,
+            materia: {
+                nombre: "Matematicas",
+                anio: 3
+            },
+        },
+    ]
+
+    for (let i = 0; i < dictados.length; i++) {
+        const dic = dictados[i];
+        let responseDic = await dictadoDB.createDictado(dic);
+        dictados[i] = {
+            ...dic,
+            obj: responseDic,
         }
     }
 
@@ -65,6 +85,22 @@ async function cargaInscribirMesa() {
                 condicion: "Desaprobado",
                 resultadoMesaExamen: [resultados[0].obj._id]
             }]
+        }, {
+            dni: 50123004,
+            tipoDni: "dni",
+            nombre: "Guido",
+            apellido: "Canevello",
+            legajo: 1504,
+            calificaciones: [{
+                nota1T: 4,
+                nota2T: 4,
+                nota3T: 4,
+                cicloLectivo: 2019,
+                promedio: 4,
+                condicion: "Desaprobado",
+                resultadoMesaExamen: [resultados[1].obj._id],
+                dictado: dictados[0].obj._id
+            }]
         }
     ]
 
@@ -74,15 +110,14 @@ async function cargaInscribirMesa() {
             fechaHora: crearFecha(-1),
             estado: "Cerrada",
             resultados: [resultados[0].obj._id]
-        },
+        }, {
+            acta: 5001,
+            fechaHora: crearFecha(-3),
+            estado: "Cerrada",
+            resultados: [resultados[1].obj._id],
+            dictado: dictados[0].obj._id
+        }
     ]
-
-    let datos = {
-        dniAlumnos: [],
-        objResultados: [],
-        idDictados: [],
-        actaMesas: [],
-    }
 
     // Agregar en DB
     for (let i = 0; i < alumnos.length; i++) {
@@ -108,17 +143,31 @@ async function cargaInscribirMesa() {
         mesaDeExamen: mesas[0].obj._id
     });
 
+    await resultadoMesaDB.updateResultadoMesa(resultados[1].obj._id, {
+        alumno: alumnos[3].obj._id,
+        mesaDeExamen: mesas[1].obj._id
+    });
+
+    //Funcionalidad
+    let datos = {
+        dniAlumnos: [],
+        objResultados: [],
+        objDictados: [],
+        actaMesas: [],
+    }
+
     // Agregar a respuesta
     alumnos.forEach(al => datos.dniAlumnos.push(al.dni))
     resultados.forEach(res => datos.objResultados.push(res.obj))
     mesas.forEach(mesa => datos.actaMesas.push(mesa.acta))
-
+    dictados.forEach(dic => datos.objDictados.push(dic.obj))
+    
     databaseHandler.desconectar();
     return datos;
 }
 
 /**
- * @param {*} datos {dniAlumnos, objResultados, idDictados, actaMesas}
+ * @param {*} datos {dniAlumnos, objResultados, objDictados, actaMesas}
  */
 async function eliminarInscribirMesa(datos) {
     await databaseHandler.conectar(false);
@@ -139,6 +188,12 @@ async function eliminarInscribirMesa(datos) {
     for (const resultado of datos.objResultados) {
         response = response
             && (await resultadoMesaDB.deleteResultadoMesa(resultado._id))
+                .deletedCount === 1;
+    }
+
+    for (const dictado of datos.objDictados) {
+        response = response
+            && (await dictadoDB.deleteDictado(dictado._id))
                 .deletedCount === 1;
     }
 
