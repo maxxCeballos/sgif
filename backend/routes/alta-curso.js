@@ -38,9 +38,9 @@ router.get('/alta-curso/profesor', asyncHandler(async (req, res) => {
 
 router.post('/alta-curso/dictado', asyncHandler( async (req, res) => {
     
-    const { cicloLectivo, programa, horarios, nombreMateria, anioMateria, idProfesor, idCurso } = req.body.dictado;
+    const { cicloLectivo, programa, horarios, nombreMateria, anioMateria, idProfesor, idCurso, idPreceptor } = req.body.dictado;
 
-    const response = await createDictado(cicloLectivo, programa, horarios, nombreMateria, anioMateria, idProfesor, idCurso);
+    const response = await createDictado(cicloLectivo, programa, horarios, nombreMateria, anioMateria, idProfesor, idCurso, idPreceptor);
 
     res.send({ ok: true, response });
 

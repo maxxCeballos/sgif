@@ -214,7 +214,8 @@ describe("ALTA CURSO", () => {
                         "nombreMateria": resCurso.body.response.materias[0].nombre,
                         "anioMateria": 1,
                         "horarios": `${resCurso.body.response.horarios[0]._id},${resCurso.body.response.horarios[1]._id}`,
-                        "idCurso": resCurso.body.response.curso._id
+                        "idCurso": resCurso.body.response.curso._id,
+                        "idPreceptor": "5fad78049f5219346048117e"
                     }})
                     .end( async (err, res) =>  {
                         expect(res).to.have.status(200);
