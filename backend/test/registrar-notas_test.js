@@ -22,25 +22,40 @@ describe('REGISTRAR NOTAS TRIMESTRALES', function () {
                 });
         }).timeout(0);
 
-
     });
 
 
     describe('Obtener Detalle Cursos', function () {
-
+        
         it('Curso especificado incorrecto', (done) => {
             requester
+            .get('/notas-trimestrales/cursos?trimestre=3')
+            .end(function (err, res) {
+                
+                expect(res).to.have.status(200);
+                expect(res.body.ok).to.be.true;
+
+                requester
                 .get('/notas-trimestrales/curso/detalle?cursoID=0005076a4c816f138a4a7000')
                 .end(function (err, res) {
                     expect(res).to.have.status(404);
                     expect(res.body.ok).to.be.false;
                     done();
                 });
+            });
         }).timeout(0);
+
 
         it('Detalle Curso', (done) => {
             requester
-                .get('/notas-trimestrales/curso/detalle?cursoID=5fc5076a4c816f138a4a712d')
+            .get('/notas-trimestrales/cursos?trimestre=3')
+            .end(function (err, res) {
+                
+                expect(res).to.have.status(200);
+                expect(res.body.ok).to.be.true;
+                
+                requester
+                .get(`/notas-trimestrales/curso/detalle?cursoID=${res.body.response[1]._id}`)
                 .end(function (err, res) {
                     expect(res).to.have.status(200);
                     expect(res.body.ok).to.be.true;
@@ -49,6 +64,7 @@ describe('REGISTRAR NOTAS TRIMESTRALES', function () {
                     expect(res.body.response.division).to.equal(1);
                     done();
                 });
+            });
         }).timeout(0);
     });
 
@@ -57,36 +73,91 @@ describe('REGISTRAR NOTAS TRIMESTRALES', function () {
 
         it('Alumno especificado incorrecto', (done) => {
             requester
-                .get('/notas-trimestrales/dictado/alumno?alumnoID=5f94e527ee542319f9e3b000')
+            .get('/notas-trimestrales/cursos?trimestre=3')
+            .end(function (err, res) {
+                
+                expect(res).to.have.status(200);
+                expect(res.body.ok).to.be.true;
+
+                requester
+                .get(`/notas-trimestrales/curso/detalle?cursoID=${res.body.response[1]._id}`)
                 .end(function (err, res) {
-                    expect(res).to.have.status(404);
-                    expect(res.body.ok).to.be.false;
-                    done();
+                    expect(res).to.have.status(200);
+                    expect(res.body.ok).to.be.true;
+                    expect(res.body.response.cicloLectivo).to.equal(2020);
+                    expect(res.body.response.anio).to.equal(1);
+                    expect(res.body.response.division).to.equal(1);
+                
+                    requester
+                    .get('/notas-trimestrales/dictado/alumno?alumnoID=5f94e527ee542319f9e3b000')
+                    .end(function (err, res) {
+                        expect(res).to.have.status(404);
+                        expect(res.body.ok).to.be.false;
+                        done();
+                    });
                 });
+            });
         }).timeout(0);
 
 
         it('Dictado especificado incorrecto', (done) => {
-            requester
-                .get('/notas-trimestrales/dictado/alumno?dictadoID=000507a34c816f138a4a712f&alumnoID=5f94e527ee542319f9e3b688')
-                .end(function (err, res) {
-                    expect(res).to.have.status(404);
-                    expect(res.body.ok).to.be.false;
-                    done();
-                });
-        }).timeout(0);
 
-        it('Alumno apto para registro de nota', (done) => {
             requester
-                .get('/notas-trimestrales/dictado/alumno?dictadoID=5fc507a34c816f138a4a712f&alumnoID=5f94e527ee542319f9e3b688')
+            .get('/notas-trimestrales/cursos?trimestre=3')
+            .end(function (err, res) {
+                
+                expect(res).to.have.status(200);
+                expect(res.body.ok).to.be.true;
+
+                requester
+                .get(`/notas-trimestrales/curso/detalle?cursoID=${res.body.response[1]._id}`)
                 .end(function (err, res) {
                     expect(res).to.have.status(200);
                     expect(res.body.ok).to.be.true;
-                    done();
+                    expect(res.body.response.cicloLectivo).to.equal(2020);
+                    expect(res.body.response.anio).to.equal(1);
+                    expect(res.body.response.division).to.equal(1);
+
+                    requester
+                    .get(`/notas-trimestrales/dictado/alumno?dictadoID=000507a34c816f138a4a712f&alumnoID=${res.body.response.alumnos[0]}`)
+                    .end(function (err, res) {
+                        expect(res).to.have.status(404);
+                        expect(res.body.ok).to.be.false;
+                        done();
+                    });
                 });
+            });
         }).timeout(0);
 
-        // agregar alumno no apto para rendir
+
+        it('Alumno apto para registro de nota', (done) => {
+            requester
+            .get('/notas-trimestrales/cursos?trimestre=3')
+            .end(function (err, res) {
+                
+                expect(res).to.have.status(200);
+                expect(res.body.ok).to.be.true;
+
+                requester
+                .get(`/notas-trimestrales/curso/detalle?cursoID=${res.body.response[1]._id}`)
+                .end(function (err, res) {
+                    expect(res).to.have.status(200);
+                    expect(res.body.ok).to.be.true;
+                    expect(res.body.response.cicloLectivo).to.equal(2020);
+                    expect(res.body.response.anio).to.equal(1);
+                    expect(res.body.response.division).to.equal(1);
+                    
+                    requester
+                    .get(`/notas-trimestrales/dictado/alumno?dictadoID=${res.body.response.dictados[0]._id}&alumnoID=${res.body.response.alumnos[1]}`)
+                    .end(function (err, res) {
+                        expect(res).to.have.status(200);
+                        expect(res.body.ok).to.be.true;
+                        done();
+                    });
+                });
+            });
+        }).timeout(0);
+
     });
 
 
@@ -105,7 +176,7 @@ describe('REGISTRAR NOTAS TRIMESTRALES', function () {
                 });
         }).timeout(0);
 
-        it('Dictado especificado incorrecto', (done) => {
+        it('Dictado especificado incorrecto 1er trimestre', (done) => {
             requester
                 .post('/notas-trimestrales/alta')
                 .send({
@@ -122,7 +193,7 @@ describe('REGISTRAR NOTAS TRIMESTRALES', function () {
                 });
         }).timeout(0);
 
-        it('Dictado especificado incorrecto', (done) => {
+        it('Dictado especificado incorrecto 2do trimestre', (done) => {
             requester
                 .post('/notas-trimestrales/alta')
                 .send({
@@ -139,7 +210,7 @@ describe('REGISTRAR NOTAS TRIMESTRALES', function () {
                 });
         }).timeout(0);
 
-        it('Dictado especificado incorrecto', (done) => {
+        it('Dictado especificado incorrecto 3er trimestre', (done) => {
             requester
                 .post('/notas-trimestrales/alta')
                 .send({
@@ -157,23 +228,48 @@ describe('REGISTRAR NOTAS TRIMESTRALES', function () {
         }).timeout(0);
 
         it('Registro Exitoso', (done) => {
+
             requester
-                .post('/notas-trimestrales/alta')
-                .send({
-                    "alumnoID": "5f94e527ee542319f9e3b688",
-                    "trimestre" : "3",
-                    "nota": 8,
-                    "dictadoID": "5f8b869cda6dcc223c737543"
-                })
+            .get('/notas-trimestrales/cursos?trimestre=3')
+            .end(function (err, res) {
+                
+                expect(res).to.have.status(200);
+                expect(res.body.ok).to.be.true;
+
+                requester
+                .get(`/notas-trimestrales/curso/detalle?cursoID=${res.body.response[1]._id}`)
                 .end(function (err, res) {
                     expect(res).to.have.status(200);
                     expect(res.body.ok).to.be.true;
-                    done();
+                    expect(res.body.response.cicloLectivo).to.equal(2020);
+                    expect(res.body.response.anio).to.equal(1);
+                    expect(res.body.response.division).to.equal(1);
+                    
+                    requester
+                    .get(`/notas-trimestrales/dictado/alumno?dictadoID=${res.body.response.dictados[0]._id}&alumnoID=${res.body.response.alumnos[1]}`)
+                    .end(function (err, resHabilita) {
+                        expect(resHabilita).to.have.status(200);
+                        expect(resHabilita.body.ok).to.be.true;
+                        
+                        requester
+                        .post('/notas-trimestrales/alta')
+                        .send({
+                            "alumnoID": "5f94e527ee542319f9e3b688",
+                            "trimestre" : "3",
+                            "nota": 8,
+                            "dictadoID": "5f8b869cda6dcc223c737543"
+                        })
+                        .end(function (err, res) {
+                            expect(res).to.have.status(200);
+                            expect(res.body.ok).to.be.true;
+                            done();
+                        });
+                    });
                 });
+            });
         }).timeout(0);
 
     });
-
 
 });
 

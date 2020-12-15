@@ -11,7 +11,8 @@ const Dictado = require('../models/dictado.model');
 const { BadRequest, NotFound } = require('../middlewares/errores');
 
 const { getCicloLectivo } = require('./ciclo-lectivo');
-const { getPreceptores } = require('../controllers/preceptor')
+const { getPreceptores } = require('../controllers/preceptor');
+const { query } = require('express');
 
 const createCurso = async (anio) => {
 
@@ -27,20 +28,9 @@ const createCurso = async (anio) => {
     
         if (cursos[0].division > 2) throw new BadRequest(`ya existen 3 divisiones de ${anio}º año`);
         
-        response.preceptor = cursos[0].preceptor;    
         division = cursos[0].division + 1;
         
-    } else {
-
-        const respPreceptores = await getPreceptores();
-
-        if ( !respPreceptores.ok ){
-            return respPreceptores;
-        } 
-
-        const preceptores  = respPreceptores.preceptores;
-        response.preceptor = preceptores.filter( preceptor => cursos.every(curso => curso.preceptor.preceptor.legajo !== preceptor.preceptor.legajo ));
-    }
+    } 
 
     const materias = await Materia.find({ anio : anio });
     if ( materias.length === 0 ) throw new NotFound(`No se encontraron materias del año ${anio}`);
@@ -60,6 +50,34 @@ const createCurso = async (anio) => {
     response.curso = await curso.save();
     if ( !response.curso ) throw new Error("Internal Server Error. Ocurrió un error al guardar curso");
     
+    return response;
+}
+
+const getPreceptorCurso = async (anio) => {
+
+    let response = {};
+
+    if ( anio < 1 || anio > 5 ) throw new BadRequest("año incorrecto, debe ser de 1 a 5");
+    
+    const cicloLectivo = await getCicloLectivo();
+    const cursos = await getCursosCicloLectivo(cicloLectivo.cicloLectivo, anio);
+    
+    if ( cursos.length > 0 ){
+        
+        response.preceptor = cursos[0].preceptor;    
+        
+    } else {
+
+        const respPreceptores = await getPreceptores();
+
+        if ( !respPreceptores.ok ){
+            return respPreceptores;
+        } 
+
+        const preceptores  = respPreceptores.preceptores;
+        response.preceptor = preceptores.filter( preceptor => cursos.every(curso => curso.preceptor.preceptor.legajo !== preceptor.preceptor.legajo ));
+    }
+
     return response;
 }
 
@@ -133,6 +151,12 @@ const createDictado = async (cicloLectivo, programa, horarios, nombreMateria, an
     return response;
 }
 
+const deleteCurso = async (id) => {
+
+    const query = await Curso.findByIdAndDelete(id)
+    return query;
+}
+
 
 // obtiene los cursos del año solicitado, del ciclo lectivo actual.
 const getCursosCicloLectivo = async (anioCiclo, anioCurso) => {
@@ -148,5 +172,7 @@ module.exports = {
     createCurso,
     getCursosCicloLectivo,
     buscarProfesor,
-    createDictado
+    createDictado,
+    getPreceptorCurso,
+    deleteCurso
 }

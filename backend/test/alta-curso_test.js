@@ -8,139 +8,224 @@ chai.use(chaiHttp);
 const url = 'http://localhost:5000';
 const requester = chai.request(url);
 
-describe("ALTA CURSO", function() {
-    describe('create Curso', function () {
+const { deleteCurso } = require('../controllers/curso');
 
-        it('Año especificado incorrecto', (done) => {
-            requester
-                .post('/alta-curso?anio=0')
-                .end(function (err, res) {
-                    expect(res).to.have.status(400);
-                    expect(res.body.ok).to.be.false;
-                    done();
-                });
-        }).timeout(0);
+describe("ALTA CURSO", () => {
 
-        it('Existen 3 divisiones del año especificado', (done) => {
-            requester
-                .post('/alta-curso?anio=1')
-                .end(function (err, res) {
-                    expect(res).to.have.status(400);
-                    expect(res.body.ok).to.be.false;
-                    done();
-                });
-        }).timeout(0);
+    it('Año especificado incorrecto', (done) => {
+        requester
+            .post('/alta-curso?anio=0')
+            .end( (err, res) => {
+                expect(res).to.have.status(400);
+                expect(res.body.ok).to.be.false;
+                done();
+            });
+    }).timeout(0);
 
-        it('No exiten Materias para el año especificado', (done) => {
-            requester
-                .post('/alta-curso?anio=4')
-                .end(function (err, res) {
-                    expect(res).to.have.status(404);
-                    expect(res.body.ok).to.be.false;
-                    done();
-                });
-        }).timeout(0);
+    it('Existen 3 divisiones del año especificado', (done) => {
+        requester
+            .post('/alta-curso?anio=1')
+            .end( (err, res) => {
+                expect(res).to.have.status(400);
+                expect(res.body.ok).to.be.false;
+                done();
+            });
+    }).timeout(0);
 
-        it('Alta curso exitoso', (done) => {
+    it('No exiten Materias para el año especificado', (done) => {
+        requester
+            .post('/alta-curso?anio=4')
+            .end( (err, res) => {
+                expect(res).to.have.status(404);
+                expect(res.body.ok).to.be.false;
+                done();
+            });
+    }).timeout(0);
+
+    it('Alta curso exitoso. Fail send Materia', (done) => {
+        requester
+        .post('/alta-curso?anio=5')
+        .end(  (err, resCurso) => {
+            expect(resCurso).to.have.status(200);
+            expect(resCurso.body.ok).to.be.true;
+
             requester
-                .post('/alta-curso?anio=5')
-                .end(function (err, res) {
+            .get('/alta-curso/profesor?materia=Quimicaa')
+            .end( async (err, res) => {
+                expect(res).to.have.status(404);
+                expect(res.body.ok).to.be.false;
+                expect(res.body.message).to.equal('Error: La materia Quimicaa no pertenece a la planilla de materias');
+                
+                await deleteCurso(resCurso.body.response.curso._id);
+
+                done();
+            });
+        });
+    }).timeout(0);
+
+    it('Alta curso exitoso. Fail response Profesor', (done) => {
+        requester
+        .post('/alta-curso?anio=5')
+        .end( (err, resCurso) => {
+            expect(resCurso).to.have.status(200);
+            expect(resCurso.body.ok).to.be.true;
+
+            requester
+            .get('/alta-curso/profesor?materia=Quimica')
+            .end(async (err, res) => {
+                expect(res).to.have.status(404);
+                expect(res.body.ok).to.be.false;
+                expect(res.body.message).to.equal('Error: No existen profesores para dar la materia Quimica');
+                
+                await deleteCurso(resCurso.body.response.curso._id);
+
+                done();
+            });
+        });
+    }).timeout(0);
+
+
+    it('Alta curso exitoso. Fail send Profesor', (done) => {
+        requester
+        .post('/alta-curso?anio=5')
+        .end( (err, resCurso) => {
+            expect(resCurso).to.have.status(200);
+            expect(resCurso.body.ok).to.be.true;
+
+                requester
+                .get('/alta-curso/profesor?materia=Biologia')
+                .end( (err, res) => {
                     expect(res).to.have.status(200);
                     expect(res.body.ok).to.be.true;
-                    done();
+                    expect(res.body.response[0].nombre).to.equal('Martin');
+                    expect(res.body.response[0].apellido).to.equal('Otamendi');
+
+                    requester
+                    .post('/alta-curso/dictado')
+                    .send({ dictado: {
+                        "idProfesor" : "000067b5e46bd85ae46d0990"
+                    }})
+                    .end(async (err, res) => {
+                        expect(res).to.have.status(404);
+                        expect(res.body.ok).to.be.false;
+                        expect(res.body.message).to.equal('Error: No existe profesor');
+
+                        await deleteCurso(resCurso.body.response.curso._id);
+
+                        done();
+                    });
+
                 });
-        }).timeout(0);
+        });
+    }).timeout(0);
 
-    });
+    it('Alta curso exitoso. Fail send Horarios', (done) => {
+        requester
+        .post('/alta-curso?anio=5')
+        .end( (err, resCurso) => {
+            expect(resCurso).to.have.status(200);
+            expect(resCurso.body.ok).to.be.true;
 
-
-    describe('Buscar Profesor', function () {
-        
-        it('Materia especificada  incorrecta', (done) => {
-            requester
-                .get('/alta-curso/profesor?materia=Quimicaa')
-                .end(function (err, res) {
-                    expect(res).to.have.status(404);
-                    expect(res.body.ok).to.be.false;
-                    expect(res.body.message).to.equal('Error: La materia Quimicaa no pertenece a la planilla de materias');
-                    done();
-                });
-        }).timeout(0);
-
-        it('No existe profesor para dar la materia', (done) => {
-            requester
-                .get('/alta-curso/profesor?materia=Quimica')
-                .end(function (err, res) {
-                    expect(res).to.have.status(404);
-                    expect(res.body.ok).to.be.false;
-                    expect(res.body.message).to.equal('Error: No existen profesores para dar la materia Quimica');
-                    done();
-                });
-        }).timeout(0);
-
-        it('Devuelve Profesor para Materia', (done) => {
-            requester
+                requester
                 .get('/alta-curso/profesor?materia=Biologia')
+                .end( (err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(res.body.ok).to.be.true;
+                    expect(res.body.response[0].nombre).to.equal('Martin');
+                    expect(res.body.response[0].apellido).to.equal('Otamendi');
+
+                    requester
+                    .post('/alta-curso/dictado')
+                    .send({ dictado: {
+                        "idProfesor": res.body.response[0]._id,
+                        "horarios" : "000bdb087d60576e3f2e2000"
+                    }})
+                    .end( async (err, res) => {
+                        expect(res).to.have.status(404);
+                        expect(res.body.ok).to.be.false;
+                        expect(res.body.message).to.equal('Error: No se encontró horario');
+
+                        await deleteCurso(resCurso.body.response.curso._id);
+
+                        done();
+                    });
+
+                });
+
+            });
+    }).timeout(0);
+
+    it('Alta curso exitoso. Fail send Curso', (done) => {
+        requester
+        .post('/alta-curso?anio=5')
+        .end( (err, resCurso) => {
+            expect(resCurso).to.have.status(200);
+            expect(resCurso.body.ok).to.be.true;
+
+                requester
+                .get('/alta-curso/profesor?materia=Biologia')
+                .end( (err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(res.body.ok).to.be.true;
+                    expect(res.body.response[0].nombre).to.equal('Martin');
+                    expect(res.body.response[0].apellido).to.equal('Otamendi');
+
+                    requester
+                    .post('/alta-curso/dictado')
+                    .send({ dictado: {
+                        "idProfesor": res.body.response[0]._id,
+                        "horarios" : resCurso.body.response.horarios[0]._id,
+                        "idCurso": "0005076a4c816f138a4a7000"
+                    }})
+                    .end( async (err, res) => {
+                        expect(res).to.have.status(404);
+                        expect(res.body.ok).to.be.false;
+                        expect(res.body.message).to.equal('Error: No se encontró el curso solicitado');
+
+                        await deleteCurso(resCurso.body.response.curso._id);
+
+                        done();
+                    });
+                });
+            });
+    }).timeout(0);
+
+    it('Alta curso exitoso', (done) => {
+        requester
+        .post('/alta-curso?anio=5')
+        .end(function (err, resCurso) {
+            expect(resCurso).to.have.status(200);
+            expect(resCurso.body.ok).to.be.true;
+
+                requester
+                .get(`/alta-curso/profesor?materia=${resCurso.body.response.materias[0].nombre}`)
                 .end(function (err, res) {
                     expect(res).to.have.status(200);
                     expect(res.body.ok).to.be.true;
                     expect(res.body.response[0].nombre).to.equal('Martin');
                     expect(res.body.response[0].apellido).to.equal('Otamendi');
-                    done();
+
+                    requester
+                    .post('/alta-curso/dictado')
+                    .send({ dictado: {
+                        "cicloLectivo": resCurso.body.response.curso.cicloLectivo,
+                        "programa": "programaBiologia2020.pdf",
+                        "idProfesor": res.body.response[0]._id,
+                        "nombreMateria": resCurso.body.response.materias[0].nombre,
+                        "anioMateria": 1,
+                        "horarios": `${resCurso.body.response.horarios[0]._id},${resCurso.body.response.horarios[1]._id}`,
+                        "idCurso": resCurso.body.response.curso._id
+                    }})
+                    .end( async (err, res) =>  {
+                        expect(res).to.have.status(200);
+                        expect(res.body.ok).to.be.true;
+
+                        await deleteCurso(resCurso.body.response.curso._id);
+
+                        done();
+                    });
                 });
-        }).timeout(0);
-
-    })
-
-
-    describe('Crear Dictado', function () {
-
-        it('Profesor especificado incorrecto', (done) => {
-            requester
-            .post('/alta-curso/dictado')
-            .send({ dictado: {
-                "idProfesor" : "000067b5e46bd85ae46d0990"
-            }})
-            .end(function (err, res) {
-                expect(res).to.have.status(404);
-                expect(res.body.ok).to.be.false;
-                expect(res.body.message).to.equal('Error: No existe profesor');
-                done();
             });
-        }).timeout(0);
+    }).timeout(0);
 
-
-        it('Horario especificado incorrecto', (done) => {
-            requester
-            .post('/alta-curso/dictado')
-            .send({ dictado: {
-                "idProfesor": "5fad67b5e46bd85ae46d0999",
-                "horarios" : "000bdb087d60576e3f2e2000"
-            }})
-            .end(function (err, res) {
-                expect(res).to.have.status(404);
-                expect(res.body.ok).to.be.false;
-                expect(res.body.message).to.equal('Error: No se encontró horario');
-                done();
-            });
-        }).timeout(0);
-
-        it('Dictado especificado incorrecto', (done) => {
-            requester
-            .post('/alta-curso/dictado')
-            .send({ dictado: {
-                "idProfesor": "5fad67b5e46bd85ae46d0999",
-                "horarios" : "5fbbdb087d60576e3f2e2aab",
-                "idCurso": "0005076a4c816f138a4a7000"
-            }})
-            .end(function (err, res) {
-                expect(res).to.have.status(404);
-                expect(res.body.ok).to.be.false;
-                expect(res.body.message).to.equal('Error: No se encontró el curso solicitado');
-                done();
-            });
-        }).timeout(0);
-
-        // agregar caso exitoso
-    });
 });
