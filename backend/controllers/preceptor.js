@@ -17,7 +17,6 @@ const getPreceptores = async () => {
     }
     
     response.preceptores = preceptoresDB;
-    console.log("aca ", response);
 
     return response;
 
