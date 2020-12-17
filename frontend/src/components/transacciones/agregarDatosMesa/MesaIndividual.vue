@@ -181,7 +181,7 @@
             ></v-select> </v-col
         ></v-row>
         <v-row justify="center" align="center">
-          <v-col cols="2" md="6">
+          <v-col class="d-flex justify-center " cols="2" md="6">
             <v-btn
               class="rounded-lg"
               large

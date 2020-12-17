@@ -2,7 +2,7 @@
   <div class="text-center">
     <v-dialog :value="estaActivado" width="500">
       <v-card>  
-        <v-card-title class="headline grey lighten-2 justify-center">
+        <v-card-title class="headline red justify-center">
           
          Ups
         </v-card-title>
@@ -13,7 +13,7 @@
 
         <v-divider />
 
-        <v-card-actions>
+        <v-card-actions class="justify-center">
           <v-btn  @click="cerrarCartel"> volver al Menu </v-btn>
         </v-card-actions>
       </v-card>

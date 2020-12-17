@@ -2,7 +2,7 @@
   <div class="text-center">
     <v-dialog :value="estaActivado" width="500">
       <v-card>  
-        <v-card-title class="headline grey lighten-2 justify-center">
+        <v-card-title class="headline teal lighten-3 justify-center">
           
          {{titulo}}
         </v-card-title>
@@ -15,7 +15,7 @@
 
         <v-card-actions>
           <v-btn  @click="confirmarOperacionInicio"> volver al Inicio </v-btn>
-          
+          <v-spacer></v-spacer>
           <v-btn  @click="confirmarOperacionMenu"> Volver Al Menu Principal </v-btn>
         </v-card-actions>
       </v-card>
