@@ -8,7 +8,7 @@
       v-on:confirmar-operacion="confirmarOperacion"
     />
 
-    <loading>
+    <loading ref="cartelLoading" />
 
     <cartel-exito ref="cartelExito" v-on:confirmar-operacion="confirmarExito" />
 
@@ -30,7 +30,8 @@ import CartelExito from "../components/CartelExito.vue";
 import CartelError from "../components/CartelError.vue";
 import BuscadorLegajos from "../components/BuscadorLegajos.vue";
 import CartelConfirmacion from "../components/CartelConfirmacion.vue";
-import moduleName from '../components/'
+import Loading from "../components/Loading.vue";
+import { ipBackend } from "../config/backend.config";
 
 export default {
   name: "InscribirMesa",
@@ -44,6 +45,7 @@ export default {
       materias: [],
       tablaLoading: true,
       materiaSeleccionada: {},
+      idAlumno: "",
     };
   },
   components: {
@@ -52,6 +54,7 @@ export default {
     CartelError,
     BuscadorLegajos,
     CartelConfirmacion,
+    Loading,
   },
 
   methods: {
@@ -64,15 +67,14 @@ export default {
 
       // TODO: el mostrarTabla tiene q ir en then
       await axios
-        .get(
-          `http://localhost:5000/inscribir-mesa/obtener-dictados/${this.legajo}`
-        )
+        .get(`${ipBackend}/inscribir-mesa/obtener-dictados/${this.legajo}`)
         .then((res) => {
           console.log(res.data);
           this.materias = res.data.response.dictados;
+          this.idAlumno = res.data.response.idAlumno;
         })
         .catch((err) => {
-          console.log(err.response)
+          console.log(err.response);
           if (err.response.data.expanded) {
             this.$refs.cartelError.abrirCartel(err.response.data.expanded);
             this.mostrarTabla = false;
@@ -123,14 +125,45 @@ export default {
       );
     },
 
-    confirmarOperacion() {
+    async confirmarOperacion() {
       this.confirmacion = true;
-      setTimeout(() => {
-        
-      }, 2000);
-      this.$refs.cartelExito.abrirCartel(
-        `Se inscribió a la mesa de la materia: ${this.materiaSeleccionada.nombreMateria}`
-      );
+      this.$refs.cartelLoading.activar();
+
+      let valoresDictado = {
+        id: this.materiaSeleccionada.id,
+        nombreMateria: this.materiaSeleccionada.nombreMateria,
+        anioMateria: this.materiaSeleccionada.anioMateria,
+        cicloLectivo: this.materiaSeleccionada.cicloLectivo,
+      };
+
+      await axios
+        .post(
+          `${ipBackend}/inscribir-mesa/registrar-mesa/${this.idAlumno}`,
+          valoresDictado
+        )
+        .then((res) => {
+          console.log(res.data);
+          this.$refs.cartelLoading.desactivar();
+          this.$refs.cartelExito.abrirCartel(
+            res.data.response.mensaje +
+              `. Se inscribió a la mesa de la materia: 
+              ${this.materiaSeleccionada.nombreMateria}. `
+          );
+        })
+        .catch((err) => {
+          console.log(err.response);
+          if (err.response.data.expanded) {
+            this.$refs.cartelError.abrirCartel(err.response.data.expanded);
+            this.mostrarTabla = false;
+          }
+        });
+
+      // setTimeout(() => {
+      //   this.$refs.cartelLoading.desactivar();
+      //   this.$refs.cartelExito.abrirCartel(
+      //   `Se inscribió a la mesa de la materia: ${this.materiaSeleccionada.nombreMateria}`
+      // );
+      // }, 2000);
     },
 
     confirmarExito() {

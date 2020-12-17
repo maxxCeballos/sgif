@@ -6,16 +6,20 @@
         <v-card-text> Hola, Bienvenido </v-card-text>
       </v-card>
     </v-container>
-    
+
+    <carta-clima />
+
     <carta-citas-biblia />
   </div>
 </template>
 
 <script>
 import CartaCitasBiblia from "../components/home/CartaCitasBiblia.vue";
+import CartaClima from "../components/home/CartaClima.vue";
+
 export default {
   name: "Home",
-  components: { CartaCitasBiblia },
+  components: { CartaCitasBiblia, CartaClima },
 };
 </script>
 

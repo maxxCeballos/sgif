@@ -3,15 +3,20 @@
     <v-card>
       <v-card-title primary-title> Versículo Aleatorio </v-card-title>
       <v-card-text>
-        <div v-if="consultaExitosa">
-          <h3 v-if="pasaje.Book">
-            {{ pasaje.Book }} {{ pasaje.Chapter }}:{{ pasaje.Verse }}
-          </h3>
-          <h3 v-if="pasaje.Output">
-            <i>"{{ pasaje.Output }}"</i>
-          </h3>
+        <div v-if="isLoading">
+          <v-progress-circular indeterminate color="primary" />
         </div>
-        <h3 v-else>ERROR EN LA API DE LA BIBLIA</h3>
+        <div v-else>
+          <div v-if="consultaExitosa">
+            <h3 v-if="pasaje.Book">
+              {{ pasaje.Book }} {{ pasaje.Chapter }}:{{ pasaje.Verse }}
+            </h3>
+            <h3 v-if="pasaje.Output">
+              <i>"{{ pasaje.Output }}"</i>
+            </h3>
+          </div>
+          <h3 v-else>ERROR EN LA API DE LA BIBLIA</h3>
+        </div>
       </v-card-text>
       <v-card-actions>
         <v-btn color="info" @click="consultaBiblia"> Buscar Siguiente </v-btn>
@@ -29,11 +34,13 @@ export default {
     return {
       pasaje: {},
       consultaExitosa: true,
+      isLoading: false,
     };
   },
   methods: {
     consultaBiblia() {
       this.pasaje = {};
+      this.isLoading = true;
       axios
         .get("https://ajith-holy-bible.p.rapidapi.com/GetVerseOfaChapter", {
           params: {
@@ -48,8 +55,15 @@ export default {
             useQueryString: true,
           },
         })
-        .then((res) => (this.pasaje = res.data))
-        .catch(() => (this.consultaExitosa = false));
+        .then((res) => {
+          this.pasaje = res.data;
+          this.consultaExitosa = true;
+          this.isLoading = false;
+        })
+        .catch(() => {
+          this.consultaExitosa = false;
+          this.isLoading = false;
+        });
     },
   },
   created: function () {
