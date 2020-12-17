@@ -45,7 +45,7 @@
               </v-col>
             </v-row>
           </div>
-          <h3 v-else>ERROR EN LA API DE LA BIBLIA</h3>
+          <h3 v-else>ERROR EN LA CONEXIÓN</h3>
         </div>
       </v-card-text>
     </v-card>
@@ -54,6 +54,7 @@
 
 <script>
 import axios from "axios";
+import { apiClima } from '../../config/backend.config';
 
 export default {
   name: "CartaClima",
@@ -70,7 +71,7 @@ export default {
       this.pronosticos = [];
       const options = {
         method: "GET",
-        url: "https://weatherapi-com.p.rapidapi.com/forecast.json",
+        url: apiClima,
         params: { q: "Cipolletti", days: "3" },
         headers: {
           "x-rapidapi-key":

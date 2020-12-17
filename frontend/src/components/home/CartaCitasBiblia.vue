@@ -15,7 +15,7 @@
               <i>"{{ pasaje.Output }}"</i>
             </h3>
           </div>
-          <h3 v-else>ERROR EN LA API DE LA BIBLIA</h3>
+          <h3 v-else>ERROR EN LA CONEXIÓN</h3>
         </div>
       </v-card-text>
       <v-card-actions>
@@ -27,6 +27,7 @@
 
 <script>
 import axios from "axios";
+import { apiBiblia } from '../../config/backend.config';
 
 export default {
   name: "CartaCitasBiblia",
@@ -42,7 +43,7 @@ export default {
       this.pasaje = {};
       this.isLoading = true;
       axios
-        .get("https://ajith-holy-bible.p.rapidapi.com/GetVerseOfaChapter", {
+        .get(apiBiblia, {
           params: {
             Verse: "1",
             Book: "Luke",

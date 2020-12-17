@@ -65,16 +65,13 @@ export default {
       this.materias = [];
       this.legajo = legajoParam;
 
-      // TODO: el mostrarTabla tiene q ir en then
       await axios
         .get(`${ipBackend}/inscribir-mesa/obtener-dictados/${this.legajo}`)
         .then((res) => {
-          console.log(res.data);
           this.materias = res.data.response.dictados;
           this.idAlumno = res.data.response.idAlumno;
         })
         .catch((err) => {
-          console.log(err.response);
           if (err.response.data.expanded) {
             this.$refs.cartelError.abrirCartel(err.response.data.expanded);
             this.mostrarTabla = false;
