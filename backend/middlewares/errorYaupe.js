@@ -1,4 +1,3 @@
-
 'use strict';
 
 const errorHandler = (err, req, res, next) => {
@@ -18,5 +17,7 @@ const errorHandler = (err, req, res, next) => {
         });
     }
 }
+
+
 
 module.exports = [errorHandler];

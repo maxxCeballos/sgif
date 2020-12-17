@@ -1,5 +1,26 @@
 <template>
   <div v-if="estaPrendido">
+    <v-card>
+      
+      <v-row class="">
+        <v-card-title class="ml-5">Mesas para Compartir</v-card-title>
+        <v-col class="d-flex justify-end ">
+          <v-btn @click="volverInicio()" class=" mr-5 rounded-lg " small color="orange">
+            <v-icon> mdi-arrow-left </v-icon>
+          </v-btn></v-col
+        >
+      </v-row>
+        <v-toolbar flat>
+          <v-toolbar-title>Puede seleccionar una mesa para compartir de la tabla</v-toolbar-title>
+          <v-divider class="mx-4" inset vertical></v-divider>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" @click="crearIndividual()" class="mb-2">
+            Crear Mesa Individual
+          </v-btn>
+        </v-toolbar>
+   
+      <v-card-text>
+     
     <v-data-table
       :headers="headers"
       :items="mesas"
@@ -9,16 +30,8 @@
       :loading="loading"
       loading-text="Cargando.. porfavor espere"
     >
-      <template v-slot:top>
-        <v-toolbar flat>
-          <v-toolbar-title>Mesas para Compartir</v-toolbar-title>
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" @click="crearIndividual()" class="mb-2">
-            Crear Mesa Individual
-          </v-btn>
-        </v-toolbar>
-      </template>
+    
+     
       <template v-slot:item="{ item }">
         <tr v-on:click="validar(item)">
           <td>{{ item.acta }}</td>
@@ -31,7 +44,8 @@
       </template>
       ></v-data-table
     >
-
+    </v-card-text>
+</v-card>
     <Confirmacion
       ref="miConfirmacion"
       v-on:confirmar-operacion="agregarDatosMesa"
@@ -41,9 +55,6 @@
 
 
 <script>
-//import {MDCDataTable} from '@material/data-table';
-//const dataTable = new MDCDataTable(document.querySelector('.mdc-data-table'));
-
 import axios from "axios";
 import { ipBackend } from "../../../config/backend.config";
 import Confirmacion from "@/components/CartelConfirmacion";
@@ -100,7 +111,7 @@ export default {
       });
     },
     validar: function (mesaCompartida) {
-      this.$refs.miConfirmacion.abrirDialogo("Realizar Mesa Compartida");
+      this.$refs.miConfirmacion.abrirCartel("Realizar Mesa Compartida");
       this.mesaSelec = mesaCompartida;
     },
     async agregarDatosMesa() {
@@ -123,7 +134,7 @@ export default {
       if (resultado.data.respClient == undefined) {
         //Indica que no se pudo crear la mesa
         this.resultadoTransaccion.message =
-          "No es posible completar la Mesa porque ningun profesor puede de la mesa compartida puede impartir " +
+          "No es posible completar la Mesa porque ningun profesor de la mesa compartida puede impartir " +
           this.materiaMesaElegida +
           " de " +
           this.anioMateriaMesaElegida;
@@ -134,23 +145,50 @@ export default {
       }
       this.$emit("terminarTransaccion", this.resultadoTransaccion);
     },
-  },
-  mounted() {
-    axios
-      .get(`${ipBackend}/agregarDatosMesaExamen/mesasParaCompartir`)
-      .then((res) => {
-        console.log(res.data);
-        this.mesas = res.data.mesasConDictados;
-        this.loading = false;
-      })
-      .catch((error) => {
-        if (!error.response) {
-          // network error
-          this.errorStatus = "Error: Network Error";
-        } else {
-          this.errorStatus = error.response.data.message;
-        }
-      });
+    reiniciarDatos() {
+      // this.oidMesaElegida = "";
+      // this.materiaMesaElegida = "";
+      // this.anioMateriaMesaElegida = 0;
+      // this.estaPrendido = false;
+      this.mesas = [];
+      this.loading = true;
+      this.mesaSelect = "";
+      this.datosAEnviar = {
+        oidIndividual: "",
+        padre: "",
+        esPadre: "",
+        materia: "",
+        anio: "",
+        profesores: "",
+        preceptores: "",
+        fechaHora: "",
+        aula: "",
+      };
+      this.resultadoTransaccion = {
+        message: "",
+        status: false,
+      };
+    },
+    obtenerInformacion() {
+      axios
+        .get(`${ipBackend}/agregarDatosMesaExamen/mesasParaCompartir`)
+        .then((res) => {
+          console.log(res.data);
+          this.mesas = res.data.mesasConDictados;
+          this.loading = false;
+        })
+        .catch((error) => {
+          if (!error.response) {
+            // network error
+            this.errorStatus = "Error: Network Error";
+          } else {
+            this.errorStatus = error.response.data.message;
+          }
+        });
+    },
+    volverInicio(){
+        this.$emit("volverInicio");
+    }
   },
 };
 </script>

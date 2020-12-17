@@ -1,11 +1,14 @@
 <template>
   <div>
     <MesasSolicitadas
+      ref="componentMesasSolicitadas"
       v-bind:estaPrendido="mostrandoSolicitadas"
       v-on:updateMesaElegida="updateMesa"
+      v-on:error="activarCartelError"
     />
 
     <MesasCompartidas
+      ref="componentMesasCompartidas"
       v-bind:estaPrendido="mostrandoCompartidas"
       :oidMesaElegida="oidMesaElegida"
       :materiaMesaElegida="materiaMesaElegida"
@@ -13,20 +16,34 @@
       v-on:crearMesaI="crearMesaI"
       v-on:prenderCarga="procesar"
       v-on:terminarTransaccion="terminarTransaccion"
+      v-on:volverInicio="reiniciarVista"
     />
 
     <MesaI
-      ref="miMesaIndividual"
+      ref="componentMesaIndividual"
       v-bind:estaPrendido="mostrandoIndividual"
       v-bind:oidMesaElegida="oidMesaElegida"
       v-bind:materiaMesaElegida="materiaMesaElegida"
       v-bind:anioMateriaMesaElegida="anioMateriaMesaElegida"
+      v-on:prenderCarga="procesar"
+      v-on:terminarTransaccion="terminarTransaccion"
+      v-on:volverInicio="reiniciarVista"
     />
     <Loading ref="loadBar" />
 
     <!-- v-on:confirmar-operacion="confirmarExito" -->
     <Exito ref="alertE" />
     <Error ref="alertEr" />
+
+    <CartelFinTransaccionExito
+      ref="cartFinTransaccionExito"
+      v-on:reiniciarTransaccion="reiniciarVista"
+    />
+    <CartelFinTransaccionError
+      ref="componenteFinTransaccionError"
+      
+    />
+    <!-- v-on:reiniciarTransaaccion="reiniciarTransaccion" -->
   </div>
 </template>
 
@@ -37,6 +54,8 @@ import MesaI from "../components/transacciones/agregarDatosMesa/MesaIndividual";
 import Exito from "@/components/CartelExito";
 import Error from "@/components/CartelError";
 import Loading from "@/components/Loading";
+import CartelFinTransaccionExito from "@/components/CartelFinTransaccionExito";
+import CartelFinTransaccionError from "@/components/CartelFinTransaccionError";
 
 export default {
   name: "AgregarDatosMesa",
@@ -58,6 +77,8 @@ export default {
     Exito,
     Error,
     Loading,
+    CartelFinTransaccionExito,
+     CartelFinTransaccionError
   },
   methods: {
     updateMesa(mesaSeleccionada) {
@@ -65,28 +86,57 @@ export default {
       this.materiaMesaElegida = mesaSeleccionada.materia;
       this.anioMateriaMesaElegida = mesaSeleccionada.anio;
       this.mostrandoSolicitadas = false;
+      this.$refs.componentMesasCompartidas.obtenerInformacion();
       this.mostrandoCompartidas = true;
     },
 
     crearMesaI() {
       this.mostrandoCompartidas = false;
       this.mostrandoIndividual = true;
-      this.$refs.miMesaIndividual.obtenerInformacion();
+      this.$refs.componentMesaIndividual.obtenerInformacion();
     },
 
     procesar() {
       this.$refs.loadBar.activar();
       this.mostrandoCompartidas = false;
+      this.mostrandoIndividual = false;
     },
 
     async terminarTransaccion(resultado) {
       await this.$refs.loadBar.desactivar();
       if (resultado.status) {
-        this.$refs.alertE.abrirCartel(resultado.message);
+        this.$refs.cartFinTransaccionExito.abrirCartel(
+          "Exito",
+          resultado.message
+        );
       } else {
-        this.$refs.alertEr.abrirCartel(resultado.message);
+        this.$refs.cartFinTransaccionExito.abrirCartel(
+          "Ups",
+          resultado.message
+        );
       }
     },
+    reiniciarDatos() {
+      this.mostrandoSolicitadas = true;
+      this.mostrandoCompartidas = false;
+      this.mostrandoIndividual = false;
+      this.oidMesaElegida = "";
+      this.materiaMesaElegida = "";
+      this.anioMateriaMesaElegida = 0;
+    },
+    reiniciarVista() {
+      this.reiniciarDatos();
+      this.$refs.componentMesasSolicitadas.reiniciarDatos();
+      this.$refs.componentMesasCompartidas.reiniciarDatos();
+      this.$refs.componentMesaIndividual.reiniciarDatos();
+    },
+    activarCartelError(error){
+      this.$refs.componenteFinTransaccionError.abrirCartel(error);
+    }
   },
+  mounted() {
+    this.$refs.componentMesasSolicitadas.obtenerInformacion();
+  }
+  
 };
 </script>

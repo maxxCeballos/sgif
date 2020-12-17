@@ -1,38 +1,31 @@
 <template>
   <div v-if="estaPrendido">
-    <v-container>
-      <v-card>
-        <v-data-table
-          caption="Mesas Solicitadas"
-          :headers="headers"
-          :items="mesas"
-          :items-per-page="10"
-          item-key="mesaId"
-          class="elevation-1"
-          :loading="isLoading"
-          loading-text="Cargando.. porfavor espere"
-        >
-          <template v-slot:item="{ item }">
-            <tr>
-              <td>{{ item.materia }}</td>
-              <td>{{ item.anio }}</td>
-              <td>{{ item.cicloLectivo }}</td>
-              <td>
-                <v-btn
-                  @click="
-                    mesaSeleccionada(item.mesaId, item.materia, item.anio)
-                  "
-                >
-                  <v-icon medium class="mr-2">
-                    mdi-arrow-right-circle-outline
-                  </v-icon>
-                </v-btn>
-              </td>
-            </tr>
-          </template>
-        </v-data-table>
-      </v-card>
-    </v-container>
+    <v-card>
+      
+      <v-card-title>Mesas de Examen Solicitadas</v-card-title>
+      <v-card-subtitle>Seleccione una mesa para agregar datos</v-card-subtitle>
+      <v-card-text>
+      <v-data-table
+        :headers="headers"
+        :items="mesas"
+        :items-per-page="10"
+        item-key="mesaId"
+        class="elevation-1"
+        :loading="isLoading"
+        loading-text="Cargando.. porfavor espere"
+      >
+        <template v-slot:item="{ item }">
+          <tr
+            v-on:click="mesaSeleccionada(item.mesaId, item.materia, item.anio)"
+          >
+            <td>{{ item.materia }}</td>
+            <td>{{ item.anio }}</td>
+            <td>{{ item.cicloLectivo }}</td>
+          </tr>
+        </template>
+      </v-data-table>
+      </v-card-text>
+    </v-card>
   </div>
 </template>
 
@@ -53,10 +46,10 @@ export default {
         { text: "Materia", value: "materia" },
         { text: "Año", value: "anio" },
         { text: "CicloLectivo", value: "cicloLectivo" },
-        { text: "Seleccionar Mesa", value: "accion", sortable: false },
       ],
       mesas: [],
       isLoading: true,
+      resultadoTransaccion: "",
     };
   },
   methods: {
@@ -70,24 +63,23 @@ export default {
         anio: anio,
       });
     },
-  },
-
-  mounted() {
-    axios
-      .get(`${ipBackend}/agregarDatosMesaExamen/mesasSolicitadas`)
-      .then((res) => {
-        console.log(res.data);
-        this.mesas = res.data.mesasConDictados;
-        this.isLoading = false;
-      })
-      .catch((error) => {
-        if (!error.response) {
-          // network error
-          this.errorStatus = "Error: Network Error";
-        } else {
-          this.errorStatus = error.response.data.message;
-        }
-      });
+    obtenerInformacion() {
+      axios
+        .get(`${ipBackend}/agregarDatosMesaExamen/mesasSolicitadas`)
+        .then((res) => {
+          this.isLoading = false;
+          if (res.data.mesasConDictados == undefined) {
+            this.resultadoTransaccion = "No hay mesas solicitadas";
+            this.$emit("error", this.resultadoTransaccion);
+          } else {
+            this.mesas = res.data.mesasConDictados;
+          }
+        });
+    },
+    reiniciarDatos() {
+      this.resultadoTransaccion = "";
+      this.obtenerInformacion();
+    },
   },
 };
 </script>
