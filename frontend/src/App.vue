@@ -8,7 +8,6 @@
       <SideNavBar />
     </v-navigation-drawer>
     <!-- Sizes your content based upon application components -->
-    <!-- <v-main pd-5 class="cyan lighten-3"> -->
     <v-main pd-5 class="fondo">
       <!-- Provides the application the proper gutter -->
       <v-container>

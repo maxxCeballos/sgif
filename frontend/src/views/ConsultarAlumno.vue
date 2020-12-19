@@ -26,8 +26,6 @@ export default {
     buscarAlumno(legajoParam) {
       this.legajo = legajoParam;
 
-      // TODO: consulta de axios
-
       if (this.legajo === "nadie") {
         this.alumno = {};
       } else {

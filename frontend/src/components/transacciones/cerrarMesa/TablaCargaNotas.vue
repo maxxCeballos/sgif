@@ -3,17 +3,18 @@
     <v-card v-if="mesa.alumnos.length !== 0" elevation="2" outlined>
       <v-card-title>Alumnos Inscriptos</v-card-title>
       <v-card-text>
-        <v-data-table
-          :headers="headers"
-          :items="mesa.alumnos"
-        >
-          <template v-slot:item.nota="props">
+        <v-data-table :headers="headers" :items="mesa.alumnos">
+          <template v-slot:[`item.condicion`]="props">
+            <v-checkbox label="Ausente" v-model="props.item.esAusente" />
+          </template>
+          <template v-slot:[`item.nota`]="props">
             <v-text-field
               v-model="props.item.nota"
               name="quantity"
               outlined
               @input="getdata"
               type="number"
+              v-bind:disabled="props.item.esAusente"
             ></v-text-field>
           </template>
         </v-data-table>

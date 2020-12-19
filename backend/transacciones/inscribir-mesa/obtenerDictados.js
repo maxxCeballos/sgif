@@ -44,7 +44,7 @@ const obtenerDictados = async (legajoAlumno) => {
         throw "Alumno estuvo Ausente en la Ultima Mesa con id: " + idMesaAusente;
     }
 
-    let dictadosDesaprobados = await getDictadosDesaprobados(calificacionesDesaprobadas);
+    let dictadosDesaprobados = await getDictadosDesaprobados(alumno._id, calificacionesDesaprobadas);
 
     return dictadosDesaprobados;
 }
@@ -53,8 +53,9 @@ const obtenerDictados = async (legajoAlumno) => {
 /**
  * Devuelve dictados con el formato {id, nombreMateria, anioMateria, cicloLectivo} de un conjunto de calificaciones
  */
-async function getDictadosDesaprobados(calificacionesDesaprobadas) {
+async function getDictadosDesaprobados(idAlumno, calificacionesDesaprobadas) {
     let dictadosDesaprobados = {
+        idAlumno,
         dictados: [],
     };
 
@@ -104,24 +105,26 @@ async function estuvoAusenteCalificacionIndiv(unaCalificacion) {
 
     let i = 0;
     let result = false;
+    let objetoResultado;
+
     while (i < resultadoMesasExamen.length && !result) {
-        result = await estuvoAusenteMesaIndiv(resultadoMesasExamen[i]);
+        objetoResultado = await getResultadoMesaByOid(resultadoMesasExamen[i]);
+        result = await estuvoAusenteMesaIndiv(objetoResultado);
         i++;
     }
 
     if (result) {
-        return resultadoMesasExamen[i - 1];
+        return objetoResultado.mesaDeExamen;
     } else {
         return undefined;
     }
 }
 
-async function estuvoAusenteMesaIndiv(oidResultado) {
-    let objetoResultado = await getResultadoMesaByOid(oidResultado);
+async function estuvoAusenteMesaIndiv(objetoResultado) {
     let objetoMesa = await getMesaExamenByOid(objetoResultado.mesaDeExamen);
 
     return (objetoResultado.condicion === "Ausente"
-        && (esDeMesPasado(objetoMesa.fechaHora)) //FIXME: Verificar si es de mes - 1;
+        && (esDeMesPasado(objetoMesa.fechaHora))
     )
 }
 
@@ -129,7 +132,6 @@ function esDeMesPasado(fechaPrevia) {
     let hoy = new Date();
 
     if (!(fechaPrevia.getYear() < hoy.getYear())) {
-        //FIXME: ver que pasa si es de este mes
         return fechaPrevia.getMonth() === hoy.getMonth() - 1;
     }
 

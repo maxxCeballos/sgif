@@ -1,8 +1,5 @@
 <template>
   <v-container v-if="estaActivado">
-    <!-- max-width="700px" -->
-    <!-- min-width="500px" -->
-    <!-- icon="mdi-check-circle-outline" -->
     <v-alert
       class="mb-0"
       dismissible

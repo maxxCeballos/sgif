@@ -24,8 +24,6 @@ let hermano = {
     fechaNacimiento: { type: Date },
     escuelaActual: { type: String },
     grado: { type: String },
-    //TODO: ATENCION! con esquema persona, llenar con hermanos
-    hermanos: [{ type: Schema.Types.ObjectId, ref: 'Persona' }],
 };
 
 let padre = {
