@@ -22,7 +22,6 @@ const createCurso = async (curso) => {
 
 const getCursoAlumno = async (cicloLectivo,oidAlumno) => {
     //Devuelvo el curso correspondiente al alumno con el oid 
-    
     const cursoAlumno = await Curso.find({"cicloLectivo":cicloLectivo,"alumnos":{$in:[oidAlumno]}});
     return cursoAlumno
 }

@@ -11,7 +11,7 @@ const { verificarProfesores, verificarPreceptores, verificarMateriaAnio } = requ
 
 
 router.get('/agregarDatosMesaExamen/mesasSolicitadas', asyncHandler(async (req, res) => {
-    
+  
     //Obtenemos las mesas en estado solicitado
     const solicitadas = await getMesasSolicitadas();
 
@@ -77,6 +77,7 @@ router.get('/agregarDatosMesaExamen/mesasParaCompartir', asyncHandler(async (req
 router.put('/agregarDatosMesaExamen/mesaIndividual/agregarDatos', asyncHandler(async (req, res) => {
     //Esta ruta es llamada cuando decide completar una mesa de tipo individual
     let oidMesa, profesorTitular, profesor2, profesor3, preceptor, preceptor2, fechaHora, aula, update, profesores, mesaActualizada, respClient, mesas1, mesas2, verifPrecep, verifProfes;
+
     update = req.body
     update.fechaHora = new Date(update.fechaHora);
     mesas1 = await getMesasCompletadas();
@@ -143,6 +144,7 @@ router.get('/agregarDatosMesaExamen/obtenerProfesores', asyncHandler(async (req,
         profesFormat.push({ "nombre": profeActual.nombre + " " + profeActual.apellido, "idProfe": profeActual._id });
     };
     response = profesFormat;
+
     res.send({ ok: true, response });
 }));
 
@@ -155,6 +157,7 @@ router.get('/agregarDatosMesaExamen/obtenerPreceptores', asyncHandler(async (req
         precepFormat.push({ "nombre": precepActual.nombre + " " + precepActual.apellido, "idPrecep": precepActual._id });
     };
     response = precepFormat;
+
     res.send({ ok: true, response });
 }));
 
@@ -233,13 +236,12 @@ router.put('/agregarDatosMesaExamen/registrarCompartida/', asyncHandler(async (r
             "message": "Se registro la mesa con exito",
             "mesaIndividualUpdate": response1,
             "mesaCompartidaUpdate": response2
-
         }
     } else {
 
         throw  {
             status:204
-           
+
         }
 
 

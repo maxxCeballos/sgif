@@ -1,6 +1,5 @@
 'use strict'
 
-const alumno = require('../../test/controllers/alumno');
 let Alumno = require('../models/alumno.model');
 const { getPersonaById, createPersona, asociarRol } = require('./persona');
 
@@ -11,7 +10,23 @@ const createAlumno = async (alumno, legajo, oidResponsable) => {
         calificaciones, hermanos, padres } = alumno;
 
     //TODO: evitar alumno vacio y alumno replicado    
+let Alumno = require('../models/alumno.model');
 
+
+const createAlumno = async (alumno) => {
+
+    const { dni, tipoDni, nombre, apellido, genero,
+        fechaNacimiento, legajo, fechaIngreso, nombreEscuelaAnt,
+        sacramento,
+        estadoInscripcion,
+        anioCorrespondiente,
+        observaciones,
+        calificaciones,
+        presentismos,
+        responsable,
+        padres,
+    } = alumno;
+  
     const newAlumno = new Alumno({
         dni,
         tipoDni,
@@ -123,6 +138,33 @@ const getAlumnoByLegajo = async (legajo) => {
     const alumnoDB = await Alumno.find({ legajo: legajo }).exec();
 
     return alumnoDB
+         fechaNacimiento,
+         legajo,
+         fechaIngreso,
+         nombreEscuelaAnt,
+         sacramento,
+        estadoInscripcion,
+        anioCorrespondiente,
+        observaciones,
+        calificaciones,
+        presentismos,
+        responsable,
+        padres
+    });
+
+
+    const alumnoDB = await newAlumno.save()
+
+    return alumnoDB;
+
+}
+
+
+const getAlumnoByDni = async (dni) => {
+
+    const alumnoDB = await Alumno.find({ dni: dni }).exec();
+
+    return alumnoDB[0]
 }
 
 const getAllAlumnos = async () => {
@@ -231,6 +273,12 @@ const addCalificacion = async (calificacion, dni) => {
     if (response.n === 1) return true
 
     return false
+
+  const getAlumnoConsultarInfo = async (dni) => {
+
+    const alumnoDB = await Alumno.find({ dni: dni }).exec();
+
+    return alumnoDB
 }
 
 
@@ -247,4 +295,9 @@ module.exports = {
     generarLegajo,
     addCalificacion,
     addResultadoMesa,
+    updateAlumno2,
+    deleteAlumno,
+    getAllAlumnos,
+    getAlumnoByDni,
+    getAlumnoConsultarInfo,
 }

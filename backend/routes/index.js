@@ -15,8 +15,6 @@ const cerrarMesaHandler = require('./cerrar-mesa');
 const agregarDatosMesaHandler = require('./agregarDatosMesa');
 const dictadoHandler =require('./dictado');
 
-
-
 const app = express();
 
 app.get('/', (req, res) => {

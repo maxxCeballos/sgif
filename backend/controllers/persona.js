@@ -67,7 +67,7 @@ const getProfesorMateria = async (materia, anio) => {
                 }
 
             }
-        
+     
 
 
     }
@@ -82,6 +82,7 @@ const getProfesorMateria = async (materia, anio) => {
     return profesores;
 
 }
+
 const getProfesores = async () => {
     //Obtengo los profesores
   
@@ -133,6 +134,4 @@ module.exports = {
     getProfesores,
     getProfesorMateria,
     getPreceptores
-    
-
 }

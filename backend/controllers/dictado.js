@@ -36,9 +36,6 @@ const getDictado = async (oid) => {
     return dictadoDB
 }
 
-
-
-
 const createDictado = async (dictado) => {
     const { cicloLectivo, programa, profesor, horarios, materia } = dictado;
 
@@ -55,10 +52,10 @@ const createDictado = async (dictado) => {
 
     return dictadoDB;
 }
+
 module.exports = {
     createDictado,
     getDictadoByOid,
     getDictadoByParams,
     getDictado
- 
 }
