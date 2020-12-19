@@ -22,7 +22,7 @@
               :items="aulas"
               item-text="numero"
               outlined
-              label="Seleccione el aula"
+              label="Aula"
               :rules="aulasRules"
               return-object
               required
@@ -45,7 +45,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
                   v-model="date"
-                  label="Seleccione la fecha de la mesa"
+                  label="Fecha"
                   prepend-inner-icon="mdi-calendar"
                   readonly
                   v-bind="attrs"
@@ -83,7 +83,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
                   v-model="time"
-                  label="Seleccione la hora de la mesa"
+                  label="Hora"
                   prepend-inner-icon="mdi-clock-time-four-outline"
                   readonly
                   outlined
@@ -111,7 +111,7 @@
               :items="profesMateria"
               item-text="nombre"
               outlined
-              label="Seleccione el profesor Titular"
+              label="Profesor Titular"
               :rules="profesRulesT"
               return-object
               required
@@ -127,7 +127,7 @@
               :items="profes"
               item-text="nombre"
               outlined
-              label="Seleccione el segundo profesor"
+              label="Segundo Profesor"
               :rules="profesRulesS"
               return-object
               required
@@ -142,7 +142,7 @@
               :items="profes"
               item-text="nombre"
               outlined
-              label="Seleccione el tercer profesor"
+              label="Tercer Profesor"
               :rules="profesRulesTe"
               return-object
               required
@@ -158,7 +158,7 @@
               :items="preceptores"
               item-text="nombre"
               outlined
-              label="Seleccione el primer preceptor"
+              label="Primer Preceptor"
               :rules="preceptorRulesU"
               return-object
               required
@@ -174,7 +174,7 @@
               :items="preceptores"
               item-text="nombre"
               outlined
-              label="Seleccione el segundo preceptor"
+              label="Segundo Preceptor"
               :rules="preceptorRulesD"
               return-object
               required
