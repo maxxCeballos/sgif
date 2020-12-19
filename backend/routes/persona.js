@@ -5,7 +5,7 @@ const asyncHandler = require('../middlewares/asynchandler');
 
 
 const router = express.Router();
-const { createPersona,getPersona } = require('../controllers/persona');
+const { createPersona,getPersona,updatePersona } = require('../controllers/persona');
 const asynchandler = require('../middlewares/asynchandler');
 
 
@@ -26,4 +26,12 @@ router.get('/persona/:oid', asyncHandler( async (req, res) => {
     res.send({ ok: true, response  });
 }));
 
+router.put('/persona/:id', asyncHandler( async (req, res) => {
+    const oidPersona=req.params.id;
+    const update = req.body;
+
+    const response = await updatePersona(oidPersona,update);
+
+    res.send({ ok: true, response  });
+}));
 module.exports=router;

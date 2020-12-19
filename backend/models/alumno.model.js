@@ -65,10 +65,10 @@ const alumnoEsquema = new Schema({
         fecha: Date,
         diocesis: String
     }],
-    estadoInscripción: {
+    estadoInscripcion: {
         type: String, enum: ["Inscripto", "No Inscripto", "Reinscripto"]
     },
-    anioCorespondiente: { type: Number, min: 1, max: 5 },
+    anioCorrespondiente: { type: Number, min: 1, max: 5 },
     observaciones,
     sanciones,
     presentismos,

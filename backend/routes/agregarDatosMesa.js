@@ -11,7 +11,7 @@ const { verificarProfesores, verificarPreceptores, verificarMateriaAnio } = requ
 
 
 router.get('/agregarDatosMesaExamen/mesasSolicitadas', asyncHandler(async (req, res) => {
-    //TODO agregar cicloLectivo para controlar que sea actual, teniendo en cuenta dictado
+  
     //Obtenemos las mesas en estado solicitado
     const solicitadas = await getMesasSolicitadas();
 
@@ -25,7 +25,7 @@ router.get('/agregarDatosMesaExamen/mesasSolicitadas', asyncHandler(async (req, 
         //Genero una lista con tuplas de mesa y su dictado correspondiente
         mesaActual = solicitadas[i];
         dictadoActual = await getDictado(mesaActual.dictado);
-        mesasConDictados.push({ "mesa": mesaActual, "dictado": dictadoActual });
+        mesasConDictados.push({ "mesaId": mesaActual._id, "materia": dictadoActual.materia.nombre, "anio": dictadoActual.materia.anio, "cicloLectivo": dictadoActual.cicloLectivo });
     }
     console.log(mesasConDictados);
 
@@ -33,9 +33,51 @@ router.get('/agregarDatosMesaExamen/mesasSolicitadas', asyncHandler(async (req, 
 
 }));
 
+router.get('/agregarDatosMesaExamen/mesasParaCompartir', asyncHandler(async (req, res) => {
+    //Obtiene las mesas cen estado completada que pueden ser compartidas
+
+
+    //Obtenemos las mesas en estado completadas y que son padres
+    const compartidas = await getMesasCompletadasCompartidas();
+    //Obtenemos las mesas en estado completadas y que no son padres y tampoco compartidas
+    const completadas = await getMesasCompletadas();
+
+    const mesas = Array.prototype.concat(compartidas.mesas, completadas.mesas);
+    //Obtener dictados de cada mesaDeExamen (si se haace aparte llevar esto, PD: si se queda hay que ver como corroborar si trajo mesas o la respuesta)
+    var i;
+    let mesaActual, dictadoActual, mesasConDictados = [];
+    mesasConDictados = [];
+    
+    for (i in mesas) {
+        //Genero una lista con tuplas de mesa y su dictado correspondiente
+        mesaActual = mesas[i];
+        dictadoActual = await getDictado(mesaActual.dictado);
+        mesasConDictados.push({
+            "idMesa": mesaActual._id,
+            "materia": dictadoActual.materia.nombre,
+            "anio": dictadoActual.materia.anio,
+            "cicloLectivo": dictadoActual.cicloLectivo,
+            "acta": mesaActual.acta,
+            "fecha": mesaActual.fechaHora,
+            "hora": mesaActual.fechaHora,
+            "aula": mesaActual.aula,
+            "esCompartida": mesaActual.esCompartida,
+            "esPadre": mesaActual.esPadre,
+            "profesores": mesaActual.profesores,
+            "preceptores": mesaActual.preceptores
+
+        });
+    }
+   
+
+    res.send({ ok: true, mesasConDictados });
+
+}));
+
 router.put('/agregarDatosMesaExamen/mesaIndividual/agregarDatos', asyncHandler(async (req, res) => {
     //Esta ruta es llamada cuando decide completar una mesa de tipo individual
-    let oidMesa, profesorTitular, profesor2, profesor3, preceptor, preceptor2, fechaHora, aula, update, profesores, preceptores, response, mesas1, mesas2, verifPrecep, verifProfes;
+    let oidMesa, profesorTitular, profesor2, profesor3, preceptor, preceptor2, fechaHora, aula, update, profesores, mesaActualizada, respClient, mesas1, mesas2, verifPrecep, verifProfes;
+
     update = req.body
     update.fechaHora = new Date(update.fechaHora);
     mesas1 = await getMesasCompletadas();
@@ -58,42 +100,64 @@ router.put('/agregarDatosMesaExamen/mesaIndividual/agregarDatos', asyncHandler(a
     }
 
     if (verifPrecep == true) {
-        response = {
-            message: "Es posible crear la mesa",
-
-        };
-
         update.acta = await getUltimaActa() + 1; //Aumento en 1  porque es la mesa siguiente
         update.estado = "Completada";
-        console.log(update);
-        response.mesaActualizada = await updateMesa(update.mesa, update);
+        console.log("aca el updateee"+update+"acta el id de la mesa"+update.mesa);
+        mesaActualizada = await updateMesa(update.mesa, update);
+        respClient = {
+            message: "Se actualizo la mesa con éxito",
+            mesa:mesaActualizada
+        };
     } else {
-        response = {
-            message: "No es posible posible crear la mesa"
+       
+        throw{
+            status:204,
+           
         }
     }
 
-    res.send({ ok: true, response });
+    res.send({ ok: true, respClient });
 }));
 
 router.get('/agregarDatosMesaExamen/obtenerProfesoresMateria/mesa', asyncHandler(async (req, res) => {
-    let response, materia, anio;
+    let response = [], materia, anio, profesores, profe, profesFormat = [], profeActual;
     console.log(req.params.materia);
     materia = req.query.materia;
     anio = req.query.anio;
-    response = await getProfesorMateria(materia, anio);
+    profesores = await getProfesorMateria(materia, anio);
+    console.log(profesores);
+    for (profe in profesores) {
+        profeActual = profesores[profe];
+
+        profesFormat.push({ "nombre": profeActual.nombre + " " + profeActual.apellido, "idProfe": profeActual._id });
+    };
+    response = profesFormat;
     res.send({ ok: true, response });
 }));
 
 router.get('/agregarDatosMesaExamen/obtenerProfesores', asyncHandler(async (req, res) => {
-    let response;
-    response = await getProfesores();
+    let response = [], profesores, profe, profesFormat = [], profeActual;
+    profesores = await getProfesores();
+    for (profe in profesores) {
+        profeActual = profesores[profe];
+
+        profesFormat.push({ "nombre": profeActual.nombre + " " + profeActual.apellido, "idProfe": profeActual._id });
+    };
+    response = profesFormat;
+
     res.send({ ok: true, response });
 }));
 
 router.get('/agregarDatosMesaExamen/obtenerPreceptores', asyncHandler(async (req, res) => {
-    let response;
-    response = await getPreceptores();
+    let response = [], preceptores, precepFormat = [], precep, precepActual;
+    preceptores = await getPreceptores();
+    for (precep in preceptores) {
+        precepActual = preceptores[precep];
+
+        precepFormat.push({ "nombre": precepActual.nombre + " " + precepActual.apellido, "idPrecep": precepActual._id });
+    };
+    response = precepFormat;
+
     res.send({ ok: true, response });
 }));
 
@@ -130,6 +194,7 @@ router.put('/agregarDatosMesaExamen/registrarCompartida/', asyncHandler(async (r
     materia = req.body.materia;
     anio = req.body.anio;
     profesoresPadre = Array.from(req.body.profesores);
+    console.log(profesoresPadre);
     preceptoresPadre = req.body.preceptores;
     fechaHoraPadre = req.body.fechaHora;
     aulaPadre = req.body.aula;
@@ -168,15 +233,15 @@ router.put('/agregarDatosMesaExamen/registrarCompartida/', asyncHandler(async (r
         response1 = await updateMesa(oidIndividual, updateMesaIndividual);
         response2 = await updateMesa(oidPadre, updateMesaPadre);
         respClient = {
-            "valida": "Se registro la mesa con exito",
-            "mesaIndividualU": response1,
+            "message": "Se registro la mesa con exito",
+            "mesaIndividualUpdate": response1,
             "mesaCompartidaUpdate": response2
-
         }
     } else {
 
-        respClient = {
-            "valida": "Ninguno de los profesores de la mesa compartida pueden dictar la materia de ese año"
+        throw  {
+            status:204
+
         }
 
 

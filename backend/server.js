@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const routesHandler = require('./routes/index');
+const errorYaupeHandler = require('./middlewares/errorYaupe');
 const errorHandler = require('./middlewares/error');
 
 
@@ -29,10 +30,11 @@ connection.once('open', () => {
 
 app.use(routesHandler);
 
+// app.use(errorYaupeHandler);
 app.use(errorHandler);
-
 
 //Start Server
 app.listen(port, () => {
     console.log(`Server running on port: ${port}`);
+    
 })
