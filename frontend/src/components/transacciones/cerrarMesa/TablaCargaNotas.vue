@@ -7,7 +7,6 @@
           <template v-slot:[`item.condicion`]="props">
             <v-checkbox label="Ausente" v-model="props.item.esAusente" />
           </template>
-          <!-- TODO: agregar funcionalidad para asignar correctamente los valores -->
           <template v-slot:[`item.nota`]="props">
             <v-text-field
               v-model="props.item.nota"

@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- Buscador de Legajos -->
     <buscador-legajos v-on:set-legajo="obtenerDictados" />
 
     <cartel-confirmacion
@@ -60,6 +59,7 @@ export default {
   methods: {
     async obtenerDictados(legajoParam) {
       this.$refs.cartelError.cerrarCartel();
+      this.$refs.cartelExito.cerrarCartel();
       this.mostrarTabla = true;
       this.tablaLoading = true;
       this.materias = [];
@@ -165,7 +165,6 @@ export default {
 
     confirmarExito() {
       this.confirmacion = false;
-      // this.$router.push({ path: "/" });
     },
   },
 };

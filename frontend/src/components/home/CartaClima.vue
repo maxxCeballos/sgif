@@ -85,7 +85,6 @@ export default {
         .then((response) => {
           response.data.forecast.forecastday.forEach((elem) => {
             let unPronostico = {
-              // TODO: traducir texto
               texto: elem.day.condition.text,
               icono: elem.day.condition.icon,
               chanceLluvia: elem.day.daily_chance_of_rain,

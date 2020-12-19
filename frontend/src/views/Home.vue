@@ -2,8 +2,8 @@
   <div class="home">
     <v-container>
       <v-card>
-        <v-card-title primary-title> MENSAJE DE BIENVENIDA </v-card-title>
-        <v-card-text> Hola, Bienvenido </v-card-text>
+        <v-card-title primary-title> BIENVENIDO </v-card-title>
+        <v-card-text> Buen Día </v-card-text>
       </v-card>
     </v-container>
 
