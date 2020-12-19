@@ -11,7 +11,7 @@ const { verificarProfesores, verificarPreceptores, verificarMateriaAnio } = requ
 
 
 router.get('/agregarDatosMesaExamen/mesasSolicitadas', asyncHandler(async (req, res) => {
-    //TODO agregar cicloLectivo para controlar que sea actual, teniendo en cuenta dictado
+    
     //Obtenemos las mesas en estado solicitado
     const solicitadas = await getMesasSolicitadas();
 
@@ -237,8 +237,9 @@ router.put('/agregarDatosMesaExamen/registrarCompartida/', asyncHandler(async (r
         }
     } else {
 
-        respClient = {
-            "message": "Ninguno de los profesores de la mesa compartida pueden dictar la materia de ese año"
+        throw  {
+            status:204
+           
         }
 
 

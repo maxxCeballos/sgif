@@ -1,6 +1,14 @@
 <template>
-  <div v-if="estaPrendido">
-    <v-card v-if="noTerminado" rounded="xl" elevation="2" width="600px">
+  <div v-if="estaPrendido" class="d-flex justify-center">
+    <v-card  rounded="xl" elevation="2" width="600px">
+      <v-row class=" flex-row-reverse">
+        <v-col class="d-flex justify-end ">
+          <v-btn @click="volverInicio()" class=" mr-5 rounded-lg " small color="orange">
+            <v-icon> mdi-arrow-left </v-icon>
+          </v-btn></v-col
+        >
+      </v-row>
+
       <v-card-title class="justify-center">
         Seleccione los Datos de la Mesa
       </v-card-title>
@@ -172,8 +180,8 @@
               required
             ></v-select> </v-col
         ></v-row>
-        <v-row justify="center">
-          <v-col cols="2" md="6">
+        <v-row justify="center" align="center">
+          <v-col class="d-flex justify-center " cols="2" md="6">
             <v-btn
               class="rounded-lg"
               large
@@ -192,7 +200,6 @@
       ref="miConfirmacion"
       v-on:confirmar-operacion="agregarDatosMesa"
     />
-    <Loading ref="loadBar" v-on:cargaFinalizada="terminarTransaccion" />
 
     <!-- <Exito ref="alertE" />
     <Error ref="alertEr" /> -->
@@ -203,9 +210,7 @@
 <script>
 import axios from "axios";
 import Confirmacion from "@/components/CartelConfirmacion";
-import Exito from "@/components/CartelExito";
-import Error from "@/components/CartelError";
-import Loading from "@/components/Loading";
+
 import { ipBackend } from "../../../config/backend.config";
 
 export default {
@@ -274,17 +279,18 @@ export default {
       time: null,
       menu2: false,
       modal2: false,
-      resultadoTransaccion: "",
-      exito: false,
-      noTerminado: true,
+      resultadoTransaccion: {
+        message: "",
+        status: false,
+      },
     };
   },
-  components: { Confirmacion, Loading, Exito, Error },
+  components: { Confirmacion },
   methods: {
     gg: function (mensaje) {
       alert(mensaje);
     },
-    obtenerInformacion: function () {
+    obtenerInformacion() {
       axios
         .get(
           `${ipBackend}/agregarDatosMesaExamen/obtenerProfesoresMateria/mesa?materia=` +
@@ -293,8 +299,13 @@ export default {
             this.anioMateriaMesaElegida
         )
         .then((res) => {
-          console.log(res.data);
-          this.profesMateria = res.data.response;
+          if (res.data.response == undefined) {
+            const enviar = "No hay profesores titulares registrados";
+            this.$emit("error", enviar);
+            return true;
+          } else {
+            this.profesMateria = res.data.response;
+          }
         })
         .catch((error) => {
           if (!error.response) {
@@ -307,8 +318,13 @@ export default {
       axios
         .get(`${ipBackend}/agregarDatosMesaExamen/obtenerProfesores`)
         .then((res) => {
-          console.log(res.data);
-          this.profes = res.data.response;
+          if (res.data.response == undefined) {
+            const enviar = "No hay profesores registrados";
+            this.$emit("error", enviar);
+            return false;
+          } else {
+            this.profes = res.data.response;
+          }
         })
         .catch((error) => {
           if (!error.response) {
@@ -321,8 +337,13 @@ export default {
       axios
         .get(`${ipBackend}/agregarDatosMesaExamen/obtenerPreceptores`)
         .then((res) => {
-          console.log(res.data);
-          this.preceptores = res.data.response;
+          if (res.data.response == undefined) {
+            const enviar = "No hay preceptores registrados";
+            this.$emit("error", enviar);
+            return false;
+          } else {
+            this.preceptores = res.data.response;
+          }
         })
         .catch((error) => {
           if (!error.response) {
@@ -334,16 +355,15 @@ export default {
         });
     },
 
-    validate: function () {
+    validate() {
       let resultado = this.$refs.form.validate();
       if (resultado) {
-        this.$refs.miConfirmacion.abrirDialogo("Agregar Datos Mesa");
+        this.$refs.miConfirmacion.abrirCartel("Agregar Datos Mesa");
         //alert(this.date);
       }
     },
     async agregarDatosMesa() {
-      this.noTerminado = false;
-      this.$refs.loadBar.activar();
+      this.$emit("prenderCarga");
       //hacer funcion afuera y llamarla #TODO
       let fechaHora = new Date(this.date);
       fechaHora.setHours(
@@ -369,20 +389,43 @@ export default {
         datosMesa
       );
       if (resultado.data.respClient == undefined) {
-        this.resultadoTransaccion =
+        this.resultadoTransaccion.message =
           "No es posible completar la Mesa porque un profesor o preceptor se encuentran asignados a otra en la misma fecha y hora";
       } else {
-        this.resultadoTransaccion = resultado.data.respClient.message;
-        this.exito = true;
+        this.resultadoTransaccion.message = resultado.data.respClient.message;
+        this.resultadoTransaccion.status = true;
       }
+      this.$emit("terminarTransaccion", this.resultadoTransaccion);
     },
-    terminarTransaccion: function () {
-      if (this.exito) {
-        this.$refs.alertE.confirmarOp(this.resultadoTransaccion);
-      } else {
-        this.$refs.alertEr.confirmarOp(this.resultadoTransaccion);
-      }
+    reiniciarDatos() {
+      // this.oidMesaElegida="";
+      // this.materiaMesaElegida="";
+      // this.anioMateriaMesaElegida=0;
+      // this.estaPrendido=false;
+      this.profeTitularSeleccionado = "";
+      this.profeSegundoSeleccionado = "";
+      this.profeTerceroSeleccionado = "";
+      this.preceptorUnoSeleccionado = "";
+      this.preceptorDosSeleccionado = "";
+      this.mesas = [];
+      this.validado = false;
+      this.profesMateria = [];
+      this.profes = [];
+      this.preceptores = [];
+      this.aula = 0;
+      this.date = new Date().toISOString().substr(0, 10);
+      this.menu = false;
+      this.time = null;
+      this.menu2 = false;
+      this.modal2 = false;
+      this.resultadoTransaccion = {
+        message: "",
+        status: false,
+      };
     },
+    volverInicio(){
+        this.$emit("volverInicio");
+    }
   },
 };
 </script>

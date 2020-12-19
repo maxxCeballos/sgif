@@ -128,15 +128,14 @@ const createMesa = async (mesa) => {
 
     return mesaDB;
 }
-
 const getMesasSolicitadas = async () => {
     //Devuelve las mesas en estado solicitada
     const mesas = await MesaExamen.find({ "estado": "Solicitada" });
     if (mesas.length == 0) {
-        //const response = { message: "No se encontraron mesas en estado Solicitada" }; //#TODO ver si puede hacer de otra manera
-        //return response;
-        throw '{ "code":0 , "message": "No se encontraron mesas en estado Solicitada" }'
-
+        throw {
+            status:204,
+            message:"No se encontraron mesas en estado Solicitada"
+        }
     }
     return mesas
 }
