@@ -31,7 +31,6 @@
     />
     <Loading ref="loadBar" />
 
-    <!-- v-on:confirmar-operacion="confirmarExito" -->
     <Exito ref="alertE" />
     <Error ref="alertEr" />
 

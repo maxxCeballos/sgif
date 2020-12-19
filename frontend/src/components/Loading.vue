@@ -35,8 +35,7 @@
     
     },
     desactivar: function () {
-      this.dialog = false;
-      
+      this.dialog = false;      
     }
     }
   }

@@ -31,9 +31,9 @@ export default {
         {
           text: "Nombre",
           align: "start",
-          value: "nombre",
+          value: "nombreMateria",
         },
-        { text: "Año", value: "anio" },
+        { text: "Año", value: "anioMateria" },
         { text: "Ciclo Lectivo", value: "cicloLectivo" },
       ],
       isEmpty: false,

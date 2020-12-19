@@ -1,7 +1,5 @@
 <template>
   <v-container v-if="estaActivado">
-    <!-- max-width="500px" -->
-    <!-- v-model="estaActivado" -->
     <v-alert
       class="mb-0"
       dismissible

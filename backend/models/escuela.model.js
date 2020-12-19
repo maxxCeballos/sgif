@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 let direccion = {
-
     altura: { type: Number },
     piso: { type: Number },
     depto: { type: String },

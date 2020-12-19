@@ -53,8 +53,6 @@ export default {
       },
     ];
 
-    //TODO: consulta de axios
-
     let nuevasMesas = [];
     this.mesas.forEach((mesa) => {
       let dia = mesa.fechaHora.getDate();
@@ -74,7 +72,6 @@ export default {
   methods: {
     selectMesa(actaMesa) {
       this.mesaSeleccionada = this.mesas.find((mesa) => mesa.acta === actaMesa);
-      //TODO: consulta axios por alumnos
 
       let alumnos = [
         {

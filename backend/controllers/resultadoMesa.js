@@ -69,19 +69,27 @@ const getAllResultadoMesas = async () => {
 //     return false;
 // }
 
-const updateResultadoMesa = async (oidResultado, atributo, valor) => {
-    var $set = { $set: {} };
-    $set.$set[atributo] = valor;
+const updateResultadoMesa = async (oidResultado, newResultado) => {
+    let response = await ResultadoMesa.updateOne(
+        { _id: oidResultado },
+        newResultado
+    ).exec();
 
-    const response = await Alumno.updateOne({ _id: oidResultado }, $set);
-
-    if (response.n === 1) return true
-
-    return false
+    return response.n === 1;
 }
 
-const deleteResultadoMesa = async (dni) => {
+// const updateResultadoMesa = async (oidResultado, atributo, valor) => {
+//     var $set = { $set: {} };
+//     $set.$set[atributo] = valor;
 
+//     const response = await Alumno.updateOne({ _id: oidResultado }, $set);
+
+//     if (response.n === 1) return true
+
+//     return false
+// }
+
+const deleteResultadoMesa = async (dni) => {
     await ResultadoMesa.deleteOne({ dni: dni }).exec();
 
     return true;

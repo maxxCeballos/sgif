@@ -1,5 +1,6 @@
 'use strict'
 
+const alumno = require('../../test/controllers/alumno');
 let Alumno = require('../models/alumno.model');
 const { getPersonaById, createPersona, asociarRol } = require('./persona');
 
@@ -132,16 +133,12 @@ const getAllAlumnos = async () => {
 }
 
 const addResultadoMesa = async (oidAlumno, oidDictado, oidResultadoMesa) => {
-    const alumnoDB = (await getAlumnoByOid(oidAlumno))[0];
-    const indiceCalificacion = alumnoDB.calificaciones.findIndex(
-        calificacion => calificacion.dictado === oidDictado);
-    const calificacionDB = alumnoDB.calificaciones[indiceCalificacion];
+    const alumnoDB = await getAlumnoByOid(oidAlumno);
+
+    const calificacionDB = alumnoDB.calificaciones.find(calificacion =>
+        calificacion.dictado == oidDictado)
 
     calificacionDB.resultadoMesaExamen.push(oidResultadoMesa);
-
-    // alumnoDB.calificaciones.splice(indiceCalificacion, 1, calificacionDB);
-    //FIXME: TEST
-    alumnoDB.calificaciones.push(calificacionDB);
 
     const response = await Alumno.updateOne({ _id: oidAlumno }, alumnoDB);
 
@@ -185,18 +182,19 @@ const updateAlumnoByOid = async (oidAlumno, atributo, valor) => {
     return false
 }
 
-const updateCalificacionAlumnoByOid = async (oidAlumno, calificacionNueva) => {
+const updateCalificacionConResultado = async (oidAlumno, nota, condicion, oidResultado) => {
     const alumnoDB = await getAlumnoByOid(oidAlumno);
 
-    let numeroCalificacion = alumnoDB.calificaciones.findIndex(calificacion =>
-        calificacion.dictado === calificacionNueva.dictado
-        && calificacion.cicloLectivo === calificacionNueva.cicloLectivo)
+    let calificacion = alumnoDB.calificaciones.find(calif =>
+        calif.resultadoMesaExamen.find(result =>
+            String(result) === String(oidResultado)));
 
-    alumnoDB.calificaciones[numeroCalificacion] = calificacionNueva;
+    calificacion.notaFinal = nota;
+    calificacion.condicion = condicion;
 
     const response = await Alumno.updateOne(
         { _id: oidAlumno },
-        { calificaciones: alumnoDB.calificaciones });
+        alumnoDB);
 
     if (response.n === 1) return true
 
@@ -238,10 +236,9 @@ const addCalificacion = async (calificacion, dni) => {
 
 module.exports = {
     createAlumno,
-    // resetAlumno,
     updateAlumno,
     updateAlumnoByOid,
-    updateCalificacionAlumnoByOid,
+    updateCalificacionConResultado,
     deleteAlumno,
     getAllAlumnos,
     getAlumnoById,

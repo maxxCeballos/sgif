@@ -1,10 +1,9 @@
 'use strict';
 
-const { getAlumnoByLegajo, addResultadoMesa: addResultadoMesaAlumno } = require('../../controllers/alumno');
-const { createResultadoMesaBasico } = require('../../controllers/resultadoMesa');
-const { getMesaExamenByDictado, addResultadoMesa, getMesaExamenByOid } = require('../../controllers/mesaExamen');
-const { getDictadoByParams } = require('../../controllers/dictado');
-const { verificarLegajo, verificarDictado } = require('../../utils/verificaciones');
+const { addResultadoMesa: addResultadoMesaAlumno } = require('../../controllers/alumno');
+const { createResultadoMesa, updateResultadoMesa } = require('../../controllers/resultadoMesa');
+const { createMesaExamen, getMesaExamenByDictado, addResultadoMesa, getMesaExamenByOid } = require('../../controllers/mesaExamen');
+const { verificarDictado } = require('../../utils/verificaciones');
 
 //TODO: Pensar implementacion de errores (codigo con global tipo Error.TIPO1, mensaje por defecto y expandido)
 
@@ -16,10 +15,8 @@ const registrarMesa = async (oidAlumno, valoresDictado) => {
         throw "El Dictado no es Correcto";
     }
 
-    //TODO: verificar que el alumno tenga el dictado
-    
     //TODO: crear resultado
-    let responseResultado = await createResultadoMesaBasico(oidAlumno);
+    let responseResultado = await createResultadoMesa({ alumno: oidAlumno });
 
     // Si el resultado dio mal
     if (!responseResultado) {
@@ -27,57 +24,67 @@ const registrarMesa = async (oidAlumno, valoresDictado) => {
     }
 
     //TODO: buscar mesa si existe y no esta cerrada
-    let objMesaDeExamen = (await getMesaExamenByDictado(dictado))[0];
+    let objMesaDeExamen = await getMesaExamenByDictado(valoresDictado.id);
+    let acta;
 
     //TODO: crear mesa si no existe o asociarla
     if (!objMesaDeExamen) {
         // Si no existe la creo
-        let acta = await generarNumActa();
+        acta = await generarNumActa();
 
         let nuevaMesa = {
             acta,
             estado: "Solicitada",
-            dictado: objDictado._id,
-            //FIXME: crear resultado primero
+            dictado: valoresDictado.id,
             resultados: [responseResultado._id],
             esCompartida: false
         }
 
+        objMesaDeExamen = await createMesaExamen(nuevaMesa);
         fueCreada = true;
     } else {
-        let responseAgregarResultadoMesa = await addResultadoMesaAlumno(
+        acta = objMesaDeExamen.acta;
+        let responseAddResultadoMesa = await addResultadoMesa(
             objMesaDeExamen._id, responseResultado._id);
 
         // Si el resultado dio mal
-        if (responseAgregarResultadoMesa) {
+        if (!responseAddResultadoMesa) {
             throw "Error al Inscribirse a la Mesa"
         }
     }
-
     //TODO: asociar resultado al alumno
     let responseAgregarResultadoAlumno = await addResultadoMesaAlumno(
-        oidAlumno, responseResultado._id);
+        oidAlumno, valoresDictado.id, responseResultado._id);
 
-    if (responseAgregarResultadoAlumno) {
+    if (!responseAgregarResultadoAlumno) {
+        throw "Error al Inscribirse a la Mesa"
+    }
+
+    let responseAsociarMesaResultado = await updateResultadoMesa(
+        responseResultado._id, { mesaDeExamen: objMesaDeExamen._id });
+
+    if (!responseAsociarMesaResultado) {
         throw "Error al Inscribirse a la Mesa"
     }
 
     //TODO: return notificar mesa AGREGAR ACTA: 
-    return generarResponse(fueCreada, objMesaDeExamen);
+    return generarResponse(acta, fueCreada, objMesaDeExamen);
 }
 
 /**
  * solicitada - solo mensaje / completada - fecha, hora, aula, etc
  */
-function generarResponse(fueCreada, objMesaDeExamen) {
+function generarResponse(acta, fueCreada, objMesaDeExamen) {
     let response = {
+        acta,
         mensaje: "Inscripción Exitosa, será notificado cuando se establezca fecha, hora y aula"
     };
 
     if (!fueCreada) {
         response = {
+            acta,
             mensaje: "Inscripción Exitosa",
-            fechaHora: objMesaDeExamen.fechaHora,
+            fechaHora: String(objMesaDeExamen.fechaHora),
             aula: objMesaDeExamen.aula,
         };
     }
@@ -88,14 +95,16 @@ function generarResponse(fueCreada, objMesaDeExamen) {
  * Genera un numero de acta que no sea utilizado por otra
  */
 async function generarNumActa() {
-    let numActa;
+    // let numActa;
+    // let encontroMesa;
 
-    do {
-        numActa = 1000 + Math.round(Math.random() * 1000);
-        let encontroMesa = await getMesaExamenByOid(numActa);
-    } while (encontroMesa);
+    // do {
+    //     numActa = 1000 + Math.round(Math.random() * 1000);
+    //     encontroMesa = await getMesaExamenByOid(numActa);
+    // } while (encontroMesa);
 
-    return numActa;
+    // return numActa;
+    return 5010;
 }
 
 module.exports = registrarMesa;

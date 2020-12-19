@@ -2,16 +2,11 @@
   <v-navigation-drawer permanent absolute>
     <template v-slot:prepend>
       <!-- TITULO -->
-      <!-- <v-list>
-        <v-list-item :to="'/'" active-class="transparent"> -->
       <v-container class="contTit" @click="handleTitulo">
         <h1 class="text-center">SGIF</h1>
         <h4 class="text-center">Sistema Gestor Instituto Fatima</h4>
       </v-container>
-      <!-- </v-list-item>
-      </v-list> -->
       <!-- USUARIO -->
-      <!-- <v-container class="fondoClaro"> -->
       <v-divider />
       <v-container>
         <v-list-item two-line>
@@ -102,7 +97,6 @@ export default {
             },
             {
               nombre: rutas.AGREGAR_DATOS_MESA.nombre,
-              // ruta: rutas.AGREGAR_DATOS_MESA.ruta,
               ruta: rutas.AGREGAR_DATOS_MESA.ruta,
             },
             {

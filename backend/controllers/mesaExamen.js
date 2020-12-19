@@ -2,10 +2,29 @@
 
 let MesaExamen = require('../models/mesaExamen.model');
 
-const createMesaExamen = () => {
+const createMesaExamen = async (mesaExamen) => {
+    const {
+        acta,
+        estado,
+        dictado,
+        resultados,
+        esCompartida,
+    } = mesaExamen;
 
+    const newMesaExamen = new MesaExamen({
+        acta,
+        estado,
+        dictado,
+        resultados,
+        esCompartida,
+    });
 
+    const mesaExamenDB = await newMesaExamen.save();
+
+    return mesaExamenDB;
 }
+
+
 
 const updateMesaExamen = async (oidMesa, atributo, valor) => {
     var $set = { $set: {} };
@@ -18,12 +37,19 @@ const updateMesaExamen = async (oidMesa, atributo, valor) => {
     return false
 }
 
+const updateMesaExamenDatos = async (oidMesa, newMesa) => {
+    let response = await MesaExamen.updateOne(
+        { _id: oidMesa },
+        newMesa
+    ).exec();
+
+    return response.n === 1;
+}
 
 const deleteMesaExamen = () => {
 
 
 }
-
 
 const getMesaExamenByOid = async (oidMesa) => {
     const mesaDB = await MesaExamen.findById(oidMesa).exec();
@@ -37,8 +63,13 @@ const getMesaExamenByActa = async (acta) => {
     return mesaDB
 }
 
+/**
+ * Busca una mesa de examen para el dictado que no este cerrada
+ */
 const getMesaExamenByDictado = async (oidDictado) => {
-    const mesaDB = await MesaExamen.find({ dictado: oidDictado }).exec();
+    const mesasEncontradas = await MesaExamen.find({ dictado: oidDictado }).exec();
+
+    const mesaDB = mesasEncontradas.find(mesa => mesa.estado !== "Cerrada");
 
     return mesaDB
 }
@@ -50,7 +81,7 @@ const getAllMesasExamen = async () => {
 }
 
 const addResultadoMesa = async (oidMesa, oidResultadoMesa) => {
-    const mesaDB = (await getMesaExamenByOid(oidMesa))[0];
+    const mesaDB = await getMesaExamenByOid(oidMesa);
 
     let resultados = [];
     if (mesaDB.resultados) {
@@ -60,7 +91,7 @@ const addResultadoMesa = async (oidMesa, oidResultadoMesa) => {
     }
     resultados.push(oidResultadoMesa);
 
-    const response = await Alumno.updateOne({ _id: oidMesa }, { resultados });
+    const response = await MesaExamen.updateOne({ _id: oidMesa }, { resultados });
 
     if (response.n === 1) return true
 
@@ -134,13 +165,13 @@ const getMesasCompletadasCompartidas = async () => {
     let response;
     const mesas = await MesaExamen.find({ "estado": "Completada", "esPadre": true });
     if (mesas.length == 0) {
-         response = {
+        response = {
             message: "No se encontraron mesas en estado Completada",
             mesas: []
         }; //#TODO ver si puede hacer de otra manera
         return response;
     } else {
-         response = {
+        response = {
             message: "Se encontraron mesas completadas compartidas",
             mesas: mesas
         };
@@ -176,6 +207,7 @@ const getUltimaActa = async () => {
 module.exports = {
     createMesaExamen,
     updateMesaExamen,
+    updateMesaExamenDatos,
     deleteMesaExamen,
     getMesaExamenByOid,
     getMesaExamenByActa,
