@@ -1,7 +1,6 @@
 'use strict'
 
-const alumno = require('../../test/controllers/alumno');
-let Alumno = require('../models/alumno.model');
+let { Alumno } = require('../models');
 const { getPersonaById, createPersona, asociarRol } = require('./persona');
 
 const createAlumno = async (alumno, legajo, oidResponsable) => {

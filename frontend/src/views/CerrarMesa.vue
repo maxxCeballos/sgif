@@ -1,14 +1,27 @@
 <template>
   <div>
     <tabla-mesas-cerrar v-bind:mesas="mesas" v-on:select-mesa="selectMesa" />
+
+    <loading ref="cartelLoading" />
+
+    <!-- v-on:confirmar-operacion="confirmarExito" -->
+    <cartel-exito ref="cartelExito" />
+
+    <cartel-error ref="cartelError" />
+
     <tabla-carga-notas
       v-bind:mesa="mesaSeleccionada"
       v-bind:show="mostrarCargaNotas"
+      v-on:error-operacion="handleErrorNotas"
+      v-on:confirmar-operacion="handleSubmit"
     />
   </div>
 </template>
 
 <script>
+import CartelError from "../components/CartelError.vue";
+import CartelExito from "../components/CartelExito.vue";
+import Loading from "../components/Loading.vue";
 import TablaCargaNotas from "../components/transacciones/cerrarMesa/TablaCargaNotas.vue";
 import TablaMesasCerrar from "../components/transacciones/cerrarMesa/TablaMesasCerrar.vue";
 
@@ -17,6 +30,9 @@ export default {
   components: {
     TablaMesasCerrar,
     TablaCargaNotas,
+    CartelExito,
+    CartelError,
+    Loading,
   },
   data() {
     return {
@@ -97,16 +113,24 @@ export default {
 
       //Agregar campo de nota y condicion
       let nuevosAlumnos = [];
-      this.mesaSeleccionada.alumnos.forEach(alumno => {
-          let nuevoAlumno = {
-              ...alumno,
-              nota: 0,
-              condicion: "",
-          }
-          nuevosAlumnos.push(nuevoAlumno);
-      })
+      this.mesaSeleccionada.alumnos.forEach((alumno) => {
+        let nuevoAlumno = {
+          ...alumno,
+          nota: 0,
+          condicion: "",
+        };
+        nuevosAlumnos.push(nuevoAlumno);
+      });
       this.mesaSeleccionada.alumnos = nuevosAlumnos;
       this.mostrarCargaNotas = true;
+    },
+
+    handleErrorNotas(mensaje) {
+      this.$refs.cartelError.abrirCartel(mensaje);
+    },
+
+    handleSubmit() {
+      console.log("Submiteado");
     },
   },
 };

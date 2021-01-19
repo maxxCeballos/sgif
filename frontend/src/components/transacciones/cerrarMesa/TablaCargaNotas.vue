@@ -1,7 +1,14 @@
 <template>
   <v-container v-if="show">
     <v-card v-if="mesa.alumnos.length !== 0" elevation="2" outlined>
-      <v-card-title>Alumnos Inscriptos</v-card-title>
+      <v-card-title>
+        <v-container pa-0>
+          Alumnos Inscriptos
+          <v-btn @click="handleSubmit" class="float-right" color="success">
+            Registrar Notas
+          </v-btn>
+        </v-container>
+      </v-card-title>
       <v-card-text>
         <v-data-table :headers="headers" :items="mesa.alumnos">
           <template v-slot:[`item.condicion`]="props">
@@ -11,11 +18,9 @@
             <v-text-field
               v-model="props.item.nota"
               name="quantity"
-              outlined
-              @input="getdata"
-              type="number"
+              type="text"
               v-bind:disabled="props.item.esAusente"
-            ></v-text-field>
+            />
           </template>
         </v-data-table>
       </v-card-text>
@@ -37,13 +42,31 @@ export default {
           text: "Legajo",
           align: "start",
           value: "legajo",
+          sortable: false,
         },
-        { text: "Nombre", value: "nombre" },
-        { text: "Apellido", value: "apellido" },
-        { text: "Condición", value: "condicion" },
-        { text: "Nota", value: "nota" },
+        { text: "Nombre", value: "nombre", sortable: false },
+        { text: "Apellido", value: "apellido", sortable: false },
+        { text: "Condición", value: "condicion", sortable: false },
+        { text: "Nota", value: "nota", sortable: false },
       ],
     };
+  },
+  methods: {
+    handleSubmit(e) {
+      e.preventDefault();
+      if (!this.mesa.alumnos.find((alumno) => isNaN(alumno.nota))) {
+        if (!this.mesa.alumnos.find((alumno) => alumno.nota.includes(","))) {
+          this.$emit("confirmar-operacion");
+        } else {
+          this.$emit(
+            "error-operacion",
+            "Revise los valores, debe usar punto (.) no coma (,)"
+          );
+        }
+      } else {
+        this.$emit("error-operacion", "Revise los valores, deben ser números");
+      }
+    },
   },
 };
 </script>
