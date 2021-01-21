@@ -39,6 +39,7 @@ export default {
       mesas: [],
       mesaSeleccionada: {},
       mostrarCargaNotas: false,
+      mensajeExito: "Resultados enviados correctamente",
     };
   },
   beforeMount: function () {
@@ -116,7 +117,7 @@ export default {
       this.mesaSeleccionada.alumnos.forEach((alumno) => {
         let nuevoAlumno = {
           ...alumno,
-          nota: 0,
+          nota: "0",
           condicion: "",
         };
         nuevosAlumnos.push(nuevoAlumno);
@@ -130,7 +131,8 @@ export default {
     },
 
     handleSubmit() {
-      console.log("Submiteado");
+      console.log(this.mensajeExito);
+      this.$refs.cartelExito.abrirCartel(this.mensajeExito);
     },
   },
 };

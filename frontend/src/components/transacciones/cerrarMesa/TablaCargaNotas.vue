@@ -37,6 +37,8 @@ export default {
   props: ["show", "mesa"],
   data() {
     return {
+      mensajeErrorNumero: "Revise los valores, debe ser numéricos",
+      mensajeErrorComa: "Revise los valores, debe usar punto (.) no coma (,)",
       headers: [
         {
           text: "Legajo",
@@ -55,16 +57,14 @@ export default {
     handleSubmit(e) {
       e.preventDefault();
       if (!this.mesa.alumnos.find((alumno) => isNaN(alumno.nota))) {
+        console.log(this.mesa.alumnos[0].nota)
         if (!this.mesa.alumnos.find((alumno) => alumno.nota.includes(","))) {
           this.$emit("confirmar-operacion");
         } else {
-          this.$emit(
-            "error-operacion",
-            "Revise los valores, debe usar punto (.) no coma (,)"
-          );
+          this.$emit("error-operacion", this.mensajeErrorComa);
         }
       } else {
-        this.$emit("error-operacion", "Revise los valores, deben ser números");
+        this.$emit("error-operacion", this.mensajeErrorNumero);
       }
     },
   },
