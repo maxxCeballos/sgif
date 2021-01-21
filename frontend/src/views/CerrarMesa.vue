@@ -127,11 +127,12 @@ export default {
     },
 
     handleErrorNotas(mensaje) {
+      this.$refs.cartelExito.cerrarCartel();
       this.$refs.cartelError.abrirCartel(mensaje);
     },
 
     handleSubmit() {
-      console.log(this.mensajeExito);
+      this.$refs.cartelError.cerrarCartel();
       this.$refs.cartelExito.abrirCartel(this.mensajeExito);
     },
   },
