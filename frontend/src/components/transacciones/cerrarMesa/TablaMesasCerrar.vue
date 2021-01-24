@@ -34,7 +34,7 @@ export default {
         { text: "Hora", value: "hora" },
         { text: "Materia", value: "nombreMateria" },
         { text: "Año", value: "anioMateria" },
-        { text: "Ciclo Lectivo", value: "cicloLectivo" },
+        { text: "Ciclo Lectivo", value: "cicloLectivoMateria" },
         { text: "Aula", value: "aula" },
       ],
     };

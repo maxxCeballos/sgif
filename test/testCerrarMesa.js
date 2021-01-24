@@ -11,6 +11,8 @@ const { expect } = require('chai');
 
 const serverOn = false;
 
+// TODO: reestructurar test para adaptarlo al nuevo funcionamiento
+
 before(async function () {
     this.timeout(0);
     await databaseHandler.conectar(serverOn);

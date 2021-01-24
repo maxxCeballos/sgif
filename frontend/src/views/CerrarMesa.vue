@@ -43,29 +43,33 @@ export default {
     };
   },
   beforeMount: function () {
+    // TODO: reemplazar por consulta
     this.mesas = [
       {
+        oidMesa: 0,
         acta: 1601,
         fechaHora: new Date(),
         nombreMateria: "Matematicas",
         anioMateria: 3,
-        cicloLectivo: 2020,
+        cicloLectivoMateria: 2020,
         aula: 4,
       },
       {
+        oidMesa: 1,
         acta: 1602,
         fechaHora: new Date(),
         nombreMateria: "Lengua",
         anioMateria: 2,
-        cicloLectivo: 2019,
+        cicloLectivoMateria: 2019,
         aula: 5,
       },
       {
+        oidMesa: 2,
         acta: 1603,
         fechaHora: new Date(),
         nombreMateria: "Biología",
         anioMateria: 2,
-        cicloLectivo: 2019,
+        cicloLectivoMateria: 2019,
         aula: 2,
       },
     ];
@@ -90,23 +94,31 @@ export default {
     selectMesa(actaMesa) {
       this.mesaSeleccionada = this.mesas.find((mesa) => mesa.acta === actaMesa);
 
+      // TODO: reemplazar por consulta
       let alumnos = [
         {
+          oidResultado: 0,
+          oidAlumno: 0,
           legajo: 1234,
           nombre: "Guido1",
           apellido: "Canevello1",
         },
         {
+          oidResultado: 1,
+          oidAlumno: 1,
           legajo: 1235,
           nombre: "Guido2",
           apellido: "Canevello2",
         },
         {
+          oidResultado: 2,
+          oidAlumno: 2,
           legajo: 1236,
           nombre: "Guido3",
           apellido: "Canevello3",
         },
       ];
+
       this.mesaSeleccionada = {
         ...this.mesaSeleccionada,
         alumnos,
@@ -133,7 +145,26 @@ export default {
 
     handleSubmit() {
       this.$refs.cartelError.cerrarCartel();
-      this.$refs.cartelExito.abrirCartel(this.mensajeExito);
+      this.$refs.cartelLoading.activar();
+
+      let resultados = [];
+
+      for (const resultado of this.mesaSeleccionada.alumnos) {
+        resultados.push({
+          oidResultado: resultado.oidResultado,
+          oidAlumno: resultado.oidAlumno,
+          nota: resultado.nota,
+          condicion: resultado.condicion,
+        });
+      }
+
+      // TODO: reemplazar por consulta
+      setTimeout(() => {
+        this.$refs.cartelLoading.desactivar();
+        this.$refs.cartelExito.abrirCartel(this.mensajeExito);
+        console.log("para la mesa de oid", this.mesaSeleccionada.oidMesa);
+        console.log("los resultados son:", resultados);
+      }, 2000);
     },
   },
 };

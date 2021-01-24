@@ -37,7 +37,10 @@ export default {
   props: ["show", "mesa"],
   data() {
     return {
-      mensajeErrorNumero: "Revise los valores, deben ser numéricos y con punto (.) en caso de decimales",
+      mensajeErrorNumero:
+        "Revise los valores, deben ser numéricos y con punto (.) en caso de decimales",
+      mensajeErrorNota:
+        "Revise los valores, no puede haber notas superiores a 10 o menores a 1",
       headers: [
         {
           text: "Legajo",
@@ -55,11 +58,20 @@ export default {
   methods: {
     handleSubmit(e) {
       e.preventDefault();
-      if (!this.mesa.alumnos.find((alumno) => isNaN(alumno.nota))) {
-        this.$emit("confirmar-operacion");
-      } else {
-        this.$emit("error-operacion", this.mensajeErrorNumero);
+      for (const alumno of this.mesa.alumnos) {
+        if (!isNaN(alumno.nota)) {
+          if (alumno.esAusente) {
+            alumno.condicion = "Ausente";
+          } else if (alumno.nota < 0 || alumno.nota > 10) {
+            this.$emit("error-operacion", this.mensajeErrorNota);
+            break;
+          }
+        } else {
+          this.$emit("error-operacion", this.mensajeErrorNumero);
+          break;
+        }
       }
+      this.$emit("confirmar-operacion");
     },
   },
 };
