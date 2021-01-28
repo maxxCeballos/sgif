@@ -11,7 +11,7 @@ const { expect } = require('chai');
 
 const serverOn = false;
 
-// TODO: revisar xq no esta andando ni borrando las mesas viejas
+// TODO: reestructurar test para adaptarlo al nuevo funcionamiento
 
 before(async function () {
     this.timeout(0);
@@ -25,19 +25,27 @@ after(function () {
     databaseHandler.desconectar();
 });
 
-describe('No Devuelve Mesas', () => {
-    it('Debería informar que no hay mesas', async function () {
+describe('Mesa Incorrecta', () => {
+    it('Debería solicitar acta', async function () {
         this.timeout(0);
 
-        let consulta = await obtenerTodasMesas("");
+        let consulta = await obtenerMesa("");
 
-        assert.equal(consulta.expanded, "No hay mesas")
+        assert.equal(consulta.expanded, "Por Favor, Ingrese un Acta")
     })
 
-    it('Debería informar que no hay mesas (por no estar en estado Solicitada)', async function () {
+    it('Debería informar que no existe la mesa', async function () {
         this.timeout(0);
 
-        //* Datos a precargar
+        let consulta = await obtenerMesa(5020);
+
+        assert.equal(consulta.expanded, "No existe Mesa")
+    })
+
+    it('Debería informar la mesa esta en estado Solicitada', async function () {
+        this.timeout(0);
+
+        // Datos a precargar
         let mesaExamen = {
             acta: 5021,
             estado: "Solicitada",
@@ -45,21 +53,21 @@ describe('No Devuelve Mesas', () => {
 
         await mesaExamenDB.createMesaExamen(mesaExamen);
 
-        //* Consulta a Testear
+        // Consulta a Testear
         let consulta = await obtenerMesa(mesaExamen.acta);
 
-        //* Limpieza
+        // Limpieza
         let responseMesa = (await mesaExamenDB.deleteMesaExamen(mesaExamen.acta))
         assert.equal(responseMesa.deletedCount, 1)
 
-        //* Test de Transaccion
-        assert.equal(consulta.expanded, "No hay mesas")
+        // Test de Transaccion
+        assert.equal(consulta.expanded, `La mesa no se puede cerrar, esta en estado ${mesaExamen.estado}`)
     })
 
-    it('Debería informar que no hay mesas (por no estar en estado Cerrada)', async function () {
+    it('Debería informar la mesa esta en estado Cerrada', async function () {
         this.timeout(0);
 
-        //* Datos a precargar
+        // Datos a precargar
         let mesaExamen = {
             acta: 5022,
             estado: "Cerrada",
@@ -67,21 +75,21 @@ describe('No Devuelve Mesas', () => {
 
         await mesaExamenDB.createMesaExamen(mesaExamen);
 
-        //* Consulta a Testear
+        // Consulta a Testear
         let consulta = await obtenerMesa(mesaExamen.acta);
 
-        //* Limpieza
+        // Limpieza
         let responseMesa = (await mesaExamenDB.deleteMesaExamen(mesaExamen.acta))
         assert.equal(responseMesa.deletedCount, 1)
 
-        //* Test de Transaccion
-        assert.equal(consulta.expanded, "No hay mesas")
+        // Test de Transaccion
+        assert.equal(consulta.expanded, `La mesa no se puede cerrar, esta en estado ${mesaExamen.estado}`)
     })
 
-    it('Debería informar que no hay mesas (porque no sucedio)', async function () {
+    it('Debería informar la mesa no sucedio todavia', async function () {
         this.timeout(0);
 
-        //* Datos a precargar
+        // Datos a precargar
         let fechaHora = crearFecha(1);
 
         let mesaExamen = {
@@ -92,55 +100,36 @@ describe('No Devuelve Mesas', () => {
 
         await mesaExamenDB.createMesaExamen(mesaExamen);
 
-        //* Consulta a Testear
+        // Consulta a Testear
         let consulta = await obtenerMesa(mesaExamen.acta);
 
-        //* Limpieza
+        // Limpieza
         let responseMesa = (await mesaExamenDB.deleteMesaExamen(mesaExamen.acta))
         assert.equal(responseMesa.deletedCount, 1)
 
-        //* Test de Transaccion
-        assert.equal(consulta.expanded, "No hay mesas")
+        // Test de Transaccion
+        assert.equal(consulta.expanded, "La mesa no se puede cerrar, aún no fue evaluada")
     })
-});
+})
 
 describe('Mesa Cerrada Correctamente', () => {
     it('Deberia cargar un alumno aprobado, otro desaprobado, y otro ausente para la mesa de Matematicas', async function () {
         this.timeout(0);
 
-        //* Datos a precargar
-        let dictado1 = {
+        // Datos a precargar
+        let dictado = {
             cicloLectivo: 2009,
             materia: {
                 nombre: "Matematicas",
                 anio: 3
             }
         }
-        let dictado1Obj = await dictadoDB.createDictado(dictado1);
-
-        let dictado2 = {
-            cicloLectivo: 2008,
-            materia: {
-                nombre: "Lengua",
-                anio: 3
-            }
-        }
-        let dictado2Obj = await dictadoDB.createDictado(dictado2);
-
-        let dictado3 = {
-            cicloLectivo: 2008,
-            materia: {
-                nombre: "Fisica",
-                anio: 3
-            }
-        }
-        let dictado3Obj = await dictadoDB.createDictado(dictado3);
+        let dictadoObj = await dictadoDB.createDictado(dictado);
 
         let resultadoMesa1Obj = await resultadoMesaDB.createResultadoMesa({});
         let resultadoMesa2Obj = await resultadoMesaDB.createResultadoMesa({});
         let resultadoMesa3Obj = await resultadoMesaDB.createResultadoMesa({});
 
-        // Aprueba
         let alumno1 = {
             dni: 50123020,
             tipoDni: "dni",
@@ -155,12 +144,11 @@ describe('Mesa Cerrada Correctamente', () => {
                 promedio: 4,
                 condicion: "Desaprobado",
                 resultadoMesaExamen: [resultadoMesa1Obj._id],
-                dictado: dictado1Obj._id
+                dictado: dictadoObj._id
             }]
-        }
+        }// Aprueba
         let alumno1Obj = await alumnoDB.createAlumno(alumno1);
 
-        // Desaprueba
         let alumno2 = {
             dni: 50123021,
             tipoDni: "dni",
@@ -175,12 +163,11 @@ describe('Mesa Cerrada Correctamente', () => {
                 promedio: 4,
                 condicion: "Desaprobado",
                 resultadoMesaExamen: [resultadoMesa2Obj._id],
-                dictado: dictado1Obj._id
+                dictado: dictadoObj._id
             }]
-        }
+        }// Desaprueba
         let alumno2Obj = await alumnoDB.createAlumno(alumno2);
 
-        // Ausente
         let alumno3 = {
             dni: 50123022,
             tipoDni: "dni",
@@ -195,13 +182,13 @@ describe('Mesa Cerrada Correctamente', () => {
                 promedio: 4,
                 condicion: "Desaprobado",
                 resultadoMesaExamen: [resultadoMesa3Obj._id],
-                dictado: dictado1Obj._id
+                dictado: dictadoObj._id
             }]
-        }
+        }// Ausente
         let alumno3Obj = await alumnoDB.createAlumno(alumno3);
 
         let fechaHora = crearFecha(-1);
-        let mesaExamen1 = {
+        let mesaExamen = {
             acta: 5023,
             estado: "Completada",
             aula: 3,
@@ -211,161 +198,106 @@ describe('Mesa Cerrada Correctamente', () => {
                 resultadoMesa2Obj._id,
                 resultadoMesa3Obj._id,
             ],
-            dictado: dictado1Obj._id
+            dictado: dictadoObj._id
         }
-        let mesaExamen1Obj = await mesaExamenDB.createMesaExamen(mesaExamen1);
+
+        let mesaExamenObj = await mesaExamenDB.createMesaExamen(mesaExamen);
         await resultadoMesaDB.updateResultadoMesa(resultadoMesa1Obj._id, {
             alumno: alumno1Obj._id,
-            mesaDeExamen: mesaExamen1Obj._id
+            mesaDeExamen: mesaExamenObj._id
         });
         await resultadoMesaDB.updateResultadoMesa(resultadoMesa2Obj._id, {
             alumno: alumno2Obj._id,
-            mesaDeExamen: mesaExamen1Obj._id
+            mesaDeExamen: mesaExamenObj._id
         });
         await resultadoMesaDB.updateResultadoMesa(resultadoMesa3Obj._id, {
             alumno: alumno3Obj._id,
-            mesaDeExamen: mesaExamen1Obj._id,
+            mesaDeExamen: mesaExamenObj._id,
         });
 
-        let mesaExamen2 = {
-            acta: 5024,
-            estado: "Completada",
-            aula: 4,
-            fechaHora,
-            dictado: dictado2Obj._id
-        }
-        let mesaExamen2Obj = await mesaExamenDB.createMesaExamen(mesaExamen2);
-
-        let mesaExamen3 = {
-            acta: 5025,
-            estado: "Completada",
-            aula: 5,
-            fechaHora,
-            dictado: dictado3Obj._id
-        }
-        let mesaExamen3Obj = await mesaExamenDB.createMesaExamen(mesaExamen3);
-
-        //* Consulta a Testear
-        let consultaObtenerTodasMesas = await obtenerTodasMesas();
-
-        let mesaAElegir = consultaObtenerTodasMesas.response.find(
-            mesa => mesa.nombreMateria === dictado1.nombreMateria
-        )
-        let consultaObtenerAlumnosMesa = await obtenerAlumnosMesa(mesaAElegir.oidMesa);
-
+        // Consulta a Testear
+        let consultaObtenerMesa = await obtenerMesa(mesaExamen.acta);
         let notas = [
             {
-                oidResultado: consultaObtenerAlumnosMesa.response.alumnos[0].oidResultado,
-                oidAlumno: consultaObtenerAlumnosMesa.response.alumnos[0].oidAlumno,
+                oidResultado: consultaObtenerMesa.response.alumnos[0].oidResultado,
+                oidAlumno: consultaObtenerMesa.response.alumnos[0].oidAlumno,
                 nota: 6
             },
             {
-                oidResultado: consultaObtenerAlumnosMesa.response.alumnos[1].oidResultado,
-                oidAlumno: consultaObtenerAlumnosMesa.response.alumnos[1].oidAlumno,
+                oidResultado: consultaObtenerMesa.response.alumnos[1].oidResultado,
+                oidAlumno: consultaObtenerMesa.response.alumnos[1].oidAlumno,
                 nota: 2
             },
             {
-                oidResultado: consultaObtenerAlumnosMesa.response.alumnos[2].oidResultado,
-                oidAlumno: consultaObtenerAlumnosMesa.response.alumnos[2].oidAlumno,
+                oidResultado: consultaObtenerMesa.response.alumnos[2].oidResultado,
+                oidAlumno: consultaObtenerMesa.response.alumnos[2].oidAlumno,
                 condicion: "Ausente"
             }
         ];
-        let consultaCargarNotasMesa = await cargarNotasMesa(mesaAElegir.oidMesa, notas);
+        let consultaCargarNotasMesa = await cargarNotasMesa(
+            consultaObtenerMesa.response.oidMesa, notas);
 
 
         resultadoMesa1Obj = await resultadoMesaDB.getResultadoMesa(resultadoMesa1Obj);
         resultadoMesa2Obj = await resultadoMesaDB.getResultadoMesa(resultadoMesa2Obj);
         resultadoMesa3Obj = await resultadoMesaDB.getResultadoMesa(resultadoMesa3Obj);
         alumno1Obj = await alumnoDB.getAlumno(alumno1.dni);
-        mesaExamen1Obj = await mesaExamenDB.getMesaExamen(mesaExamen1.acta);
+        mesaExamenObj = await mesaExamenDB.getMesaExamen(mesaExamen.acta);
 
-        //* Limpieza
-        let responseDictado1 = (await dictadoDB.deleteDictado(dictado1Obj._id));
-        let responseDictado2 = (await dictadoDB.deleteDictado(dictado2Obj._id));
-        let responseDictado3 = (await dictadoDB.deleteDictado(dictado3Obj._id));
+        // Limpieza
+        let responseDictado = (await dictadoDB.deleteDictado(dictadoObj._id));
         let responseResultado1 = (await resultadoMesaDB.deleteResultadoMesa(resultadoMesa1Obj._id))
         let responseResultado2 = (await resultadoMesaDB.deleteResultadoMesa(resultadoMesa2Obj._id))
         let responseResultado3 = (await resultadoMesaDB.deleteResultadoMesa(resultadoMesa3Obj._id))
         let responseAlumno1 = (await alumnoDB.deleteAlumno(alumno1.dni));
         let responseAlumno2 = (await alumnoDB.deleteAlumno(alumno2.dni));
         let responseAlumno3 = (await alumnoDB.deleteAlumno(alumno3.dni));
-        let responseMesa1 = (await mesaExamenDB.deleteMesaExamen(mesaExamen1.acta))
-        let responseMesa2 = (await mesaExamenDB.deleteMesaExamen(mesaExamen2.acta))
-        let responseMesa3 = (await mesaExamenDB.deleteMesaExamen(mesaExamen3.acta))
+        let responseMesa = (await mesaExamenDB.deleteMesaExamen(mesaExamen.acta))
 
-        assert.equal(responseDictado1.deletedCount, 1)
-        assert.equal(responseDictado2.deletedCount, 1)
-        assert.equal(responseDictado3.deletedCount, 1)
+        assert.equal(responseDictado.deletedCount, 1)
         assert.equal(responseResultado1.deletedCount, 1)
         assert.equal(responseResultado2.deletedCount, 1)
         assert.equal(responseResultado3.deletedCount, 1)
         assert.equal(responseAlumno1.deletedCount, 1)
         assert.equal(responseAlumno2.deletedCount, 1)
         assert.equal(responseAlumno3.deletedCount, 1)
-        assert.equal(responseMesa1.deletedCount, 1)
-        assert.equal(responseMesa2.deletedCount, 1)
-        assert.equal(responseMesa3.deletedCount, 1)
+        assert.equal(responseMesa.deletedCount, 1)
 
-        //* Test de Transaccion
-        // Hay que verificar uno por uno, ya que pueden estar en distinta posicion
-        let esperadoObtenerTodasMesas = [
-            {
-                oidMesa: String(mesaExamen1Obj._id),
-                acta: mesaExamen1.acta,
-                fechaHora: String(mesaExamen1.fechaHora),
-                aula: mesaExamen1.aula,
-                cicloLectivoMateria: dictado1.cicloLectivo,
-                nombreMateria: dictado1.materia.nombre,
-                anioMateria: dictado1.materia.anio,
-            }, {
-                oidMesa: String(mesaExamen2Obj._id),
-                acta: mesaExamen2.acta,
-                fechaHora: String(mesaExamen2.fechaHora),
-                aula: mesaExamen2.aula,
-                cicloLectivoMateria: dictado2.cicloLectivo,
-                nombreMateria: dictado2.materia.nombre,
-                anioMateria: dictado2.materia.anio,
-            }, {
-                oidMesa: String(mesaExamen3Obj._id),
-                acta: mesaExamen3.acta,
-                fechaHora: String(mesaExamen3.fechaHora),
-                aula: mesaExamen3.aula,
-                cicloLectivoMateria: dictado3.cicloLectivo,
-                nombreMateria: dictado3.materia.nombre,
-                anioMateria: dictado3.materia.anio,
-            },
-        ];
-
-        let esperadoObtenerAlumnosMesa = [
-            {
-                oidResultado: String(resultadoMesa1Obj._id),
-                oidAlumno: String(alumno1Obj._id),
-                nombre: alumno1.nombre,
-                apellido: alumno1.apellido,
-                legajo: String(alumno1.legajo),
-            }, {
-                oidResultado: String(resultadoMesa2Obj._id),
-                oidAlumno: String(alumno2Obj._id),
-                nombre: alumno2.nombre,
-                apellido: alumno2.apellido,
-                legajo: String(alumno2.legajo),
-            }, {
-                oidResultado: String(resultadoMesa3Obj._id),
-                oidAlumno: String(alumno3Obj._id),
-                nombre: alumno3.nombre,
-                apellido: alumno3.apellido,
-                legajo: String(alumno3.legajo),
-            },
-        ]
-
-        assert.equal(consultaObtenerTodasMesas.response, esperadoObtenerTodasMesas.length)
-        expect(consultaObtenerTodasMesas.response).to.deep.include.members(esperadoObtenerTodasMesas);
-
-        assert.equal(consultaObtenerAlumnosMesa.response, esperadoObtenerTodasMesas.length)
-        expect(consultaObtenerAlumnosMesa.response).to.deep.include.members(esperadoObtenerAlumnosMesa);
+        // Test de Transaccion
+        let esperadoObtenerMesa = {
+            oidMesa: String(mesaExamenObj._id),
+            acta: mesaExamen.acta,
+            fechaHora: String(mesaExamen.fechaHora),
+            aula: mesaExamen.aula,
+            cicloLectivoMateria: dictado.cicloLectivo,
+            nombreMateria: dictado.materia.nombre,
+            anioMateria: dictado.materia.anio,
+            alumnos: [
+                {
+                    oidResultado: String(resultadoMesa1Obj._id),
+                    oidAlumno: String(alumno1Obj._id),
+                    nombre: alumno1.nombre,
+                    apellido: alumno1.apellido,
+                    legajo: String(alumno1.legajo),
+                }, {
+                    oidResultado: String(resultadoMesa2Obj._id),
+                    oidAlumno: String(alumno2Obj._id),
+                    nombre: alumno2.nombre,
+                    apellido: alumno2.apellido,
+                    legajo: String(alumno2.legajo),
+                }, {
+                    oidResultado: String(resultadoMesa3Obj._id),
+                    oidAlumno: String(alumno3Obj._id),
+                    nombre: alumno3.nombre,
+                    apellido: alumno3.apellido,
+                    legajo: String(alumno3.legajo),
+                },
+            ]
+        }
+        expect(consultaObtenerMesa.response).to.deep.include(esperadoObtenerMesa);
 
         assert.equal(consultaCargarNotasMesa.response.mensaje, "Mesa Cerrada con Éxito")
-        assert.equal(mesaExamen1Obj.estado, "Cerrada")
+        assert.equal(mesaExamenObj.estado, "Cerrada")
         expect(alumno1Obj.calificaciones[0]).to.deep.include({
             condicion: "Aprobado",
             notaFinal: notas[0].nota
@@ -411,20 +343,9 @@ function crearFecha(cantidadMeses) {
     return fechaHora;
 }
 
-async function obtenerTodasMesas() {
+async function obtenerMesa(acta) {
     return await axios
-        .get(`${urlBackend}/cerrar-mesa/obtener-todas-mesas`)
-        .then((res) => {
-            return res.data;
-        })
-        .catch((res) => {
-            return res.response.data;
-        });
-}
-
-async function obtenerAlumnosMesa(oidMesa) {
-    return await axios
-        .get(`${urlBackend}/cerrar-mesa/obtener-alumnos-mesa/${oidMesa}`)
+        .get(`${urlBackend}/cerrar-mesa/obtener-mesa/${acta}`)
         .then((res) => {
             return res.data;
         })

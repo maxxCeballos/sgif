@@ -509,10 +509,10 @@ function crearFecha(cantidadMeses) {
     let mes = fechaHora.getMonth() + cantidadMeses;
 
     if (mes >= 12) {
-        fechaHora.setYear(fechaHora.getYear() + 1);
+        fechaHora.setYear(fechaHora.getFullYear() + 1);
         fechaHora.setMonth(mes - 12);
     } else if (mes < 0) {
-        fechaHora.setYear(fechaHora.getYear() - 1);
+        fechaHora.setYear(fechaHora.getFullYear() - 1);
         fechaHora.setMonth(12 + mes);
     } else {
         fechaHora.setMonth(mes);

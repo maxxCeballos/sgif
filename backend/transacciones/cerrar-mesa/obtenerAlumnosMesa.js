@@ -10,7 +10,7 @@ const { getAlumnoByOid } = require("../../controllers/alumno");
  * 
  * @param {*} acta el numero de acta de la mesa
  * 
- * @returns (acta, fecha y hora, aula, datos de dictado y datos de cada alumno inscripto)
+ * @returns [(acta, fecha y hora, aula, datos de dictado y datos de cada alumno inscripto)]
  */
 const obtenerMesa = async (oidMesa) => {
     const mesaExamen = (await getMesaExamenByActa(acta))[0];

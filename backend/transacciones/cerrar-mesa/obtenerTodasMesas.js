@@ -4,10 +4,9 @@ const { getAllMesasExamen } = require("../../controllers/mesaExamen");
 const { getDictadoByOid } = require("../../controllers/dictado");
 
 /**
- * Devuelve todas las mesas completadas y previas a la fecha de hoy para que 
- * el usuario seleccione una para cerrar
+ * Devuelve todas las mesas completadas y previas a la fecha de hoy para que el usuario seleccione una para cerrar
  *  
- * @returns (acta, fecha y hora, aula y datos de dictado)
+ * @returns arreglo con datos de [(oid, acta, fecha y hora, aula y datos de dictado)] para cada mesa
  */
 const obtenerTodasMesas = async () => {
     const mesas = await getAllMesasExamen();

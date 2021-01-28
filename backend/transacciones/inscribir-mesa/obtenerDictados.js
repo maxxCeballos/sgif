@@ -131,11 +131,11 @@ async function estuvoAusenteMesaIndiv(objetoResultado) {
 function esDeMesPasado(fechaPrevia) {
     let hoy = new Date();
 
-    if (!(fechaPrevia.getYear() < hoy.getYear())) {
+    if (!(fechaPrevia.getFullYear() < hoy.getFullYear())) {
         return fechaPrevia.getMonth() === hoy.getMonth() - 1;
     }
 
-    return false;
+    return fechaPrevia.getMonth() == 11 && hoy.getMonth() == 0;
 }
 
 module.exports = obtenerDictados
