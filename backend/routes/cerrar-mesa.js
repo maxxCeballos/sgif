@@ -7,9 +7,8 @@ const router = express.Router();
 
 
 const obtenerTodasMesas = require('../transacciones/cerrar-mesa/obtenerTodasMesas');
-const obtenerAlumnosMesa = require('../transacciones/cerrar-mesa/obtenerAlumnosMesa');
 const cargarNotasMesas = require('../transacciones/cerrar-mesa/cargarNotasMesa');
-const obtenerMesa = require('../transacciones/cerrar-mesa/obtenerMesa');
+const obtenerAlumnosMesa = require('../transacciones/cerrar-mesa/obtenerAlumnosMesa');
 
 // /**
 //  * Obtiene la mesa y sus alumnos solo si esta completada y previa a la fecha de hoy.
@@ -32,7 +31,7 @@ const obtenerMesa = require('../transacciones/cerrar-mesa/obtenerMesa');
 /**
  * Obtiene todas las mesas que estan completadas y previas a la fecha de hoy.
  */
-router.get('/cerrar-mesa/obtener-todas-mesas/', asyncHandler(async (req, res) => {
+router.get('/cerrar-mesa/obtener-todas-mesas', asyncHandler(async (req, res) => {
     const response = await obtenerTodasMesas();
 
     res.send({ ok: true, response });
@@ -44,7 +43,7 @@ router.get('/cerrar-mesa/obtener-todas-mesas/', asyncHandler(async (req, res) =>
 router.get('/cerrar-mesa/obtener-alumnos-mesa/:oidMesa', asyncHandler(async (req, res) => {
     const oidMesa = req.params.oidMesa;
 
-    const response = await obtenerMesa(oidMesa);
+    const response = await obtenerAlumnosMesa(oidMesa);
 
     res.send({ ok: true, response });
 }));

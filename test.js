@@ -10,6 +10,9 @@ let real = [
     }, {
         nom: "c",
         edad: 1
+    }, {
+        nom: "d",
+        edad: 20
     },
 ]
 

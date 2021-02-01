@@ -17,34 +17,45 @@ const obtenerTodasMesas = async () => {
 
     // Busca las mesas completadas y con la fecha adecuada
     const fechaHoy = new Date();
-    const mesasCompletadas = mesas.find(mesa =>
-        mesa.fechaHora < fechaHoy && mesa.estado === "Completada");
-    if (mesasCompletadas - length === 0) {
+    const mesasCompletadas = []
+    mesas.forEach(mesa => {
+        if (mesa.fechaHora < fechaHoy && mesa.estado === "Completada") {
+            mesasCompletadas.push(mesa);
+        }
+    });
+
+    if (mesasCompletadas.length === 0) {
         throw "No hay mesas";
     }
 
     let response = await getDatosResponse(mesasCompletadas);
+
     return response;
 }
 
+/**
+ * Carga las mesas que tienen dictado
+ */
 async function getDatosResponse(mesas) {
     let mesasResponse = [];
 
     for (const mesa of mesas) {
         const dictado = await getDictadoByOid(mesa.dictado);
-        let mesaIndivResponse = {
-            oidMesa: mesa._id,
-            acta: mesa.acta,
-            fechaHora: String(mesa.fechaHora),
-            aula: mesa.aula,
-            cicloLectivoMateria: dictado.cicloLectivo,
-            nombreMateria: dictado.materia.nombre,
-            anioMateria: dictado.materia.anio,
-        };
-        mesasResponse.push(mesaIndivResponse);
+        if (dictado && dictado.materia) {
+            let mesaIndivResponse = {
+                oidMesa: mesa._id,
+                acta: mesa.acta,
+                fechaHora: String(mesa.fechaHora),
+                aula: mesa.aula,
+                cicloLectivoMateria: dictado.cicloLectivo,
+                nombreMateria: dictado.materia.nombre,
+                anioMateria: dictado.materia.anio,
+            };
+            mesasResponse.push(mesaIndivResponse);
+        }
     }
 
-    return mesaResponse;
+    return mesasResponse;
 }
 
 module.exports = obtenerTodasMesas;

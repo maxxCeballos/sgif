@@ -1,8 +1,7 @@
 'use strict';
 
-const { getMesaExamenByActa } = require("../../controllers/mesaExamen");
+const { getMesaExamenByOid } = require("../../controllers/mesaExamen");
 const { getResultadoMesaByOid } = require("../../controllers/resultadoMesa");
-const { getDictadoByOid } = require("../../controllers/dictado");
 const { getAlumnoByOid } = require("../../controllers/alumno");
 
 /**
@@ -10,10 +9,10 @@ const { getAlumnoByOid } = require("../../controllers/alumno");
  * 
  * @param {*} acta el numero de acta de la mesa
  * 
- * @returns [(acta, fecha y hora, aula, datos de dictado y datos de cada alumno inscripto)]
+ * @returns [(datos de cada alumno inscripto)]
  */
-const obtenerMesa = async (oidMesa) => {
-    const mesaExamen = (await getMesaExamenByActa(acta))[0];
+const obtenerAlumnosMesa = async (oidMesa) => {
+    const mesaExamen = await getMesaExamenByOid(oidMesa);
 
     if (!mesaExamen) {
         throw "No existe Mesa";
@@ -54,4 +53,4 @@ async function getDatosResponse(mesaExamen) {
     return alumnos;
 }
 
-module.exports = obtenerMesa;
+module.exports = obtenerAlumnosMesa;

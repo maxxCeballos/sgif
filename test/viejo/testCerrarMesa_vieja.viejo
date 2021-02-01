@@ -1,12 +1,12 @@
-const alumnoDB = require('./controllers/alumno');
-const resultadoMesaDB = require('./controllers/resultadoMesa');
-const mesaExamenDB = require('./controllers/mesaExamen');
-const dictadoDB = require('./controllers/dictado');
+const alumnoDB = require('../controllers/alumno');
+const resultadoMesaDB = require('../controllers/resultadoMesa');
+const mesaExamenDB = require('../controllers/mesaExamen');
+const dictadoDB = require('../controllers/dictado');
 
 const axios = require('axios');
 const assert = require("chai").assert;
 const urlBackend = "http://localhost:5000";
-const databaseHandler = require('./databaseHandler');
+const databaseHandler = require('../databaseHandler');
 const { expect } = require('chai');
 
 const serverOn = false;
@@ -25,7 +25,7 @@ after(function () {
     databaseHandler.desconectar();
 });
 
-describe('Mesa Incorrecta', () => {
+xdescribe('Mesa Incorrecta', () => {
     it('Debería solicitar acta', async function () {
         this.timeout(0);
 
