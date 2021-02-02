@@ -58,20 +58,25 @@ export default {
   methods: {
     handleSubmit(e) {
       e.preventDefault();
+      let esError = false;
       for (const alumno of this.mesa.alumnos) {
         if (!isNaN(alumno.nota)) {
           if (alumno.esAusente) {
             alumno.condicion = "Ausente";
           } else if (alumno.nota < 0 || alumno.nota > 10) {
+            esError = true;
             this.$emit("error-operacion", this.mensajeErrorNota);
             break;
           }
         } else {
+          esError = true;
           this.$emit("error-operacion", this.mensajeErrorNumero);
           break;
         }
       }
-      this.$emit("confirmar-operacion");
+      if (!esError) {
+        this.$emit("confirmar-operacion");
+      }
     },
   },
 };
