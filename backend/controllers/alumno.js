@@ -140,10 +140,10 @@ const setPadre = async (oidPadre, oidAlumno) => {
         exito: false
     };
     let res;
-    let padreAux = await getPadreByOID(oidPadre);
+    let padreAux = await getPadreByOID(oidPadre);    
     let padres = await getPadres(oidAlumno);
 
-    //si el arreglo es menor a 2 y mayor a 0, entonces tiene 1 padre y tienen que tener dnis diferentes al que ya tiene
+    //si el arreglo es menor a 2 y mayor a 0, entonces tiene 1 padre y tienen que tener dnis diferentes al que ya tiene    
     if (padres.length < 2) {
         if (padres.length === 0 || padres[0].dni !== padreAux.dni) {
             let $push = { $push: { 'padres': oidPadre } }

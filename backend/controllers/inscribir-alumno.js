@@ -75,14 +75,15 @@ const validarAlumno = async (dni) => {
 
 const createResponsableNuevo = async (datosResponsable) => {
 
-    const { nombre, apellido, dni, genero, cuitCuil, telefono, email, calle, altura,
-        barrio, piso, depto, tira, modulo, localidad, codigoPostal, provincia } = datosResponsable;
+    const { nombre, apellido, dni, genero, cuitCuil, telefono, email, calle,
+        altura, barrio, piso, depto, tira, modulo, localidad, codigoPostal,
+        provincia, fechaNacimiento, lugarNacimiento, } = datosResponsable;
 
     const persona = { nombre, apellido, dni, genero };
 
     const responsable = {
         legajo: await generarLegajoResp(),
-        cuitCuil, telefono, email, calle, altura,
+        cuitCuil, telefono, email, calle, altura, fechaNacimiento, lugarNacimiento,
         barrio, piso, depto, tira, modulo, localidad, codigoPostal, provincia
     }
 

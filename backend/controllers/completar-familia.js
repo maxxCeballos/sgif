@@ -24,7 +24,7 @@ const asociarPadre = async (oidPadre, oidAlumno) => {
         } else {
             response = {
                 valido: false,
-                message: "No se pudo actualizar el alumno, verifique si existe"
+                message: res.message
             };
         }
     } else {
@@ -42,15 +42,15 @@ const asociarPadre = async (oidPadre, oidAlumno) => {
  */
 const createPadreNuevo = async (datosPadre, oidAlumno) => {
     const { dni, nombre, apellido, genero, fechaNacimiento, partidaNacimiento, nacionalidad,
-        telefono, ocupacion, lugarTrabajo, telefonoLaboral, bautismo, comunion,
-        confirmación, egresoPrimario, egresoSecundario, relacionParentesco } = datosPadre;
+        telefono, email, ocupacion, lugarTrabajo, telefonoLaboral, emailLaboral, bautismo, comunion,
+        confirmacion, egresoPrimario, egresoSecundario, relacionParentesco } = datosPadre;
 
     const persona = { dni, nombre, apellido, genero };
 
     const padre = {
-        fechaNacimiento, partidaNacimiento, nacionalidad,
-        telefono, ocupacion, lugarTrabajo, telefonoLaboral, bautismo, comunion,
-        confirmación, egresoPrimario, egresoSecundario, relacionParentesco
+        fechaNacimiento, partidaNacimiento, nacionalidad, telefono, email, ocupacion,
+        lugarTrabajo, telefonoLaboral, emailLaboral, bautismo, comunion,
+        confirmacion, egresoPrimario, egresoSecundario, relacionParentesco
     }
 
     if (!await getAlumnoByOID(oidAlumno)) {
@@ -132,7 +132,7 @@ const asociarHermano = async (oidHermano, oidAlumno) => {
         } else {
             response = {
                 valido: false,
-                message: "No se pudo actualizar el alumno, verifique si existe"
+                message: res.message
             };
         }
     } else {
