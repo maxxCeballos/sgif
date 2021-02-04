@@ -12,7 +12,10 @@ const obtenerTodasMesas = async () => {
     const mesas = await getAllMesasExamen();
 
     if (mesas.length === 0) {
-        throw "No hay mesas";
+        throw {
+            status: 204,
+            message: "No hay mesas"
+        };
     }
 
     // Busca las mesas completadas y con la fecha adecuada
@@ -25,7 +28,10 @@ const obtenerTodasMesas = async () => {
     });
 
     if (mesasCompletadas.length === 0) {
-        throw "No hay mesas";
+        throw {
+            status: 204,
+            message: "No hay mesas"
+        };
     }
 
     let response = await getDatosResponse(mesasCompletadas);

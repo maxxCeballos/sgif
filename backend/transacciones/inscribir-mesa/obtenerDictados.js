@@ -6,8 +6,6 @@ const { getMesaExamenByOid } = require('../../controllers/mesaExamen');
 const { getDictadoByOid } = require('../../controllers/dictado');
 const { verificarLegajo } = require('../../utils/verificaciones');
 
-//TODO: Pensar implementacion de errores (codigo con global tipo Error.TIPO1, mensaje por defecto y expandido)
-
 /**
  * Busca los dictados de las calificaciones desaprobadas del Alumno recibido,
  * verificando que el alumno no haya estado ausente en una mesa del mes anterior
@@ -20,28 +18,42 @@ const { verificarLegajo } = require('../../utils/verificaciones');
  */
 const obtenerDictados = async (legajoAlumno) => {
     if (!verificarLegajo(legajoAlumno)) {
-        throw "El Legajo no es Correcto";
+        throw {
+            status: 204,
+            message: "El Legajo no es Correcto"
+        };
     }
 
     let alumno = (await getAlumnoByLegajo(legajoAlumno))[0];
 
-    //FIXME: necesito verificar inscripcion?
     if (!alumno) {
-        throw "No existe el Alumno";
+        throw {
+            status: 204,
+            message: "No existe el Alumno"
+        };
     } else if (!alumno.calificaciones || alumno.calificaciones.length === 0) {
-        throw "Alumno sin Calificaciones";
+        throw {
+            status: 204,
+            message: "Alumno sin Calificaciones"
+        };
     }
 
     let calificacionesDesaprobadas = getCalificacionesDesaprobadas(alumno)
 
     if (noTieneCalificacionesDesaprobadas(calificacionesDesaprobadas)) {
-        throw "Alumno sin Calificaciones Desaprobadas";
+        throw {
+            status: 204,
+            message: "Alumno sin Calificaciones Desaprobadas"
+        };
     }
 
     let idMesaAusente = await getMesaAusenteMesPasado(calificacionesDesaprobadas);
 
     if (idMesaAusente) {
-        throw "Alumno estuvo Ausente en la Ultima Mesa con id: " + idMesaAusente;
+        throw {
+            status: 204,
+            message: "Alumno estuvo Ausente en la Ultima Mesa con id: " + idMesaAusente
+        };
     }
 
     let dictadosDesaprobados = await getDictadosDesaprobados(alumno._id, calificacionesDesaprobadas);
@@ -49,7 +61,6 @@ const obtenerDictados = async (legajoAlumno) => {
     return dictadosDesaprobados;
 }
 
-// TODO: agregar el id de alumno
 /**
  * Devuelve dictados con el formato {id, nombreMateria, anioMateria, cicloLectivo} de un conjunto de calificaciones
  */

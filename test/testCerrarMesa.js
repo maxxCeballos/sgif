@@ -11,8 +11,6 @@ const { expect } = require('chai');
 
 const serverOn = false;
 
-// TODO: revisar xq no esta andando ni borrando las mesas viejas
-
 before(async function () {
     this.timeout(0);
     await databaseHandler.conectar(serverOn);

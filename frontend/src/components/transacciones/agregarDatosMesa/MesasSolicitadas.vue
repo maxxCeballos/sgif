@@ -1,31 +1,36 @@
 <template>
   <div v-if="estaPrendido">
-    <v-card>
-      
-      <v-card-title>Mesas de Examen Solicitadas</v-card-title>
-      <v-card-subtitle>Seleccione una mesa para agregar datos</v-card-subtitle>
-      <v-card-text>
-      <v-data-table
-        :headers="headers"
-        :items="mesas"
-        :items-per-page="10"
-        item-key="mesaId"
-        class="elevation-1"
-        :loading="isLoading"
-        loading-text="Cargando.. porfavor espere"
-      >
-        <template v-slot:item="{ item }">
-          <tr
-            v-on:click="mesaSeleccionada(item.mesaId, item.materia, item.anio)"
+    <v-container>
+      <v-card>
+        <v-card-title>Mesas de Examen Solicitadas</v-card-title>
+        <v-card-subtitle
+          >Seleccione una mesa para agregar datos</v-card-subtitle
+        >
+        <v-card-text>
+          <v-data-table
+            :headers="headers"
+            :items="mesas"
+            :items-per-page="10"
+            item-key="mesaId"
+            class="elevation-1"
+            :loading="isLoading"
+            loading-text="Cargando.. porfavor espere"
           >
-            <td>{{ item.materia }}</td>
-            <td>{{ item.anio }}</td>
-            <td>{{ item.cicloLectivo }}</td>
-          </tr>
-        </template>
-      </v-data-table>
-      </v-card-text>
-    </v-card>
+            <template v-slot:item="{ item }">
+              <tr
+                v-on:click="
+                  mesaSeleccionada(item.mesaId, item.materia, item.anio)
+                "
+              >
+                <td>{{ item.materia }}</td>
+                <td>{{ item.anio }}</td>
+                <td>{{ item.cicloLectivo }}</td>
+              </tr>
+            </template>
+          </v-data-table>
+        </v-card-text>
+      </v-card>
+    </v-container>
   </div>
 </template>
 

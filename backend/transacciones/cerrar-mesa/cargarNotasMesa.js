@@ -4,6 +4,7 @@ const { updateCalificacionConResultado } = require("../../controllers/alumno");
 const { getMesaExamenByOid, updateMesaExamenDatos } = require("../../controllers/mesaExamen");
 const { updateResultadoMesa } = require("../../controllers/resultadoMesa");
 
+//TODO limpiar si hay errores
 /**
  * Carga las notas de una o varias mesas (si incluye asociadas)
  * 
@@ -18,11 +19,17 @@ const cargarNotasMesa = async (oidMesa, notas) => {
     const mesa = await getMesaExamenByOid(oidMesa);
 
     if (!mesa) {
-        throw "No existe la Mesa";
+        throw {
+            status: 204,
+            message: "No existe la mesa"
+        };
     }
 
     if (mesa.resultados.length !== notas.length) {
-        throw "Existen resultados sin cargar";
+        throw {
+            status: 204,
+            message: "Existen resultados sin cargar"
+        };
     }
 
     for (const datoNota of notas) {
@@ -30,7 +37,10 @@ const cargarNotasMesa = async (oidMesa, notas) => {
         const resultado = mesa.resultados.find(res => String(datoNota.oidResultado) === String(res));
 
         if (!datoNota) {
-            throw "No se encontro resultado para: " + resultado;
+            throw {
+                status: 204,
+                message: "No se encontro resultado para: " + resultado
+            };
         }
 
         if (datoNota.condicion && datoNota.condicion === "Ausente") {
@@ -38,15 +48,20 @@ const cargarNotasMesa = async (oidMesa, notas) => {
                 resultado, { condicion: datoNota.condicion });
 
             if (!responseActualizarResultado) {
-                throw "No se pudo cerrar la Mesa";
+                throw {
+                    status: 204,
+                    message: "No se pudo cerrar la Mesa"
+                };    
             }
         } else if (datoNota.nota >= 4) {
-            // TODO: verificar q nota no sea mayor a 10 o menor a 1
             let responseActualizarResultado = await updateResultadoMesa(
                 resultado, { condicion: "Aprobado", nota: datoNota.nota });
 
             if (!responseActualizarResultado) {
-                throw "No se pudo cerrar la Mesa";
+                throw {
+                    status: 204,
+                    message: "No se pudo cerrar la Mesa"
+                };    
             }
 
             let responseActualizarAlumno = await updateCalificacionConResultado(
@@ -56,14 +71,20 @@ const cargarNotasMesa = async (oidMesa, notas) => {
                 resultado);
 
             if (!responseActualizarAlumno) {
-                throw "No se pudo cerrar la Mesa";
+                throw {
+                    status: 204,
+                    message: "No se pudo cerrar la Mesa"
+                };    
             }
         } else {
             let responseActualizarResultado = await updateResultadoMesa(
                 resultado, { condicion: "Desaprobado", nota: datoNota.nota });
 
             if (!responseActualizarResultado) {
-                throw "No se pudo cerrar la Mesa";
+                throw {
+                    status: 204,
+                    message: "No se pudo cerrar la Mesa"
+                };    
             }
         }
     }
@@ -72,7 +93,10 @@ const cargarNotasMesa = async (oidMesa, notas) => {
         oidMesa, { estado: "Cerrada" });
 
     if (!responseActualizarResultado) {
-        throw "No se pudo cerrar la Mesa";
+        throw {
+            status: 204,
+            message: "No se pudo cerrar la Mesa"
+        };   
     }
 
     return {

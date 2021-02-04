@@ -15,7 +15,10 @@ const obtenerAlumnosMesa = async (oidMesa) => {
     const mesaExamen = await getMesaExamenByOid(oidMesa);
 
     if (!mesaExamen) {
-        throw "No existe Mesa";
+        throw {
+            status: 204,
+            message: "No existe la mesa"
+        };
     }
 
     let alumnos = [];
@@ -32,24 +35,6 @@ const obtenerAlumnosMesa = async (oidMesa) => {
         });
     }
     
-    return alumnos;
-}
-
-async function getDatosResponse(mesaExamen) {
-    let alumnos = [];
-
-    for (const oidResultado of mesaExamen.resultados) {
-        const resultado = await getResultadoMesaByOid(oidResultado);
-        const alumno = await getAlumnoByOid(resultado.alumno);
-        alumnos.push({
-            oidResultado: resultado._id,
-            oidAlumno: alumno._id,
-            nombre: alumno.nombre,
-            apellido: alumno.apellido,
-            legajo: alumno.legajo,
-        });
-    }
-
     return alumnos;
 }
 
