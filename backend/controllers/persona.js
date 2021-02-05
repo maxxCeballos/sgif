@@ -123,6 +123,11 @@ const getPersona = async (oid) => {
     return personaDB
 }
 
+const getPreceptorSancion= async (oid) => {
+    //Este es usado por la transacción Consultar Información Alumno
+    const preceptor = await Persona.findById(oid);
+    return preceptor
+}
 module.exports = {
     createPersona,
     updatePersona,
@@ -133,5 +138,7 @@ module.exports = {
     asociarRol,
     getProfesores,
     getProfesorMateria,
-    getPreceptores
+    getPreceptores,
+    getPreceptorSancion,
+    
 }

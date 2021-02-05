@@ -134,9 +134,15 @@ const getAlumnoByLegajo = async (legajo) => {
 const getAlumnoByDni = async (dni) => {
 
     const alumnoDB = await Alumno.find({ dni: dni }).exec();
-
+    if (alumnoDB.length == 0) {
+        throw {
+            status: 204,
+            message: "No se encontro el alumno"
+        }
+    }
     return alumnoDB[0]
 }
+
 
 const getAllAlumnos = async () => {
 

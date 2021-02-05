@@ -10,9 +10,9 @@ const { getCursoAlumno } = require('../controllers/curso');
 const { getAlumnoByDni, } = require('../controllers/alumno');
 const { getCicloLectivoActual } = require('../controllers/cicloLectivo');
 const { getResponsableAlumno } = require('../controllers/responsable');
-const { getPreceptorSancion } = require('../controllers/persona');
+const { getPreceptorSancion, getPersona } = require('../controllers/persona');
 
-router.get('/consultarInfoCicloActual/:dni', asyncHandler(async (req, res) => {
+router.get('/consultarCalificacionesCicloActual/:dni', asyncHandler(async (req, res) => {
   //Esta ruta corresponde  a la transacción consultar Información Alumno del ciclo lectivo actual
   let dictados, cursoActual, calificacionesActuales, dniAlumno, response = {}, cicloActual, inasistencias;
   var alumno, responsable;
@@ -23,10 +23,8 @@ router.get('/consultarInfoCicloActual/:dni', asyncHandler(async (req, res) => {
   //Obtenemos el cicloLectivoAactual
   cicloActual = await getCicloLectivoActual();
 
-  //Obtener Curso de Alumno del Ciclo lectivo Actual
 
-  cursoActual = await getCursoAlumno(cicloActual.cicloLectivo, alumno._id);
-  //console.log(cursoActual);
+
 
   //Obtener Calificaciones del ciclo lectivo actual
   calificacionesActuales = obtenerCalificacionesCiclo(cicloActual.cicloLectivo, alumno.calificaciones);
@@ -40,7 +38,7 @@ router.get('/consultarInfoCicloActual/:dni', asyncHandler(async (req, res) => {
   });
   console.log(dictados);
 
-  response = { ciclo: cicloActual, curso: cursoActual, calificaciones: dictados };
+  response = { ciclo: cicloActual, calificaciones: dictados };
 
   res.send({ ok: true, response });
 }));
@@ -48,8 +46,8 @@ router.get('/consultarInfoCicloActual/:dni', asyncHandler(async (req, res) => {
 
 router.get('/consultarInfo/:dni', asyncHandler(async (req, res) => {
   //Esta ruta se consulta cuando se necesita saber información del alumno que no es referida a las notas
-  let alumno, response, sancion, sanciones = [], cicloActual, inasistencias;
-  alumno = await getAlumnoByDni(dniAlumno);
+  let inasistencias = [], alumno, informacion, sancion, sanciones = [], cicloActual;
+  alumno = await getAlumnoByDni(req.params.dni);
   for (san in alumno.sanciones) {
     sancion = {
       id: san.id,
@@ -61,23 +59,53 @@ router.get('/consultarInfo/:dni', asyncHandler(async (req, res) => {
     sanciones.push(sancion);
   }
   cicloActual = await getCicloLectivoActual();
-  inasistencias = obtenerInasistenciaCiclo(alumno.presentismos, cicloActual)
-  response = {
+  inasistencias = await obtenerInasistenciaCiclo(alumno.presentismos, cicloActual)
+  console.log(inasistencias);
+  informacion = {
     observaciones: alumno.observaciones,
     sanciones: sanciones,
-    presentismos: obtenerInasistenciaCiclo()
+    presentismos: inasistencias
 
   }
-  res.send({ ok: true, response });
+  res.send({ ok: true, informacion });
 }));
 
 router.get('/consultarCalificacionesMateria/:dni', asyncHandler(async (req, res) => {
   //Esta ruta se consulta cuando se necesita saber las calificaciones del alumno para 1 materia en su historia academaica
-  let alumno, calificaciones, response ;
-  alumno = await getAlumnoByDni(dniAlumno);
-  calificaciones = obtenerCalificacionesMateria(req.query.materia, alumno.calificaciones);
-  reponse = calificaciones;
-  res.send({ ok: true, response });
+  let alumno, calificaciones, calificacionesMateria = [];
+  alumno = await getAlumnoByDni(req.params.dni);
+  calificaciones = await obtenerCalificacionesMateria(req.query.materia, alumno.calificaciones);
+  console.log(calificaciones);
+  calificacionesMateria = {
+    calificaciones: calificaciones
+  };
+  res.send({ ok: true, calificacionesMateria });
 }));
+
+router.get('/consultarInfoFamiliar/:dni', asyncHandler(async (req, res) => {
+  //Esta ruta corresponde  a la transacción consultar Información Alumno, se obtiene la información familiar del alumno
+  let dniAlumno, familia, alumno, responsable, padre = 0, padres = [], padreActual,hermanos=[],hermano=0,hermanoActual;
+  dniAlumno = req.params.dni;
+  //Se obtiene el alumno
+  alumno = await getAlumnoByDni(dniAlumno);
+  responsable = await getPersona(alumno.responsable);
+
+  for (padre in alumno.padres) {
+    padreActual = await getPersona(alumno.padres[padre]);
+    padres.push(padreActual);
+  }
+  for (hermano in alumno.hermanos) {
+    hermanoActual = await getPersona(alumno.hermanos[hermano]);
+    hermanos.push(hermanoActual);
+  }
+  familia={
+    responsable:responsable,
+    padres:padres,
+    hermanos:hermanos
+
+  }
+  res.send({ ok: true, familia });
+}));
+
 
 module.exports = router;
