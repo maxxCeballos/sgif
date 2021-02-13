@@ -1,5 +1,6 @@
 <template>
-  <v-navigation-drawer permanent absolute>
+  <v-navigation-drawer disable-resize-watcher permanent app>
+    <!-- <v-navigation-drawer> -->
     <template v-slot:prepend>
       <!-- TITULO -->
       <v-container class="contTit" @click="handleTitulo">
@@ -11,7 +12,7 @@
       <v-container>
         <v-list-item two-line>
           <v-list-item-avatar>
-            <img alt="avatar" src="../assets/avatar.png.jpg" />
+            <img alt="avatar" src="@/assets/avatar.png.jpg" />
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>Michael Johnson</v-list-item-title>
@@ -62,7 +63,7 @@
 </template>
 
 <script>
-import rutas from "../config/routes.config";
+import rutas from "@/config/routes.config";
 
 export default {
   name: "Sidebar",
