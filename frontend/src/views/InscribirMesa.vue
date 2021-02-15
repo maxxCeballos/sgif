@@ -73,7 +73,7 @@ export default {
         })
         .catch((err) => {
           if (err.response.data.expanded) {
-            this.$refs.cartelError.abrirCartel(err.response.data.expanded);
+            this.$refs.cartelError.abrirCartel(err.response.data.expanded.message);
             this.mostrarTabla = false;
           }
         });

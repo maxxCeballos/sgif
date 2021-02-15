@@ -171,6 +171,8 @@ describe('Mesa de Castigo', () => {
     })
 })
 
+//TODO dar a elegir las fechas para anotarse
+
 describe('Transacciones Correctas', () => {
     it('Deberia informar que se anoto en una Solicitada y no tener problemas con la ausencia',
         async function () {
