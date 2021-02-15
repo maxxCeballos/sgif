@@ -9,14 +9,14 @@ const urlBackend = "http://localhost:5000";
 const databaseHandler = require('./databaseHandler');
 const { expect } = require('chai');
 
-const serverOn = false;
+const serverOn = true;
 
 before(async function () {
     this.timeout(0);
     await databaseHandler.conectar(serverOn);
-    // if(!serverOn){
-    //     throw "Error Servidor Apagado"
-    // }
+    if(!serverOn){
+        throw "Error Servidor Apagado"
+    }
 });
 
 after(function () {

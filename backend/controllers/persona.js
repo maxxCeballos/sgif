@@ -67,7 +67,7 @@ const getProfesorMateria = async (materia, anio) => {
                 }
 
             }
-        
+     
 
 
     }
@@ -82,6 +82,7 @@ const getProfesorMateria = async (materia, anio) => {
     return profesores;
 
 }
+
 const getProfesores = async () => {
     //Obtengo los profesores
   
@@ -122,6 +123,11 @@ const getPersona = async (oid) => {
     return personaDB
 }
 
+const getPreceptorSancion= async (oid) => {
+    //Este es usado por la transacción Consultar Información Alumno
+    const preceptor = await Persona.findById(oid);
+    return preceptor
+}
 module.exports = {
     createPersona,
     updatePersona,
@@ -132,7 +138,7 @@ module.exports = {
     asociarRol,
     getProfesores,
     getProfesorMateria,
-    getPreceptores
+    getPreceptores,
+    getPreceptorSancion,
     
-
 }

@@ -14,8 +14,7 @@ const responsableHandler = require('./responsable');
 const cerrarMesaHandler = require('./cerrar-mesa');
 const agregarDatosMesaHandler = require('./agregarDatosMesa');
 const dictadoHandler =require('./dictado');
-
-
+const consultarInfoAlumnHandler = require('./consultarInfoAlumno');
 
 const app = express();
 
@@ -36,6 +35,7 @@ app.use(inscribirAlumnoHandler);
 app.use(inscribirMesaHandler);
 app.use(cerrarMesaHandler);
 app.use(agregarDatosMesaHandler);
+app.use(consultarInfoAlumnHandler);
 
 
 module.exports = app;

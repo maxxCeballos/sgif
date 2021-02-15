@@ -100,8 +100,6 @@ const addResultadoMesa = async (oidMesa, oidResultadoMesa) => {
 
 //Yaupe controllers
 
-
-
 const createMesa = async (mesa) => {
     const { acta, fechaHora, aula, estado, dictado,
         preceptores,
@@ -110,6 +108,7 @@ const createMesa = async (mesa) => {
         resultados } = mesa;
     const esPadre = false;
     const esCompartida = false;
+  
     const newMesa = new MesaExamen({
         acta,
         fechaHora,
@@ -128,6 +127,7 @@ const createMesa = async (mesa) => {
 
     return mesaDB;
 }
+
 const getMesasSolicitadas = async () => {
     //Devuelve las mesas en estado solicitada
     const mesas = await MesaExamen.find({ "estado": "Solicitada" });
@@ -143,6 +143,7 @@ const getMesasSolicitadas = async () => {
 const getMesasCompletadas = async () => {
     //Devuelve las mesas en estado completada que no son compartidas
     let response;
+  
     const mesas = await MesaExamen.find({ "estado": "Completada", "esPadre": false, "esCompartida": false });
     console.log(mesas);
     if (mesas.length == 0) {
@@ -162,6 +163,7 @@ const getMesasCompletadas = async () => {
 }
 const getMesasCompletadasCompartidas = async () => {
     //Devuelve las mesas en estado completada y que son padre
+
     let response;
     const mesas = await MesaExamen.find({ "estado": "Completada", "esPadre": true });
     if (mesas.length == 0) {
@@ -194,7 +196,6 @@ const getUltimaActa = async () => {
     if (mesas.length == 0) {
         //Hay que buscar las que estan cerradas
         mesas = await MesaExamen.find({ "estado": "Cerrada" }).sort({ "acta": -1 }).limit(1);
-
     }
     if (mesas.length == 0) {
         response = 1;
@@ -204,6 +205,7 @@ const getUltimaActa = async () => {
     }
     return response
 }
+
 module.exports = {
     createMesaExamen,
     updateMesaExamen,
