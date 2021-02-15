@@ -26,7 +26,7 @@
       :items="mesas"
       :items-per-page="10"
       item-key="mesaId"
-      class="elevation-1"
+      
       :loading="loading"
       loading-text="Cargando.. porfavor espere"
     >

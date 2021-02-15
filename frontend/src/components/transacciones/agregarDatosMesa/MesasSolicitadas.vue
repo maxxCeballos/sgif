@@ -1,6 +1,6 @@
 <template>
   <div v-if="estaPrendido">
-    <v-card>
+    <v-card elevation="2" outlined>
       
       <v-card-title>Mesas de Examen Solicitadas</v-card-title>
       <v-card-subtitle>Seleccione una mesa para agregar datos</v-card-subtitle>
@@ -10,7 +10,7 @@
         :items="mesas"
         :items-per-page="10"
         item-key="mesaId"
-        class="elevation-1"
+        
         :loading="isLoading"
         loading-text="Cargando.. porfavor espere"
       >
