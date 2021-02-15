@@ -52,14 +52,16 @@ router.get('/agregarDatosMesaExamen/mesasParaCompartir', asyncHandler(async (req
         //Genero una lista con tuplas de mesa y su dictado correspondiente
         mesaActual = mesas[i];
         dictadoActual = await getDictado(mesaActual.dictado);
+        let fechaN= new Date(mesaActual.fechaHora).toISOString().substr(0, 10);
+        let hora= new Date(mesaActual.fechaHora).toISOString().substr(11,5);
         mesasConDictados.push({
             "idMesa": mesaActual._id,
             "materia": dictadoActual.materia.nombre,
             "anio": dictadoActual.materia.anio,
             "cicloLectivo": dictadoActual.cicloLectivo,
             "acta": mesaActual.acta,
-            "fecha": mesaActual.fechaHora,
-            "hora": mesaActual.fechaHora,
+            "fecha": fechaN,
+            "hora": hora,
             "aula": mesaActual.aula,
             "esCompartida": mesaActual.esCompartida,
             "esPadre": mesaActual.esPadre,
