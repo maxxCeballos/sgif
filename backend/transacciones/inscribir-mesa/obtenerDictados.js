@@ -19,7 +19,7 @@ const { verificarLegajo } = require('../../utils/verificaciones');
 const obtenerDictados = async (legajoAlumno) => {
     if (!verificarLegajo(legajoAlumno)) {
         throw {
-            status: 204,
+            status: 404,
             message: "El Legajo no es Correcto"
         };
     }
@@ -28,22 +28,22 @@ const obtenerDictados = async (legajoAlumno) => {
 
     if (!alumno) {
         throw {
-            status: 204,
+            status: 404,
             message: "No existe el Alumno"
         };
     } else if (!alumno.calificaciones || alumno.calificaciones.length === 0) {
+        // Alumno sin Calificaciones
         throw {
             status: 204,
-            message: "Alumno sin Calificaciones"
         };
     }
 
     let calificacionesDesaprobadas = getCalificacionesDesaprobadas(alumno)
 
     if (noTieneCalificacionesDesaprobadas(calificacionesDesaprobadas)) {
+        // Alumno sin Calificaciones Desaprobadas
         throw {
             status: 204,
-            message: "Alumno sin Calificaciones Desaprobadas"
         };
     }
 
@@ -51,7 +51,7 @@ const obtenerDictados = async (legajoAlumno) => {
 
     if (idMesaAusente) {
         throw {
-            status: 204,
+            status: 200,
             message: "Alumno estuvo Ausente en la Ultima Mesa con id: " + idMesaAusente
         };
     }

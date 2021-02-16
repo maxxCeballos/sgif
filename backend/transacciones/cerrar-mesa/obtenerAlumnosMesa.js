@@ -16,7 +16,7 @@ const obtenerAlumnosMesa = async (oidMesa) => {
 
     if (!mesaExamen) {
         throw {
-            status: 204,
+            status: 404,
             message: "No existe la mesa"
         };
     }

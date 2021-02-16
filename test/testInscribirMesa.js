@@ -9,14 +9,14 @@ const urlBackend = "http://localhost:5000";
 const databaseHandler = require('./databaseHandler');
 const { expect } = require('chai');
 
-const serverOn = true;
+const serverOn = false;
 
 before(async function () {
     this.timeout(0);
     await databaseHandler.conectar(serverOn);
-    if(!serverOn){
-        throw "Error Servidor Apagado"
-    }
+    // if(!serverOn){
+    //     throw "Error Servidor Apagado"
+    // }
 });
 
 after(function () {
@@ -29,7 +29,8 @@ describe('Legajo Incorrecto', () => {
 
         let consulta = await obtenerDictados("");
 
-        assert.equal(consulta.expanded, "Por Favor, Ingrese un Legajo");
+        assert.equal(consulta.status, 404)
+        assert.equal(consulta.data.message, "Por Favor, Ingrese un Legajo");
     })
 
     it('Deberia solicitar legajo con formato correcto', async function () {
@@ -37,7 +38,8 @@ describe('Legajo Incorrecto', () => {
 
         let consulta = await obtenerDictados("Legajo Incorrecto");
 
-        assert.equal(consulta.expanded, "El Legajo no es Correcto");
+        assert.equal(consulta.status, 404)
+        assert.equal(consulta.data.message, "El Legajo no es Correcto");
     })
 
     it('Deberia informar que no existe el Alumno', async function () {
@@ -45,12 +47,13 @@ describe('Legajo Incorrecto', () => {
 
         let consulta = await obtenerDictados("99999");
 
-        assert.equal(consulta.expanded, "No existe el Alumno");
+        assert.equal(consulta.status, 404)
+        assert.equal(consulta.data.message, "No existe el Alumno");
     })
 })
 
 describe('Sin Materias para rendir', () => {
-    it('Deberia informar que no tiene materias', async function () {
+    it('Deberia responder con status 204 por no haber materias', async function () {
         this.timeout(0);
 
         // Datos a precargar
@@ -72,10 +75,10 @@ describe('Sin Materias para rendir', () => {
         assert.equal(response.deletedCount, 1)
 
         // Test de Transaccion
-        assert.equal(consulta.expanded, "Alumno sin Calificaciones");
+        assert.equal(consulta.status, 204)
     })
 
-    it('Deberia informar que tiene materias pero no desaprobadas', async function () {
+    it('Deberia responder con status 204 por no haber materias desaprobadas', async function () {
         this.timeout(0);
 
         // Datos a precargar
@@ -106,7 +109,7 @@ describe('Sin Materias para rendir', () => {
         assert.equal(response.deletedCount, 1)
 
         // Test de Transaccion
-        assert.equal(consulta.expanded, "Alumno sin Calificaciones Desaprobadas");
+        assert.equal(consulta.status, 204)
     })
 })
 
@@ -167,7 +170,8 @@ describe('Mesa de Castigo', () => {
         assert.equal(responseAlumno.deletedCount, 1)
 
         // Test de Transaccion
-        assert.equal(consulta.expanded, "Alumno estuvo Ausente en la Ultima Mesa con id: " + mesaExamenObj._id);
+        assert.equal(consulta.status, 200)
+        assert.equal(consulta.data.message, "Alumno estuvo Ausente en la Ultima Mesa con id: " + mesaExamenObj._id);
     })
 })
 
@@ -234,16 +238,16 @@ describe('Transacciones Correctas', () => {
             // Consulta a Testear
             let consultaObtenerDictados = await obtenerDictados(alumno.legajo);
             let consultaRegistrarMesa = await registrarMesa(
-                consultaObtenerDictados.response.idAlumno,
+                consultaObtenerDictados.data.response.idAlumno,
                 {
-                    id: consultaObtenerDictados.response.dictados[0].id,
-                    nombreMateria: consultaObtenerDictados.response.dictados[0].nombreMateria,
-                    anioMateria: consultaObtenerDictados.response.dictados[0].anioMateria,
-                    cicloLectivo: consultaObtenerDictados.response.dictados[0].cicloLectivo,
+                    id: consultaObtenerDictados.data.response.dictados[0].id,
+                    nombreMateria: consultaObtenerDictados.data.response.dictados[0].nombreMateria,
+                    anioMateria: consultaObtenerDictados.data.response.dictados[0].anioMateria,
+                    cicloLectivo: consultaObtenerDictados.data.response.dictados[0].cicloLectivo,
                 });
 
             let mesaCreadaTransaccionObj = await mesaExamenDB.getMesaExamen(
-                consultaRegistrarMesa.response.acta);
+                consultaRegistrarMesa.data.response.acta);
 
             alumnoObj = await alumnoDB.getAlumno(alumno.dni);
             let idResultadoCreadoTransaccion = alumnoObj.calificaciones[0].resultadoMesaExamen
@@ -257,7 +261,7 @@ describe('Transacciones Correctas', () => {
             let responseResultado = (await resultadoMesaDB.deleteResultadoMesa(resultadoMesaObj._id))
             let responseMesa = (await mesaExamenDB.deleteMesaExamen(mesaExamen.acta))
             let responseMesaCreadaTransaccion = (await mesaExamenDB.deleteMesaExamen(
-                consultaRegistrarMesa.response.acta))
+                consultaRegistrarMesa.data.response.acta))
             let responseAlumno = (await alumnoDB.deleteAlumno(alumno.dni));
 
             assert.equal(responseDictado.deletedCount, 1)
@@ -279,13 +283,13 @@ describe('Transacciones Correctas', () => {
                     },
                 ],
             }
-            expect(consultaObtenerDictados.response).to.deep.include(esperadoObtenerDictados);
+            expect(consultaObtenerDictados.data.response).to.deep.include(esperadoObtenerDictados);
 
             assert.equal(
-                consultaRegistrarMesa.response.mensaje,
+                consultaRegistrarMesa.data.response.mensaje,
                 "Inscripción Exitosa, será notificado cuando se establezca fecha, hora y aula"
             );
-            expect(consultaRegistrarMesa.response).to.have.deep.property('acta');
+            expect(consultaRegistrarMesa.data.response).to.have.deep.property('acta');
 
             let esperadoMesaRegistrada = {
                 estado: "Solicitada",
@@ -382,10 +386,10 @@ describe('Transacciones Correctas', () => {
             // Consulta a Testear
             let consultaObtenerDictados = await obtenerDictados(alumno.legajo);
 
-            let datosDictado = consultaObtenerDictados.response.dictados
+            let datosDictado = consultaObtenerDictados.data.response.dictados
                 .find(dictado => dictado.nombreMateria === dictado1.materia.nombre)
             let consultaRegistrarMesa = await registrarMesa(
-                consultaObtenerDictados.response.idAlumno,
+                consultaObtenerDictados.data.response.idAlumno,
                 {
                     id: datosDictado.id,
                     nombreMateria: datosDictado.nombreMateria,
@@ -447,8 +451,8 @@ describe('Transacciones Correctas', () => {
                 ]
             }
 
-            expect(consultaObtenerDictados.response).to.deep.include(esperadoObtenerDictados);
-            expect(consultaObtenerDictados.response).to.not.include(noEsperadoObtenerDictados);
+            expect(consultaObtenerDictados.data.response).to.deep.include(esperadoObtenerDictados);
+            expect(consultaObtenerDictados.data.response).to.not.include(noEsperadoObtenerDictados);
 
             let esperadoRegistrarMesa = {
                 acta: mesaExamen.acta,
@@ -457,7 +461,7 @@ describe('Transacciones Correctas', () => {
                 aula: mesaExamen.aula,
             }
 
-            expect(consultaRegistrarMesa.response).to.deep.include(esperadoRegistrarMesa);
+            expect(consultaRegistrarMesa.data.response).to.deep.include(esperadoRegistrarMesa);
 
             assert.equal(
                 String(mesaExamenObj.resultados[0]),
@@ -472,11 +476,9 @@ describe('Transacciones Correctas', () => {
         })
 })
 
-
 // TODO: cambios de diseño de transaccion, anotar
 
-
-describe('Prueba de DB', () => {
+xdescribe('Prueba de DB', () => {
     it('Deberia crear alumno y borrarlo', async function () {
         this.timeout(0);
 
@@ -526,10 +528,10 @@ async function obtenerDictados(legajo) {
     return await axios
         .get(`${urlBackend}/inscribir-mesa/obtener-dictados/${legajo}`)
         .then((res) => {
-            return res.data;
+            return res;
         })
         .catch((res) => {
-            return res.response.data;
+            return res.response;
         });
 }
 
@@ -537,9 +539,9 @@ async function registrarMesa(oidAlumno, valoresDictado) {
     return await axios
         .post(`${urlBackend}/inscribir-mesa/registrar-mesa/${oidAlumno}`, valoresDictado)
         .then((res) => {
-            return res.data;
+            return res;
         })
         .catch((res) => {
-            return res.response.data;
+            return res.response;
         });
 }

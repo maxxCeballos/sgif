@@ -20,14 +20,14 @@ const cargarNotasMesa = async (oidMesa, notas) => {
 
     if (!mesa) {
         throw {
-            status: 204,
+            status: 404,
             message: "No existe la mesa"
         };
     }
 
     if (mesa.resultados.length !== notas.length) {
         throw {
-            status: 204,
+            status: 400,
             message: "Existen resultados sin cargar"
         };
     }
@@ -38,7 +38,7 @@ const cargarNotasMesa = async (oidMesa, notas) => {
 
         if (!datoNota) {
             throw {
-                status: 204,
+                status: 400,
                 message: "No se encontro resultado para: " + resultado
             };
         }
@@ -49,7 +49,7 @@ const cargarNotasMesa = async (oidMesa, notas) => {
 
             if (!responseActualizarResultado) {
                 throw {
-                    status: 204,
+                    status: 500,
                     message: "No se pudo cerrar la Mesa"
                 };    
             }
@@ -59,7 +59,7 @@ const cargarNotasMesa = async (oidMesa, notas) => {
 
             if (!responseActualizarResultado) {
                 throw {
-                    status: 204,
+                    status: 500,
                     message: "No se pudo cerrar la Mesa"
                 };    
             }
@@ -72,7 +72,7 @@ const cargarNotasMesa = async (oidMesa, notas) => {
 
             if (!responseActualizarAlumno) {
                 throw {
-                    status: 204,
+                    status: 500,
                     message: "No se pudo cerrar la Mesa"
                 };    
             }
@@ -82,7 +82,7 @@ const cargarNotasMesa = async (oidMesa, notas) => {
 
             if (!responseActualizarResultado) {
                 throw {
-                    status: 204,
+                    status: 500,
                     message: "No se pudo cerrar la Mesa"
                 };    
             }
@@ -94,7 +94,7 @@ const cargarNotasMesa = async (oidMesa, notas) => {
 
     if (!responseActualizarResultado) {
         throw {
-            status: 204,
+            status: 500,
             message: "No se pudo cerrar la Mesa"
         };   
     }

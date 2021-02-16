@@ -9,14 +9,14 @@ const urlBackend = "http://localhost:5000";
 const databaseHandler = require('./databaseHandler');
 const { expect } = require('chai');
 
-const serverOn = true;
+const serverOn = false;
 
 before(async function () {
     this.timeout(0);
     await databaseHandler.conectar(serverOn);
-    if (!serverOn) {
-        throw "Error Servidor Apagado"
-    }
+    // if (!serverOn) {
+    //     throw "Error Servidor Apagado"
+    // }
 });
 
 after(function () {
@@ -30,7 +30,8 @@ describe('No Devuelve Mesas', () => {
 
         let consulta = await obtenerTodasMesas();
 
-        assert.equal(consulta.expanded, "No hay mesas")
+        assert.equal(consulta.status, 204)
+        // assert.equal(consulta.data.message, "No hay mesas");
     })
 
     it('Debería informar que no hay mesas (por no estar en estado Solicitada)', async function () {
@@ -52,10 +53,11 @@ describe('No Devuelve Mesas', () => {
         assert.equal(responseMesa.deletedCount, 1)
 
         //* Test de Transaccion
-        if (typeof consulta.expanded === 'string') {
-            assert.equal(consulta.expanded, "No hay mesas")
+        if (consulta.status == 204) {
+            assert.equal(consulta.status, 204)
         } else {
-            let actasMesas = consulta.response.map(mesa => {
+            assert.equal(consulta.status, 200)
+            let actasMesas = consulta.data.response.map(mesa => {
                 return mesa.acta;
             })
             expect(actasMesas).to.not.include.members([mesaExamen.acta]);
@@ -81,10 +83,11 @@ describe('No Devuelve Mesas', () => {
         assert.equal(responseMesa.deletedCount, 1)
 
         //* Test de Transaccion
-        if (typeof consulta.expanded === 'string') {
-            assert.equal(consulta.expanded, "No hay mesas")
+        if (consulta.status == 204) {
+            assert.equal(consulta.status, 204)
         } else {
-            let actasMesas = consulta.response.map(mesa => {
+            assert.equal(consulta.status, 200)
+            let actasMesas = consulta.data.response.map(mesa => {
                 return mesa.acta;
             })
             expect(actasMesas).to.not.include.members([mesaExamen.acta]);
@@ -113,10 +116,11 @@ describe('No Devuelve Mesas', () => {
         assert.equal(responseMesa.deletedCount, 1)
 
         //* Test de Transaccion
-        if (typeof consulta.expanded === 'string') {
-            assert.equal(consulta.expanded, "No hay mesas")
+        if (consulta.status == 204) {
+            assert.equal(consulta.status, 204)
         } else {
-            let actasMesas = consulta.response.map(mesa => {
+            assert.equal(consulta.status, 200)
+            let actasMesas = consulta.data.response.map(mesa => {
                 return mesa.acta;
             })
             expect(actasMesas).to.not.include.members([mesaExamen.acta]);
@@ -268,25 +272,25 @@ describe('Mesa Cerrada Correctamente', () => {
         //* Consulta a Testear
         let consultaObtenerTodasMesas = await obtenerTodasMesas();
 
-        let mesaAElegir = consultaObtenerTodasMesas.response.find(
+        let mesaAElegir = consultaObtenerTodasMesas.data.response.find(
             mesa => mesa.nombreMateria === dictado1.materia.nombre
         )
         let consultaObtenerAlumnosMesa = await obtenerAlumnosMesa(mesaAElegir.oidMesa);
 
         let notas = [
             {
-                oidResultado: consultaObtenerAlumnosMesa.response[0].oidResultado,
-                oidAlumno: consultaObtenerAlumnosMesa.response[0].oidAlumno,
+                oidResultado: consultaObtenerAlumnosMesa.data.response[0].oidResultado,
+                oidAlumno: consultaObtenerAlumnosMesa.data.response[0].oidAlumno,
                 nota: 6
             },
             {
-                oidResultado: consultaObtenerAlumnosMesa.response[1].oidResultado,
-                oidAlumno: consultaObtenerAlumnosMesa.response[1].oidAlumno,
+                oidResultado: consultaObtenerAlumnosMesa.data.response[1].oidResultado,
+                oidAlumno: consultaObtenerAlumnosMesa.data.response[1].oidAlumno,
                 nota: 2
             },
             {
-                oidResultado: consultaObtenerAlumnosMesa.response[2].oidResultado,
-                oidAlumno: consultaObtenerAlumnosMesa.response[2].oidAlumno,
+                oidResultado: consultaObtenerAlumnosMesa.data.response[2].oidResultado,
+                oidAlumno: consultaObtenerAlumnosMesa.data.response[2].oidAlumno,
                 condicion: "Ausente"
             }
         ];
@@ -327,6 +331,10 @@ describe('Mesa Cerrada Correctamente', () => {
 
         //* Test de Transaccion
         // Hay que verificar uno por uno, ya que pueden estar en distinta posicion
+        assert.equal(consultaObtenerTodasMesas.status, 200)
+        assert.equal(consultaObtenerAlumnosMesa.status, 200)
+        assert.equal(consultaCargarNotasMesa.status, 200)
+
         let esperadoObtenerTodasMesas = [
             {
                 oidMesa: String(mesaExamen1Obj._id),
@@ -377,12 +385,12 @@ describe('Mesa Cerrada Correctamente', () => {
             },
         ]
 
-        expect(consultaObtenerTodasMesas.response).to.deep.include.members(esperadoObtenerTodasMesas);
+        expect(consultaObtenerTodasMesas.data.response).to.deep.include.members(esperadoObtenerTodasMesas);
 
-        assert.equal(consultaObtenerAlumnosMesa.response.length, esperadoObtenerTodasMesas.length)
-        expect(consultaObtenerAlumnosMesa.response).to.deep.include.members(esperadoObtenerAlumnosMesa);
+        assert.equal(consultaObtenerAlumnosMesa.data.response.length, esperadoObtenerTodasMesas.length)
+        expect(consultaObtenerAlumnosMesa.data.response).to.deep.include.members(esperadoObtenerAlumnosMesa);
 
-        assert.equal(consultaCargarNotasMesa.response.mensaje, "Mesa Cerrada con Éxito")
+        assert.equal(consultaCargarNotasMesa.data.response.mensaje, "Mesa Cerrada con Éxito")
         assert.equal(mesaExamen1Obj.estado, "Cerrada")
         expect(alumno1Obj.calificaciones[0]).to.deep.include({
             condicion: "Aprobado",
@@ -433,10 +441,10 @@ async function obtenerTodasMesas() {
     return await axios
         .get(`${urlBackend}/cerrar-mesa/obtener-todas-mesas`)
         .then((res) => {
-            return res.data;
+            return res;
         })
         .catch((res) => {
-            return res.response.data;
+            return res.response;
         });
 }
 
@@ -444,10 +452,10 @@ async function obtenerAlumnosMesa(oidMesa) {
     return await axios
         .get(`${urlBackend}/cerrar-mesa/obtener-alumnos-mesa/${oidMesa}`)
         .then((res) => {
-            return res.data;
+            return res;
         })
         .catch((res) => {
-            return res.response.data;
+            return res.response;
         });
 }
 
@@ -455,9 +463,9 @@ async function cargarNotasMesa(oidMesa, notas) {
     return await axios
         .put(`${urlBackend}/cerrar-mesa/cargar-notas-mesa/${oidMesa}`, notas)
         .then((res) => {
-            return res.data;
+            return res;
         })
         .catch((res) => {
-            return res.response.data;
+            return res.response;
         });
 }

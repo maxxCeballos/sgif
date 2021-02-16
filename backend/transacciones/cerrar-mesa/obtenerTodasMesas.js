@@ -12,9 +12,9 @@ const obtenerTodasMesas = async () => {
     const mesas = await getAllMesasExamen();
 
     if (mesas.length === 0) {
+        // No hay mesas
         throw {
             status: 204,
-            message: "No hay mesas"
         };
     }
 
@@ -28,9 +28,9 @@ const obtenerTodasMesas = async () => {
     });
 
     if (mesasCompletadas.length === 0) {
+        // No hay mesas
         throw {
             status: 204,
-            message: "No hay mesas"
         };
     }
 

@@ -49,4 +49,29 @@ describe('InscribirMesa', () => {
         expect(instanciaCartelError.vm.$data.estaActivado).toBe(true)
         expect(instanciaCartelError.vm.$data.mensaje).toBe(mensajeError)
     })
+
+    it('should ', async () => {
+        const mensajeError = "Error de Test"
+        const errorRespuesta = {
+            response: {
+                data: {
+                    expanded: {
+                        status: 204,
+                        message: mensajeError
+                    }
+                }
+            }
+        };
+
+        axios.get.mockImplementationOnce(() => Promise.reject(errorRespuesta));
+
+        await wrapper.vm.obtenerDictados(1234);
+        // instanciaBuscadorLegajos.vm.$emit('set-legajo', 1234);
+        // await wrapper.vm.$nextTick()
+
+        const instanciaCartelError = wrapper.findComponent(CartelError);
+
+        expect(instanciaCartelError.vm.$data.estaActivado).toBe(true)
+        expect(instanciaCartelError.vm.$data.mensaje).toBe(mensajeError)
+    })
 })

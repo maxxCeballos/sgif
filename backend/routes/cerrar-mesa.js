@@ -34,6 +34,7 @@ const obtenerAlumnosMesa = require('../transacciones/cerrar-mesa/obtenerAlumnosM
 router.get('/cerrar-mesa/obtener-todas-mesas', asyncHandler(async (req, res) => {
     const response = await obtenerTodasMesas();
 
+    res.status(200);
     res.send({ ok: true, response });
 }));
 
@@ -45,6 +46,7 @@ router.get('/cerrar-mesa/obtener-alumnos-mesa/:oidMesa', asyncHandler(async (req
 
     const response = await obtenerAlumnosMesa(oidMesa);
 
+    res.status(200);
     res.send({ ok: true, response });
 }));
 
@@ -52,7 +54,10 @@ router.get('/cerrar-mesa/obtener-alumnos-mesa/:oidMesa', asyncHandler(async (req
  * Para controlar si no se envia oidMesa
  */
 router.get('/cerrar-mesa/obtener-alumnos-mesa', asyncHandler(async (req, res) => {
-    throw "Por Favor, Ingrese un Identificador de Mesa";
+    throw {
+        status: 404,
+        message: "Por Favor, Ingrese un Identificador de Mesa"
+    };
 }));
 
 /**
@@ -66,6 +71,7 @@ router.put('/cerrar-mesa/cargar-notas-mesa/:oidMesa', asyncHandler(async (req, r
 
     const response = await cargarNotasMesas(oidMesa, notas);
 
+    res.status(200);
     res.send({ ok: true, response });
 }));
 
@@ -73,7 +79,10 @@ router.put('/cerrar-mesa/cargar-notas-mesa/:oidMesa', asyncHandler(async (req, r
  * Carga los resultados de los alumnos que rindieron en la mesa con las notas y la asistencia.
  */
 router.put('/cerrar-mesa/cargar-notas-mesa', asyncHandler(async (req, res) => {
-    throw "Por Favor, Ingrese un Identificador de Mesa";
+    throw {
+        status: 404,
+        message: "Por Favor, Ingrese un Identificador de Mesa"
+    };
 }));
 
 module.exports = router;

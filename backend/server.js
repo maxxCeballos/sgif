@@ -31,8 +31,8 @@ connection.once('open', () => {
 
 app.use(routesHandler);
 
-// app.use(errorYaupeHandler);
 app.use(errorYaupeHandler);
+// app.use(errorYaupeHandler);
 
 //Start Server
 app.listen(port, () => {

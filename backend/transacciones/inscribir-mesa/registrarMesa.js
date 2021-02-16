@@ -11,7 +11,7 @@ const registrarMesa = async (oidAlumno, valoresDictado) => {
 
     if (!verificarDictado(valoresDictado)) {
         throw {
-            status: 204,
+            status: 400,
             message: "El Dictado no es Correcto"
         };
     }
@@ -21,7 +21,7 @@ const registrarMesa = async (oidAlumno, valoresDictado) => {
     // Si el resultado dio mal
     if (!responseResultado) {
         throw {
-            status: 204,
+            status: 500,
             message: "Error al Inscribirse a la Mesa"
         };        
     }
@@ -50,7 +50,7 @@ const registrarMesa = async (oidAlumno, valoresDictado) => {
 
         if (!responseAddResultadoMesa) {
             throw {
-                status: 204,
+                status: 500,
                 message: "Error al Inscribirse a la Mesa"
             };    
         }
@@ -60,7 +60,7 @@ const registrarMesa = async (oidAlumno, valoresDictado) => {
 
     if (!responseAgregarResultadoAlumno) {
         throw {
-            status: 204,
+            status: 500,
             message: "Error al Inscribirse a la Mesa"
         };    
     }
@@ -70,7 +70,7 @@ const registrarMesa = async (oidAlumno, valoresDictado) => {
 
     if (!responseAsociarMesaResultado) {
         throw {
-            status: 204,
+            status: 500,
             message: "Error al Inscribirse a la Mesa"
         };    
     }
