@@ -5,7 +5,7 @@ const asyncHandler = require('../middlewares/asynchandler');
 
 const router = express.Router();
 
-const { createAlumno, updateAlumnoOID, getAllAlumnos, getAlumnoById, deleteAlumno, setPadre, getPadres } = require('../controllers/alumno');
+const { createAlumno, updateAlumnoOID, getAllAlumnos, getAlumnoById, deleteAlumnoOID, setPadre, getPadres } = require('../controllers/alumno');
 const { response } = require('express');
 
 router.post('/alumno', asyncHandler(async (req, res) => {
@@ -46,11 +46,11 @@ router.put('/alumno/:oidAlumno', asyncHandler(async (req, res) => {
     res.send({ ok: true, response });
 }));
 
-router.delete('/alumno/:dni', asyncHandler(async (req, res) => {
+router.delete('/alumno/:oid', asyncHandler(async (req, res) => {
 
-    const dni = req.params.dni
+    const oid = req.params.oid
 
-    const response = await deleteAlumno(dni)
+    const response = await deleteAlumnoOID(oid)
 
     res.send({ ok: true, response })
 }));
