@@ -45,6 +45,7 @@ export default {
       tablaLoading: true,
       materiaSeleccionada: {},
       idAlumno: "",
+      msgNoMaterias: "No hay materias para rendir",
     };
   },
   components: {
@@ -68,12 +69,22 @@ export default {
       await axios
         .get(`${ipBackend}/inscribir-mesa/obtener-dictados/${this.legajo}`)
         .then((res) => {
-          this.materias = res.data.response.dictados;
-          this.idAlumno = res.data.response.idAlumno;
+          if (res.status == 204) {
+            this.$refs.cartelError.abrirCartel(this.msgNoMaterias);
+            this.mostrarTabla = false;
+          } else if (res.status == 200 && !res.data.response.idAlumno) {
+            // Mesa de Castigo
+            this.$refs.cartelError.abrirCartel(res.data.response.message);
+            this.mostrarTabla = false;
+          } else {
+            // Consulta responde correctamente
+            this.materias = res.data.response.dictados;
+            this.idAlumno = res.data.response.idAlumno;
+          }
         })
         .catch((err) => {
-          if (err.response.data.expanded) {
-            this.$refs.cartelError.abrirCartel(err.response.data.expanded.message);
+          if (err.response.status == 404) {
+            this.$refs.cartelError.abrirCartel(err.response.data.message);
             this.mostrarTabla = false;
           }
         });
@@ -139,19 +150,32 @@ export default {
           valoresDictado
         )
         .then((res) => {
-          console.log(res.data);
-          this.$refs.cartelLoading.desactivar();
-          this.$refs.cartelExito.abrirCartel(
-            res.data.response.mensaje +
-              `. Se inscribió a la mesa de la materia: 
-              ${this.materiaSeleccionada.nombreMateria}. `
-          );
+          if (res.status == 200) {
+            this.$refs.cartelLoading.desactivar();
+            let msg =
+              res.data.response.mensaje +
+              `. Se inscribió a la mesa de la materia: ${this.materiaSeleccionada.nombreMateria}. `;
+            if (res.data.response.fechaHora && res.data.response.aula) {
+              let fechaHora = new Date(res.data.response.fechaHora);
+
+              let diaExamen = `${fechaHora.getDate()}/${fechaHora.getMonth() + 1}/${fechaHora.getFullYear()}`;
+              let horaExamen = `${fechaHora.getHours()}:${fechaHora.getMinutes()}`;
+              msg +=
+                `El exámen será en el aula: ${res.data.response.aula}, ` +
+                `el dia: ${diaExamen} a las ${horaExamen}`;
+            }
+            this.$refs.cartelExito.abrirCartel(msg);
+          }
         })
         .catch((err) => {
-          console.log(err.response);
-          if (err.response.data.expanded) {
-            this.$refs.cartelError.abrirCartel(err.response.data.expanded);
+          if (
+            err.response &&
+            (err.response.status == 400 || err.response.status == 500)
+          ) {
+            this.$refs.cartelError.abrirCartel(err.response.data.message);
             this.mostrarTabla = false;
+          } else {  
+            console.log(err)
           }
         });
 

@@ -5,8 +5,8 @@
 
   <v-app>
     <!-- <v-navigation-drawer app> -->
-      <!-- TODO para hacerlo mas responsive, capaz conviene q se transforme en barra superior al achicar -->
-      <SideNavBar />
+    <!-- TODO para hacerlo mas responsive, capaz conviene q se transforme en barra superior al achicar -->
+    <SideNavBar />
     <!-- </v-navigation-drawer> -->
 
     <!-- <v-navigation-drawer disable-resize-watcher permanent app>

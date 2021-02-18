@@ -6,15 +6,11 @@
         <v-form @submit="setLegajo">
           <v-row>
             <v-col>
-              <v-text-field
-                label="Legajo"
-                outlined
-                v-model="legajo"
-              />
+              <v-text-field label="Legajo" outlined v-model="legajo" />
             </v-col>
             <v-col>
-              <v-btn @click="setLegajo" elevation="1" large
-                >Buscar Materias
+              <v-btn @click="setLegajo" elevation="1" large>
+                Buscar Materias
               </v-btn>
             </v-col>
           </v-row>

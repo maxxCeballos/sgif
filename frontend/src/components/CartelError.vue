@@ -18,7 +18,7 @@
 
 <script>
 export default {
-  name: "CartelErrorr",
+  name: "CartelError",
   data: function () {
     return {
       estaActivado: false,

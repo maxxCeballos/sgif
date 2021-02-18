@@ -283,8 +283,11 @@ describe('Transacciones Correctas', () => {
                     },
                 ],
             }
+            assert.equal(consultaObtenerDictados.status, 200)
             expect(consultaObtenerDictados.data.response).to.deep.include(esperadoObtenerDictados);
 
+
+            assert.equal(consultaRegistrarMesa.status, 200)
             assert.equal(
                 consultaRegistrarMesa.data.response.mensaje,
                 "Inscripción Exitosa, será notificado cuando se establezca fecha, hora y aula"
@@ -451,6 +454,7 @@ describe('Transacciones Correctas', () => {
                 ]
             }
 
+            assert.equal(consultaObtenerDictados.status, 200)
             expect(consultaObtenerDictados.data.response).to.deep.include(esperadoObtenerDictados);
             expect(consultaObtenerDictados.data.response).to.not.include(noEsperadoObtenerDictados);
 
@@ -461,6 +465,7 @@ describe('Transacciones Correctas', () => {
                 aula: mesaExamen.aula,
             }
 
+            assert.equal(consultaRegistrarMesa.status, 200)
             expect(consultaRegistrarMesa.data.response).to.deep.include(esperadoRegistrarMesa);
 
             assert.equal(

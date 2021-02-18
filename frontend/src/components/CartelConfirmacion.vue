@@ -1,6 +1,6 @@
 <template >
-  <div class="text-center">
-    <v-dialog :value="estaActivado" width="500">
+  <v-dialog :value="estaActivado" width="500">
+    <div class="text-center">
       <v-card>
         <v-card-title class="headline grey lighten-2 justify-center">
           {{ titulo }}
@@ -18,8 +18,8 @@
           <v-btn color="primary" @click="confirmarOperacion"> Confirmar </v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
-  </div>
+    </div>
+  </v-dialog>
 </template>
 
 <script>
