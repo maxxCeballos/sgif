@@ -4,7 +4,6 @@ import Vuetify from 'vuetify'
 
 describe('CartelConfirmacion', () => {
     const localVue = createLocalVue();
-    localVue.use(Vuetify);
     let vuetify;
     let wrapper;
 
