@@ -176,6 +176,8 @@ export default {
             this.mostrarTabla = false;
           } else {  
             console.log(err)
+            this.$refs.cartelError.abrirCartel("Error al procesar la respuesta del servidor");
+            this.mostrarTabla = false;
           }
         });
 
