@@ -20,12 +20,11 @@ Pasos para iniciar backend y ejecutar los tests.
 
 #### Pasos para Ejecutar y Testear
   1. Clonar repositorio.
-  2. Ejecutar `$ cd backend`
-  3. Ejecutar `$ npm init`
-  4. Ejecutar `$ npm i`
-  5. Ir al directorio backend: `cd backend`
-  6. (Iniciar Backend) `$ npm start`
-  7. (Ejecutar Tests)  `$ npm test`
-  8. (Ejecutar Istanbul) `$ npm run coverage`    
+  2. Ejecutar `$ npm init`
+  3. Ejecutar `$ npm i`
+  4. Ir al directorio backend: `cd backend`
+  5. (Iniciar Backend) `$ npm start`
+  6. (Ejecutar Tests)  `$ npm test`
+  7. (Ejecutar Istanbul) `$ npm run coverage`    
   >Para visualizar los resultados de istanbul abrir en un buscador el archivo `index.html`
   El archivo se encuentra en la ruta `./backend/coverage/lcov-report/index.html`
