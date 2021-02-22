@@ -48,13 +48,13 @@ const validarAlumno = async (dni) => {
 
         estadoInscripcion = alumnoDB.estadoInscripcion;
         if (estadoInscripcion !== "No Inscripto") {
+            //TODO: se agrega un nuevo estado que es Egresado
             response = {
                 valido: false,
                 operacion: "Inválido",
                 message: "El alumno está " + estadoInscripcion
             }
-        } else {
-            //TODO: verificar que no se haya egresado
+        } else {            
             response = {
                 valido: true,
                 operacion: "Reinscribir",
@@ -75,14 +75,15 @@ const validarAlumno = async (dni) => {
 
 const createResponsableNuevo = async (datosResponsable) => {
 
-    const { nombre, apellido, dni, genero, cuitCuil, telefono, email, calle, altura,
-        barrio, piso, depto, tira, modulo, localidad, codigoPostal, provincia } = datosResponsable;
+    const { nombre, apellido, dni, genero, cuitCuil, telefono, email, calle,
+        altura, barrio, piso, depto, tira, modulo, localidad, codigoPostal,
+        provincia, fechaNacimiento, lugarNacimiento, } = datosResponsable;
 
     const persona = { nombre, apellido, dni, genero };
 
     const responsable = {
         legajo: await generarLegajoResp(),
-        cuitCuil, telefono, email, calle, altura,
+        cuitCuil, telefono, email, calle, altura, fechaNacimiento, lugarNacimiento,
         barrio, piso, depto, tira, modulo, localidad, codigoPostal, provincia
     }
 
@@ -135,7 +136,7 @@ const registrarAlumnoNuevo = async (datosAlumno, oidResponsable) => {
     } else {
         //TODO: eliminar responsable si lo creo
         response.exito = false;
-        response.alumno = alumnoDB;
+        response.alumno = alumnoNuevo;
     }
     return response;
 }
@@ -181,7 +182,7 @@ const registrarAlumnoRol = async (datosAlumno, oidPersona, oidResponsable) => {
         }
     } else {
         //TODO: eliminar responsable si lo creo
-        response = alumnoDB;
+        response = alumnoNuevo;
     }
     return response;
 }

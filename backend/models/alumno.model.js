@@ -48,12 +48,45 @@ let observaciones = [{
     archivo: String, //FIXME es un archivo
 }];
 
+const tiposSacr = ["bautismo", "comunion", "confirmacion"];
+
+function cantMax(sacramentos) {
+    return sacramentos.length <= tiposSacr.length;
+};
+
+function sonUnicos(sacramentos) {
+    const n = sacramentos.length;
+    const max = tiposSacr.length;
+    let diferentes = true;
+    if (n > 0) {
+        let i = 0;
+        while (i < max && diferentes) {
+            let sacr = tiposSacr[i];
+            let ocurr = 0;
+            let j = 0
+            while (j < n && diferentes) {
+                if (sacramentos[j].tipo === sacr) {
+                    ocurr++;
+                }
+                if (ocurr > 1) {
+                    diferentes = false;
+                } else {
+                    j++;
+                }
+            }
+            i++;
+        }
+    }
+    return diferentes;
+}
+
 const alumnoEsquema = new Schema({
     dni: { type: String, unique: true },
     tipoDni: String,
     nombre: String,
     apellido: String,
     genero: { type: String, enum: ["Masculino", "Femenino", "Otro"] },
+    email: String,
     fechaNacimiento: Date,
     lugarNacimiento: String,
     legajo: { type: String, unique: true },
@@ -61,11 +94,17 @@ const alumnoEsquema = new Schema({
     fechaEgreso: Date,
     nombreEscuelaAnt: String,
     foto: String, //FIXME poner tipo de dato para la foto
-    sacramento: [{
-        tipo: { type: String, enum: ["Bautismo", "Comunión", "Confirmación"] },
-        fecha: Date,
-        diocesis: String
-    }],
+    sacramentos: {
+        type: [{
+            tipo: { type: String, enum: tiposSacr, required: true },
+            fecha: { type: Date, required: true },
+            diocesis: { type: String, required: true }
+        }],
+        validate: [
+            { validator: cantMax, msg: "Se recibieron más sacramentos de los permitidos" },
+            { validator: sonUnicos, msg: "Se recibieron dos sacramentos iguales" }
+        ]
+    },
     estadoInscripcion: {
         type: String, enum: ["Inscripto", "No Inscripto", "Reinscripto"]
     },

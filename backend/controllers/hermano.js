@@ -9,6 +9,11 @@ const getHermanoByID = async (dni) => {
         return false;
     } else if (hermano.length > 1) {
         throw "Hay mas de un hermano con el mismo DNI."
+    }else{        
+        if(!hermano[0].hermano.hasOwnProperty("fechaNacimiento")){
+            console.log("hermano no")
+            return false;
+        }
     }
 
     return hermano[0];

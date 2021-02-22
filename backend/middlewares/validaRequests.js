@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 
 const vDni = (req, res, next) => {
     //Al no haber formato se verifica que al menos sea un nro.
+    //FIXME: no verifica 101asd
 
     let dni = req.params.dni;
     if (isNaN(parseInt(dni)) || dni === undefined) {

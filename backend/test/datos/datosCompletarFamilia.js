@@ -18,7 +18,7 @@ const datosPadre = {
     telefonoLaboral: "0800-GOOGLE-123",
     bautismo: true,
     comunion: true,
-    confirmación: true,
+    confirmacion: true,
     egresoPrimario: false,
     egresoSecundario: false,
     relacionParentesco: "Padre"
@@ -37,7 +37,7 @@ const padreCompleto = {
     telefonoLaboral: datosPadre.telefonoLaboral,
     bautismo: datosPadre.bautismo,
     comunion: datosPadre.comunion,
-    confirmación: datosPadre.confirmación,
+    confirmacion: datosPadre.confirmacion,
     egresoPrimario: datosPadre.egresoPrimario,
     egresoSecundario: datosPadre.egresoSecundario,
     relacionParentesco: datosPadre.relacionParentesco
@@ -53,7 +53,7 @@ const padreEsperado = {
         telefonoLaboral: datosPadre.telefonoLaboral,
         bautismo: datosPadre.bautismo,
         comunion: datosPadre.comunion,
-        confirmación: datosPadre.confirmación,
+        confirmacion: datosPadre.confirmacion,
         egresoPrimario: datosPadre.egresoPrimario,
         egresoSecundario: datosPadre.egresoSecundario,
         relacionParentesco: datosPadre.relacionParentesco

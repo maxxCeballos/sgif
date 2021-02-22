@@ -18,7 +18,7 @@ router.post('/ciclo-lectivo', asyncHandler(async (req, res) => {
 router.get('/ciclo-lectivo', asyncHandler(async (req, res) => {
     const response = await getCicloLectivo();
 
-    console.log(response);
+    //console.log(response);
 
     res.send({ ok: true, response });
 }));

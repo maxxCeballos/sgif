@@ -8,7 +8,7 @@ const { getPadreByOID } = require('./padre');
 
 const createAlumno = async (alumno, oidResponsable) => {
     const { dni, tipoDni, nombre, apellido, genero, legajo, fechaNacimiento,
-        lugarNacimiento, fechaEgreso, nombreEscuelaAnt, foto,
+        email, lugarNacimiento, fechaEgreso, nombreEscuelaAnt, foto,
         sacramentos, anioCorrespondiente } = alumno;
 
     let response = {
@@ -16,14 +16,15 @@ const createAlumno = async (alumno, oidResponsable) => {
         alumno
     };
 
-    //TODO: verificar que la persona no sea un alumno ya
-
+    //TODO: verificar que la persona no sea un alumno ya    
+    
     const newAlumno = new Alumno({
         dni,
         tipoDni,
         nombre,
         apellido,
         genero,
+        email,
         fechaNacimiento,
         lugarNacimiento,
         legajo,
@@ -31,7 +32,7 @@ const createAlumno = async (alumno, oidResponsable) => {
         fechaEgreso,
         nombreEscuelaAnt,
         foto,
-        sacramentos, //TODO: revisar que este bien armado
+        sacramentos,
         //estadoInscripcion, se completa mas adelante
         anioCorrespondiente,
         responsable: oidResponsable
@@ -40,8 +41,8 @@ const createAlumno = async (alumno, oidResponsable) => {
     response.alumno = await newAlumno.save().catch(err => {        
         throw new BadRequest(err);
     });
+    
     response.exito = true;
-
     return response;
 }
 
@@ -140,10 +141,10 @@ const setPadre = async (oidPadre, oidAlumno) => {
         exito: false
     };
     let res;
-    let padreAux = await getPadreByOID(oidPadre);
+    let padreAux = await getPadreByOID(oidPadre);    
     let padres = await getPadres(oidAlumno);
 
-    //si el arreglo es menor a 2 y mayor a 0, entonces tiene 1 padre y tienen que tener dnis diferentes al que ya tiene
+    //si el arreglo es menor a 2 y mayor a 0, entonces tiene 1 padre y tienen que tener dnis diferentes al que ya tiene    
     if (padres.length < 2) {
         if (padres.length === 0 || padres[0].dni !== padreAux.dni) {
             let $push = { $push: { 'padres': oidPadre } }

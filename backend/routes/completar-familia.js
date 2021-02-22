@@ -17,8 +17,7 @@ const { getPadreByID } = require('../controllers/padre');
 const { getHermanoByID } = require('../controllers/hermano');
 
 router.get('/completar-familia/alumno/oid/:oid', vOID, asyncHandler(async (req, res) => {
-    const oidAlumno = req.params.oid;
-    console.log("oidAlumno",oidAlumno)
+    const oidAlumno = req.params.oid;    
 
     const alumno = await getAlumnoByOID(oidAlumno);
 

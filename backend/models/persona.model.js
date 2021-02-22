@@ -17,7 +17,9 @@ let responsable = {
     localidad: { type: String },
     codigoPostal: { type: Number },
     provincia: { type: String },
-};
+    fechaNacimiento: { type: Date },
+    lugarNacimiento: { type: String }
+}
 
 
 let hermano = {
@@ -33,12 +35,14 @@ let padre = {
     partidaNacimiento: { type: String },
     nacionalidad: { type: String },
     telefono: { type: String },
+    email: { type: String },
     ocupacion: { type: String },
     lugarTrabajo: { type: String },
     telefonoLaboral: { type: String },
+    emailLaboral: { type: String },
     bautismo: { type: Boolean },
     comunion: { type: Boolean },
-    confirmación: { type: Boolean },
+    confirmacion: { type: Boolean },
     egresoPrimario: { type: Boolean },
     egresoSecundario: { type: Boolean },
     relacionParentesco: { type: String }
