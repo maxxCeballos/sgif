@@ -23,8 +23,12 @@ Pasos para iniciar backend y ejecutar los tests.
   2. Ejecutar `$ npm init`
   3. Ejecutar `$ npm i`
   4. Ir al directorio backend: `cd backend`
-  5. (Iniciar Backend) `$ npm start`
-  6. (Ejecutar Tests)  `$ npm test`
-  7. (Ejecutar Istanbul) `$ npm run coverage`    
+  5. Actualizar ATLAS_URI en /backend/.env
+  6. (Iniciar Backend) `$ npm start`
+  7. (Ejecutar Tests)  `$ npm test`
+  8. (Ejecutar Istanbul) `$ npm run coverage`    
   >Para visualizar los resultados de istanbul abrir en un buscador el archivo `index.html`
   El archivo se encuentra en la ruta `./backend/coverage/lcov-report/index.html`
+
+  > Aclaración paso 5: Comunicarse con los desarrolladores, para que se le envíen los datos de acceso a MongoAtlas.    
+  O conectar a una base Mongo, considerar los datos de prueba, que no se van a poseer.
